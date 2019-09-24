@@ -1,7 +1,7 @@
 {
 	"name": "vscode-elrond-c",
 	"displayName": "Elrond Smart Contract Development in C",
-	"description": "VS Code extension to enable Elrond smart contract development in Rust",
+	"description": "VS Code extension to enable Elrond smart contract development in C",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.38.0"
@@ -10,14 +10,19 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:extension.buildCurrentFile",
+		"onCommand:extension.buildCurrentFile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.buildCurrentFile",
+				"title": "Smart Contracts - build current file"
+			},
+			{
+				"command": "extension.runCurrentFile",
+				"title": "Smart Contracts - run current file"
 			}
 		]
 	},
