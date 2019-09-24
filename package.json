@@ -24,7 +24,28 @@
 				"command": "extension.runCurrentFile",
 				"title": "Smart Contracts - run current file"
 			}
-		]
+		],
+
+		"configuration": {
+			"title": "vscode-elrond-c",
+			"properties": {
+				"elrond.clangPath": {
+					"type": "string",
+					"default": "clang",
+					"description": "clang tool."
+				},
+				"elrond.llcPath": {
+					"type": "string",
+					"default": "llc",
+					"description": "llc tool."
+				},
+				"elrond.wasmLdPath": {
+					"type": "string",
+					"default": "wasm-ld",
+					"description": "wasm-ld tool."
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
