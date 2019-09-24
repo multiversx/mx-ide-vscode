@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import child_process = require('child_process');
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -11,9 +12,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
+function wrapTry(action: CallableFunction) {
+	return () => {
+		try {
+			action();
+		} catch (error) {
+			vscode.window.showErrorMessage(error.message);
+		}
+	};
+}
+
 function buildCurrentFile() {
 	let path = getActiveFilePath();
+
 	vscode.window.showInformationMessage(`Build: ${path}.`);
+
+	let configuration = vscode.workspace.getConfiguration('elrond');
+	let clangPath: any = configuration.get("clangPath");
+	let llcPath: any = configuration.get("llcPath");
+	let wasmLdPath: any = configuration.get("wasmLdPath");
+
+	let command: string = `${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${path}`;
+	executeChildProcess(command);
+
+	vscode.window.showInformationMessage(`Build done.`);
 }
 
 function runCurrentFile() {
@@ -32,14 +54,19 @@ function getActiveFilePath() {
 	return path;
 }
 
-function wrapTry(action: CallableFunction) {
-	return () => {
-		try {
-			action();
-		} catch (error) {
-			vscode.window.showErrorMessage(error.message);
+function executeChildProcess(command: string) {
+	console.log("Will execute child process:");
+	console.log(command);
+
+	child_process.exec(command, (error: any, stdout: any, stderr: any) => {
+		if (error) {
+			console.error(error);
+			vscode.window.showErrorMessage(error || stdout || stderr);
 		}
-	};
+
+		console.log('STDOUT: ' + stdout);
+		console.error('STDERR: ' + stderr);
+	});
 }
 
 function getMainSyms() {
