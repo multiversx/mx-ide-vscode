@@ -33,12 +33,9 @@ function buildCurrentFile() {
 	let filePath_o = `${filePathWithoutExtension}.o`;
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
-	vscode.window.showInformationMessage(`Build: ${filePath}.`);
-
-	let configuration = vscode.workspace.getConfiguration('elrond');
-	let clangPath: any = configuration.get("clangPath");
-	let llcPath: any = configuration.get("llcPath");
-	let wasmLdPath: any = configuration.get("wasmLdPath");
+	let clangPath: any = getConfigurationValue("clangPath");
+	let llcPath: any = getConfigurationValue("llcPath");
+	let wasmLdPath: any = getConfigurationValue("wasmLdPath");
 	let symsFilePath = createTemporaryMainSymsFile();
 
 	// clang
@@ -53,7 +50,7 @@ function buildCurrentFile() {
 
 function runCurrentFile() {
 	let filePath = getActiveFilePath();
-	vscode.window.showInformationMessage(`Run: ${filePath}.`);
+	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
 }
 
 function getActiveFilePath() {
@@ -77,7 +74,7 @@ function executeChildProcess(command: string) {
 function createTemporaryMainSymsFile() {
 	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
 	let symsFileContent = getMainSyms().join("\n");
-	
+
 	fs.writeFileSync(symsFilePath, symsFileContent);
 
 	return symsFilePath;
@@ -106,4 +103,10 @@ function getMainSyms() {
         "getBlockTimestamp",
         "signalError"
     ];
+}
+
+function getConfigurationValue(key: string) {
+	let configuration = vscode.workspace.getConfiguration('elrond');
+	let value = configuration.get(key);
+	return value;
 }
