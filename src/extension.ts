@@ -62,9 +62,13 @@ function runCurrentFile() {
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
 	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
+
+	let options: vscode.InputBoxOptions = {
+		value: "yourFunction param1 param2 param3",
+		prompt: "Enter transaction data (function and parameters)"
+	};
 	
-	let options: vscode.InputBoxOptions = { value: "yourFunction param1 param2 param3" };
-	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => {}, raisePromiseError);
+	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => { }, raisePromiseError);
 
 	function onInputFulfilled(text: any) {
 		// simple debug
