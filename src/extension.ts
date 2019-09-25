@@ -28,9 +28,10 @@ function wrapTry(action: CallableFunction) {
 function buildCurrentFile() {
 	let filePath = getActiveFilePath();
 	let parsedPath = path.parse(filePath);
-	let parentDirectory = parsedPath.dir;
-	let filename = parsedPath.name;
-	let fullPathWithoutExtension = path.join(parentDirectory, filename);
+	let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
+	let filePath_ll = `${filePathWithoutExtension}.ll`;
+	let filePath_o = `${filePathWithoutExtension}.o`;
+	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
 	vscode.window.showInformationMessage(`Build: ${filePath}.`);
 
@@ -38,17 +39,14 @@ function buildCurrentFile() {
 	let clangPath: any = configuration.get("clangPath");
 	let llcPath: any = configuration.get("llcPath");
 	let wasmLdPath: any = configuration.get("wasmLdPath");
-
-	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
-	let symsFileContent = getMainSyms().join("\n");
-	fs.writeFileSync(symsFilePath, symsFileContent);
+	let symsFilePath = createTemporaryMainSymsFile();
 
 	// clang
 	executeChildProcess(`${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${filePath}`);
 	// llc
-	executeChildProcess(`${llcPath} -O3 -filetype=obj "${fullPathWithoutExtension}.ll" -o "${fullPathWithoutExtension}.o"`);
+	executeChildProcess(`${llcPath} -O3 -filetype=obj "${filePath_ll}" -o "${filePath_o}"`);
 	// wasm-ld
-	executeChildProcess(`${wasmLdPath} --no-entry "${fullPathWithoutExtension}.o" -o "${fullPathWithoutExtension}.wasm" --strip-all -allow-undefined-file=${symsFilePath} -export=_main -export=do_balance -export=topUp -export=transfer`);
+	executeChildProcess(`${wasmLdPath} --no-entry "${filePath_o}" -o "${filePath_wasm}" --strip-all -allow-undefined-file=${symsFilePath} -export=_main -export=do_balance -export=topUp -export=transfer`);
 
 	vscode.window.showInformationMessage(`Build done.`);
 }
@@ -74,6 +72,15 @@ function executeChildProcess(command: string) {
 	console.log(command);
 
 	child_process.execSync(command);
+}
+
+function createTemporaryMainSymsFile() {
+	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
+	let symsFileContent = getMainSyms().join("\n");
+	
+	fs.writeFileSync(symsFilePath, symsFileContent);
+
+	return symsFilePath;
 }
 
 function getMainSyms() {
