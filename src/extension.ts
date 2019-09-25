@@ -100,7 +100,7 @@ function createTemporaryMainSymsFile() {
 }
 
 function createTemporarySimpleOutputFile(content: string) {
-	let filePath = path.join(os.tmpdir(), "elrond_main.syms");
+	let filePath = path.join(os.tmpdir(), "simple_output.txt");
 	fs.writeFileSync(filePath, content);
 	return filePath;
 }
