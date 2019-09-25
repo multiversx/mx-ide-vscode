@@ -55,11 +55,14 @@ function runCurrentFile() {
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
 	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
-	let txData = "data";
+	let txData = "";
 
 	// simple debug
 	let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
-	vscode.window.showInformationMessage(output, { modal: true });
+	let outputFile = createTemporarySimpleOutputFile(output);
+
+	let uri = vscode.Uri.file(outputFile);
+	vscode.window.showTextDocument(uri);
 }
 
 function getActiveFilePath() {
@@ -89,6 +92,12 @@ function createTemporaryMainSymsFile() {
 	fs.writeFileSync(symsFilePath, symsFileContent);
 
 	return symsFilePath;
+}
+
+function createTemporarySimpleOutputFile(content: string) {
+	let filePath = path.join(os.tmpdir(), "elrond_main.syms");
+	fs.writeFileSync(filePath, content);
+	return filePath;
 }
 
 function getMainSyms() {
