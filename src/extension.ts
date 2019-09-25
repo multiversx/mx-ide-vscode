@@ -43,7 +43,7 @@ function buildCurrentFile() {
 	let clangPath: any = getConfigurationValue("clangPath");
 	let llcPath: any = getConfigurationValue("llcPath");
 	let wasmLdPath: any = getConfigurationValue("wasmLdPath");
-	let symsFilePath = createTemporaryMainSymsFile();
+	let symsFilePath = createTemporaryFile("main.syms", getMainSymsAsText());
 
 	// clang
 	executeChildProcess(`${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${filePath}`);
@@ -67,14 +67,13 @@ function runCurrentFile() {
 		value: "yourFunction param1 param2 param3",
 		prompt: "Enter transaction data (function and parameters)"
 	};
-	
+
 	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => { }, raisePromiseError);
 
-	function onInputFulfilled(text: any) {
+	function onInputFulfilled(userInput: any) {
 		// simple debug
-		let txData = text;
-		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
-		let outputFile = createTemporarySimpleOutputFile(output);
+		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${userInput}`);
+		let outputFile = createTemporaryFile("simple_output.txt", output);
 
 		let uri = vscode.Uri.file(outputFile);
 		vscode.window.showTextDocument(uri);
@@ -98,29 +97,20 @@ function getActiveFilePath() {
 }
 
 function executeChildProcess(command: string) {
-	console.log("Will execute child process:");
-	console.log(command);
-
+	console.log(`executeChildProcess():\n${command}`);
 	let output = child_process.execSync(command).toString()
-	console.log("Executed.");
+	console.log("executeChildProcess(): done.");
 	return output;
 }
 
-function createTemporaryMainSymsFile() {
-	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
-	let symsFileContent = getMainSyms().join("\n");
-	fs.writeFileSync(symsFilePath, symsFileContent);
-	return symsFilePath;
-}
-
-function createTemporarySimpleOutputFile(content: string) {
-	let filePath = path.join(os.tmpdir(), "simple_output.txt");
+function createTemporaryFile(fileName: string, content: string) {
+	let filePath = path.join(os.tmpdir(), fileName);
 	fs.writeFileSync(filePath, content);
 	return filePath;
 }
 
-function getMainSyms() {
-	return [
+function getMainSymsAsText() {
+	let mainSyms = [
 		"getOwner",
 		"getExternalBalance",
 		"blockHash",
@@ -142,6 +132,8 @@ function getMainSyms() {
 		"getBlockTimestamp",
 		"signalError"
 	];
+
+	return mainSyms.join("\n")
 }
 
 function getConfigurationValue(key: string) {
