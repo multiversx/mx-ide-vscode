@@ -30,7 +30,14 @@
 				"title": "Smart Contracts - build & run current file"
 			}
 		],
-
+		"menus": {
+			"editor/context": [
+				{
+					"command": "extension.buildAndRunCurrentFile",
+					"group": "dummyGroup"
+				}
+			]
+		},
 		"configuration": {
 			"title": "vscode-elrond-c",
 			"properties": {
