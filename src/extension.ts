@@ -57,14 +57,23 @@ function runCurrentFile() {
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
 	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
-	let txData = "";
+	
+	let options: vscode.InputBoxOptions = { value: "yourFunction param1 param2 param3" };
+	vscode.window.showInputBox(options).then(onInputFulfilled, onInputRejected);
 
-	// simple debug
-	let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
-	let outputFile = createTemporarySimpleOutputFile(output);
+	function onInputFulfilled(text: any) {
+		// simple debug
+		let txData = text;
+		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
+		let outputFile = createTemporarySimpleOutputFile(output);
 
-	let uri = vscode.Uri.file(outputFile);
-	vscode.window.showTextDocument(uri);
+		let uri = vscode.Uri.file(outputFile);
+		vscode.window.showTextDocument(uri);
+	}
+
+	function onInputRejected() {
+		vscode.window.showErrorMessage("Bad input.");
+	}
 }
 
 function buildAndRunCurrentFile() {
