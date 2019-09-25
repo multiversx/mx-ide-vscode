@@ -72,7 +72,7 @@ function runCurrentFile() {
 
 	function onInputFulfilled(userInput: any) {
 		// simple debug
-		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${userInput}`);
+		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${userInput}`, true);
 		let outputFile = createTemporaryFile("simple_output.txt", output);
 
 		let uri = vscode.Uri.file(outputFile);
@@ -96,9 +96,21 @@ function getActiveFilePath() {
 	return path;
 }
 
-function executeChildProcess(command: string) {
+function executeChildProcess(command: string, silentOnError: boolean = false) {
 	console.log(`executeChildProcess():\n${command}`);
-	let output = child_process.execSync(command).toString()
+
+	var output;
+
+	try {
+		output = child_process.execSync(command).toString()
+	} catch (error) {
+		if (silentOnError) {
+			output = error.toString();
+		} else {
+			throw error;
+		}
+	}
+
 	console.log("executeChildProcess(): done.");
 	return output;
 }
