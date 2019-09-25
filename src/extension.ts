@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import child_process = require('child_process');
 import path = require('path');
+import os = require('os');
+import fs = require('fs');
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -27,8 +29,8 @@ function buildCurrentFile() {
 	let filePath = getActiveFilePath();
 	let parsedPath = path.parse(filePath);
 	let parentDirectory = parsedPath.dir;
-	let filenameWithoutExtension = parsedPath.name;
-	let fullPathWithoutExtension = path.join(parentDirectory, filenameWithoutExtension);
+	let filename = parsedPath.name;
+	let fullPathWithoutExtension = path.join(parentDirectory, filename);
 
 	vscode.window.showInformationMessage(`Build: ${filePath}.`);
 
@@ -37,10 +39,16 @@ function buildCurrentFile() {
 	let llcPath: any = configuration.get("llcPath");
 	let wasmLdPath: any = configuration.get("wasmLdPath");
 
+	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
+	let symsFileContent = getMainSyms().join("\n");
+	fs.writeFileSync(symsFilePath, symsFileContent);
+
 	// clang
 	executeChildProcess(`${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${filePath}`);
 	// llc
-	executeChildProcess(`${llcPath} -O3 -filetype=obj "${fullPathWithoutExtension}.ll" -o "./${filenameWithoutExtension}.o"`);
+	executeChildProcess(`${llcPath} -O3 -filetype=obj "${fullPathWithoutExtension}.ll" -o "${fullPathWithoutExtension}.o"`);
+	// wasm-ld
+	executeChildProcess(`${wasmLdPath} --no-entry "${fullPathWithoutExtension}.o" -o "${fullPathWithoutExtension}.wasm" --strip-all -allow-undefined-file=${symsFilePath} -export=_main -export=do_balance -export=topUp -export=transfer`);
 
 	vscode.window.showInformationMessage(`Build done.`);
 }
@@ -65,15 +73,7 @@ function executeChildProcess(command: string) {
 	console.log("Will execute child process:");
 	console.log(command);
 
-	child_process.exec(command, (error: any, stdout: any, stderr: any) => {
-		if (error) {
-			console.error(error);
-			vscode.window.showErrorMessage(error || stdout || stderr);
-		}
-
-		console.log('STDOUT: ' + stdout);
-		console.error('STDERR: ' + stderr);
-	});
+	child_process.execSync(command);
 }
 
 function getMainSyms() {
