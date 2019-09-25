@@ -58,7 +58,8 @@ function runCurrentFile() {
 	let txData = "data";
 
 	// simple debug
-	executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
+	let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
+	vscode.window.showInformationMessage(output, { modal: true });
 }
 
 function getActiveFilePath() {
@@ -76,8 +77,9 @@ function executeChildProcess(command: string) {
 	console.log("Will execute child process:");
 	console.log(command);
 
-	child_process.execSync(command);
+	let output = child_process.execSync(command).toString()
 	console.log("Executed.");
+	return output;
 }
 
 function createTemporaryMainSymsFile() {
