@@ -5,15 +5,17 @@ import os = require('os');
 import fs = require('fs');
 
 export function activate(context: vscode.ExtensionContext) {
-
-	let disposableCommandBuildCurrentFile = vscode.commands.registerCommand('extension.buildCurrentFile', wrapTry(buildCurrentFile));
-	let disposableCommandRunCurrentFile = vscode.commands.registerCommand('extension.runCurrentFile', wrapTry(runCurrentFile));
-
-	context.subscriptions.push(disposableCommandBuildCurrentFile);
-	context.subscriptions.push(disposableCommandRunCurrentFile);
+	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
+	registerCustomCommand(context, 'extension.runCurrentFile', runCurrentFile);
+	registerCustomCommand(context, 'extension.buildAndRunCurrentFile', buildAndRunCurrentFile);
 }
 
 export function deactivate() { }
+
+function registerCustomCommand(context: vscode.ExtensionContext, name: string, action: CallableFunction) {
+	let disposable = vscode.commands.registerCommand(name, wrapTry(action));
+	context.subscriptions.push(disposable);
+}
 
 function wrapTry(action: CallableFunction) {
 	return () => {
@@ -63,6 +65,11 @@ function runCurrentFile() {
 
 	let uri = vscode.Uri.file(outputFile);
 	vscode.window.showTextDocument(uri);
+}
+
+function buildAndRunCurrentFile() {
+	buildCurrentFile();
+	runCurrentFile();
 }
 
 function getActiveFilePath() {
