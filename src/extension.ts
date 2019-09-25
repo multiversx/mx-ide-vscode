@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposableCommandRunCurrentFile);
 }
 
-export function deactivate() {}
+export function deactivate() { }
 
 function wrapTry(action: CallableFunction) {
 	return () => {
@@ -88,9 +88,7 @@ function executeChildProcess(command: string) {
 function createTemporaryMainSymsFile() {
 	let symsFilePath = path.join(os.tmpdir(), "elrond_main.syms");
 	let symsFileContent = getMainSyms().join("\n");
-
 	fs.writeFileSync(symsFilePath, symsFileContent);
-
 	return symsFilePath;
 }
 
@@ -101,28 +99,28 @@ function createTemporarySimpleOutputFile(content: string) {
 }
 
 function getMainSyms() {
-    return [
-        "getOwner",
-        "getExternalBalance",
-        "blockHash",
-        "transfer",
-        "getArgument",
-        "getArgumentAsInt64",
-        "getFunction",
-        "getNumArguments",
-        "storageStore",
-        "storageLoad",
-        "storageStoreAsInt64",
-        "storageLoadAsInt64",
-        "getCaller",
-        "getCallValue",
-        "getCallValueAsInt64",
-        "logMessage",
-        "writeLog",
-        "finish",
-        "getBlockTimestamp",
-        "signalError"
-    ];
+	return [
+		"getOwner",
+		"getExternalBalance",
+		"blockHash",
+		"transfer",
+		"getArgument",
+		"getArgumentAsInt64",
+		"getFunction",
+		"getNumArguments",
+		"storageStore",
+		"storageLoad",
+		"storageStoreAsInt64",
+		"storageLoadAsInt64",
+		"getCaller",
+		"getCallValue",
+		"getCallValueAsInt64",
+		"logMessage",
+		"writeLog",
+		"finish",
+		"getBlockTimestamp",
+		"signalError"
+	];
 }
 
 function getConfigurationValue(key: string) {
