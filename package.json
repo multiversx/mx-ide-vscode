@@ -34,7 +34,8 @@
 			"editor/context": [
 				{
 					"command": "extension.buildAndRunCurrentFile",
-					"group": "dummyGroup"
+					"group": "dummyGroup",
+					"when": "resourceExtname == .c"
 				}
 			]
 		},
