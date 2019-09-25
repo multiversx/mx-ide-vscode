@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import child_process = require('child_process');
+import path = require('path');
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -23,24 +24,30 @@ function wrapTry(action: CallableFunction) {
 }
 
 function buildCurrentFile() {
-	let path = getActiveFilePath();
+	let filePath = getActiveFilePath();
+	let parsedPath = path.parse(filePath);
+	let parentDirectory = parsedPath.dir;
+	let filenameWithoutExtension = parsedPath.name;
+	let fullPathWithoutExtension = path.join(parentDirectory, filenameWithoutExtension);
 
-	vscode.window.showInformationMessage(`Build: ${path}.`);
+	vscode.window.showInformationMessage(`Build: ${filePath}.`);
 
 	let configuration = vscode.workspace.getConfiguration('elrond');
 	let clangPath: any = configuration.get("clangPath");
 	let llcPath: any = configuration.get("llcPath");
 	let wasmLdPath: any = configuration.get("wasmLdPath");
 
-	let command: string = `${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${path}`;
-	executeChildProcess(command);
+	// clang
+	executeChildProcess(`${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${filePath}`);
+	// llc
+	executeChildProcess(`${llcPath} -O3 -filetype=obj "${fullPathWithoutExtension}.ll" -o "./${filenameWithoutExtension}.o"`);
 
 	vscode.window.showInformationMessage(`Build done.`);
 }
 
 function runCurrentFile() {
-	let path = getActiveFilePath();
-	vscode.window.showInformationMessage(`Run: ${path}.`);
+	let filePath = getActiveFilePath();
+	vscode.window.showInformationMessage(`Run: ${filePath}.`);
 }
 
 function getActiveFilePath() {
