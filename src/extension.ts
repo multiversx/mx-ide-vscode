@@ -50,7 +50,15 @@ function buildCurrentFile() {
 
 function runCurrentFile() {
 	let filePath = getActiveFilePath();
+	let parsedPath = path.parse(filePath);
+	let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
+	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
+
 	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
+	let txData = "data";
+
+	// simple debug
+	executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${txData}`);
 }
 
 function getActiveFilePath() {
@@ -69,6 +77,7 @@ function executeChildProcess(command: string) {
 	console.log(command);
 
 	child_process.execSync(command);
+	console.log("Executed.");
 }
 
 function createTemporaryMainSymsFile() {
