@@ -43,6 +43,11 @@
 					"type": "string",
 					"default": "wasm-ld",
 					"description": "wasm-ld tool."
+				},
+				"elrond.elrondGoNodeDebugPath": {
+					"type": "string",
+					"default": "elrond-go-node-debug",
+					"description": "Node debug tool."
 				}
 			}
 		}

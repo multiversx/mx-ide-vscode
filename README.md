@@ -27,6 +27,7 @@ This extension contributes the following settings:
 * `elrond.clangPath`: `clang` tool.
 * `elrond.llcPath`: `llc` tool.
 * `elrond.wasmLdPath`: `wasm-ld` tool.
+* `elrond.elrondGoNodeDebugPath`: `elrond-go-node-debug` tool.
 
 ## Known Issues
 
