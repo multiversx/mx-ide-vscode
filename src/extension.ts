@@ -27,6 +27,11 @@ function wrapTry(action: CallableFunction) {
 	};
 }
 
+function raisePromiseError(error: any) {
+	vscode.window.showErrorMessage(error.message);
+	throw error;
+}
+
 function buildCurrentFile() {
 	let filePath = getActiveFilePath();
 	let parsedPath = path.parse(filePath);
@@ -59,7 +64,7 @@ function runCurrentFile() {
 	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
 	
 	let options: vscode.InputBoxOptions = { value: "yourFunction param1 param2 param3" };
-	vscode.window.showInputBox(options).then(onInputFulfilled, onInputRejected);
+	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => {}, raisePromiseError);
 
 	function onInputFulfilled(text: any) {
 		// simple debug
@@ -69,10 +74,6 @@ function runCurrentFile() {
 
 		let uri = vscode.Uri.file(outputFile);
 		vscode.window.showTextDocument(uri);
-	}
-
-	function onInputRejected() {
-		vscode.window.showErrorMessage("Bad input.");
 	}
 }
 
