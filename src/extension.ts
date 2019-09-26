@@ -156,9 +156,47 @@ function getConfigurationValue(key: string) {
 }
 
 function startDebugServer() {
+	killServerIfRunning(function() {
+		performStartDebugServer();
+	});
 }
 
-function killProcessByPort(port: Number) {
-	let command: string = `fuser -k ${port}/tcp`;
-	executeChildProcess(command);
+function killServerIfRunning(callback: CallableFunction) {
+	let port: any = getConfigurationValue("restApi.port");
+	let subprocess = child_process.spawn("fuser", ["-k", `${port}/tcp`]);
+
+	subprocess.stdout.setEncoding('utf8');
+	subprocess.stderr.setEncoding('utf8');
+
+	subprocess.stdout.on("data", function (data) {
+		console.log(`fuser: ${data}`);
+	});
+
+	subprocess.stderr.on("data", function (data) {
+		console.error(`fuser: ${data}`);
+	});
+
+	subprocess.on("close", function(code) {
+		console.log(`fuser exit: ${code}`);
+		callback();
+	});
+}
+
+function performStartDebugServer() {
+	let toolPath: any = getConfigurationValue("restApi.toolPath");
+	let configPath: any = getConfigurationValue("restApi.configPath");
+	let port: any = getConfigurationValue("restApi.port");
+
+	let subprocess = child_process.spawn(toolPath, ["--rest-api-port", port, "--config", configPath]);
+
+	subprocess.stdout.setEncoding('utf8');
+	subprocess.stderr.setEncoding('utf8');
+
+	subprocess.stdout.on("data", function (data) {
+		console.log(`Debug server: ${data}`);
+	});
+
+	subprocess.stderr.on("data", function (data) {
+		console.error(`Debug server: ${data}`);
+	});
 }

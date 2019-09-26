@@ -65,7 +65,22 @@
 				"elrond.elrondGoNodeDebugPath": {
 					"type": "string",
 					"default": "elrond-go-node-debug",
-					"description": "Node debug tool."
+					"description": "Simple debug tool."
+				},
+				"elrond.restApi.toolPath": {
+					"type": "string",
+					"default": "elrond-go-node-debug-api",
+					"description": "Debug server executable."
+				},
+				"elrond.restApi.port": {
+					"type": "number",
+					"default": "8080",
+					"description": "Debug server port."
+				},
+				"elrond.restApi.configPath": {
+					"type": "string",
+					"default": "config.toml",
+					"description": "Debug server configuration path."
 				}
 			}
 		}
