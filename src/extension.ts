@@ -8,6 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.runCurrentFile', runCurrentFile);
 	registerCustomCommand(context, 'extension.buildAndRunCurrentFile', buildAndRunCurrentFile);
+	registerCustomCommand(context, 'extension.startDebugServer', startDebugServer);
 }
 
 export function deactivate() { }
@@ -152,6 +153,9 @@ function getConfigurationValue(key: string) {
 	let configuration = vscode.workspace.getConfiguration('elrond');
 	let value = configuration.get(key);
 	return value;
+}
+
+function startDebugServer() {
 }
 
 function killProcessByPort(port: Number) {

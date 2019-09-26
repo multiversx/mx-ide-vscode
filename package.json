@@ -12,7 +12,8 @@
 	"activationEvents": [
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.runCurrentFile",
-		"onCommand:extension.buildAndRunCurrentFile"
+		"onCommand:extension.buildAndRunCurrentFile",
+		"onCommand:extension.startDebugServer"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +29,10 @@
 			{
 				"command": "extension.buildAndRunCurrentFile",
 				"title": "Smart Contracts - build & run current file"
+			},
+			{
+				"command": "extension.startDebugServer",
+				"title": "Smart Contracts - start (restart) debug server"
 			}
 		],
 		"menus": {
