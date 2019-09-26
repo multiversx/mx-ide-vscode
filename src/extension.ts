@@ -153,3 +153,8 @@ function getConfigurationValue(key: string) {
 	let value = configuration.get(key);
 	return value;
 }
+
+function killProcessByPort(port: Number) {
+	let command: string = `fuser -k ${port}/tcp`;
+	executeChildProcess(command);
+}
