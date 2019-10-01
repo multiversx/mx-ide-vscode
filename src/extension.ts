@@ -3,6 +3,7 @@ import child_process = require('child_process');
 import path = require('path');
 import os = require('os');
 import fs = require('fs');
+import { ApiClient } from './apiClient';
 
 export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
