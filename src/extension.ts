@@ -43,8 +43,7 @@ function buildCurrentFile() {
 
 function runCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
-	let parsedPath = path.parse(filePath);
-	let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
+	let filePathWithoutExtension = FsFacade.removeExtension(filePath);
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 	let simpleDebugToolPath: any = MySettings.getSimpleDebugToolPath();
 

@@ -7,8 +7,7 @@ import { Presenter } from "./presenter";
 export class Builder {
 
     static buildFile(filePath: string) {
-        let parsedPath = path.parse(filePath);
-        let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
+        let filePathWithoutExtension = FsFacade.removeExtension(filePath);
         let filePath_ll = `${filePathWithoutExtension}.ll`;
         let filePath_o = `${filePathWithoutExtension}.o`;
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;

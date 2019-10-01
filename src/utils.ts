@@ -63,4 +63,10 @@ export class FsFacade {
         fs.writeFileSync(filePath, content);
         return filePath;
     }
+
+    public static removeExtension(filePath: string) {
+        let parsedPath = path.parse(filePath);
+        let withoutExtension = path.join(parsedPath.dir, parsedPath.name);
+        return withoutExtension;
+    }
 }
