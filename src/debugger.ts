@@ -1,6 +1,7 @@
 import { FsFacade, ProcessFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
+import * as request from "request";
 
 export class SimpleDebugger {
 
@@ -51,5 +52,27 @@ export class RestDebugger {
             program: toolPath,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath]
         });
+    }
+
+    public static deploySmartContract() {
+        let url = RestDebugger.buildUrl("deploy");
+        let options: any = {
+            json: {
+                "SndAddress": "foobar",
+                "Code": "base64(?)",
+                "Args": []
+            }
+        };
+
+        request.post(url, options, function (error: any, response: any, body: any) {
+            console.error("error:", error);
+            console.log("statusCode:", response && response.statusCode);
+            console.log("body:", body);
+        });
+    }
+
+    private static buildUrl(relative: string) {
+        let port: any = MySettings.getRestDebuggerConfigPath();
+        return `http://localhost:${port}/${relative}`;
     }
 }
