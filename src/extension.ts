@@ -5,6 +5,7 @@ import os = require('os');
 import fs = require('fs');
 import { ApiClient } from './apiClient';
 import { MySettings } from './settings';
+import { Syms } from "./syms";
 
 export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
@@ -46,7 +47,7 @@ function buildCurrentFile() {
 	let clangPath: any = MySettings.getClangPath();
 	let llcPath: any = MySettings.getLlcPath();
 	let wasmLdPath: any = MySettings.getWasmLdPath();
-	let symsFilePath = createTemporaryFile("main.syms", getMainSymsAsText());
+	let symsFilePath = createTemporaryFile("main.syms", Syms.getMainSymsAsText());
 
 	// clang
 	executeChildProcess(`${clangPath} -cc1 -Ofast -emit-llvm -triple=wasm32-unknown-unknown-wasm ${filePath}`);
@@ -122,33 +123,6 @@ function createTemporaryFile(fileName: string, content: string) {
 	let filePath = path.join(os.tmpdir(), fileName);
 	fs.writeFileSync(filePath, content);
 	return filePath;
-}
-
-function getMainSymsAsText() {
-	let mainSyms = [
-		"getOwner",
-		"getExternalBalance",
-		"blockHash",
-		"transfer",
-		"getArgument",
-		"getArgumentAsInt64",
-		"getFunction",
-		"getNumArguments",
-		"storageStore",
-		"storageLoad",
-		"storageStoreAsInt64",
-		"storageLoadAsInt64",
-		"getCaller",
-		"getCallValue",
-		"getCallValueAsInt64",
-		"logMessage",
-		"writeLog",
-		"finish",
-		"getBlockTimestamp",
-		"signalError"
-	];
-
-	return mainSyms.join("\n")
 }
 
 function startDebugServer() {
