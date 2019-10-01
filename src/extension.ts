@@ -4,6 +4,7 @@ import path = require('path');
 import os = require('os');
 import fs = require('fs');
 import { ApiClient } from './apiClient';
+import { MySettings } from './settings';
 
 export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
@@ -42,9 +43,9 @@ function buildCurrentFile() {
 	let filePath_o = `${filePathWithoutExtension}.o`;
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
-	let clangPath: any = getConfigurationValue("clangPath");
-	let llcPath: any = getConfigurationValue("llcPath");
-	let wasmLdPath: any = getConfigurationValue("wasmLdPath");
+	let clangPath: any = MySettings.getClangPath();
+	let llcPath: any = MySettings.getLlcPath();
+	let wasmLdPath: any = MySettings.getWasmLdPath();
 	let symsFilePath = createTemporaryFile("main.syms", getMainSymsAsText());
 
 	// clang
@@ -63,7 +64,7 @@ function runCurrentFile() {
 	let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
-	let elrondGoNodeDebugPath: any = getConfigurationValue("elrondGoNodeDebugPath");
+	let simpleDebugToolPath: any = MySettings.getSimpleDebugToolPath();
 
 	let options: vscode.InputBoxOptions = {
 		value: "yourFunction param1 param2 param3",
@@ -74,7 +75,7 @@ function runCurrentFile() {
 
 	function onInputFulfilled(userInput: any) {
 		// simple debug
-		let output = executeChildProcess(`${elrondGoNodeDebugPath} "${filePath_wasm}" ${userInput}`, true);
+		let output = executeChildProcess(`${simpleDebugToolPath} "${filePath_wasm}" ${userInput}`, true);
 		let outputFile = createTemporaryFile("simple_output.txt", output);
 
 		let uri = vscode.Uri.file(outputFile);
@@ -150,12 +151,6 @@ function getMainSymsAsText() {
 	return mainSyms.join("\n")
 }
 
-function getConfigurationValue(key: string) {
-	let configuration = vscode.workspace.getConfiguration('elrond');
-	let value = configuration.get(key);
-	return value;
-}
-
 function startDebugServer() {
 	killServerIfRunning(function() {
 		performStartDebugServer();
@@ -163,7 +158,7 @@ function startDebugServer() {
 }
 
 function killServerIfRunning(callback: CallableFunction) {
-	let port: any = getConfigurationValue("restApi.port");
+	let port: any = MySettings.getRestApiPort();
 	let subprocess = child_process.spawn("fuser", ["-k", `${port}/tcp`]);
 
 	subprocess.stdout.setEncoding('utf8');
@@ -184,9 +179,9 @@ function killServerIfRunning(callback: CallableFunction) {
 }
 
 function performStartDebugServer() {
-	let toolPath: any = getConfigurationValue("restApi.toolPath");
-	let configPath: any = getConfigurationValue("restApi.configPath");
-	let port: any = getConfigurationValue("restApi.port");
+	let toolPath: any = MySettings.getRestApiToolPath();
+	let configPath: any = MySettings.getRestApiConfigPath();
+	let port: any = MySettings.getRestApiConfigPath();
 
 	let subprocess = child_process.spawn(toolPath, ["--rest-api-port", port, "--config", configPath]);
 

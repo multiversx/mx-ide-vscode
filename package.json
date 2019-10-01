@@ -62,7 +62,7 @@
 					"default": "wasm-ld",
 					"description": "wasm-ld tool."
 				},
-				"elrond.elrondGoNodeDebugPath": {
+				"elrond.simpleDebugToolPath": {
 					"type": "string",
 					"default": "elrond-go-node-debug",
 					"description": "Simple debug tool."
