@@ -25,6 +25,7 @@ export class ProcessFacade {
 
     public static execute(options: any) {
         let program = options.program;
+        let programName = FsFacade.getFilename(program);
         let args = options.args;
         let subprocess = child_process.spawn(program, args);
 
@@ -32,7 +33,7 @@ export class ProcessFacade {
         subprocess.stderr.setEncoding('utf8');
 
         subprocess.stdout.on("data", function (data) {
-            console.log(`${program}: ${data}`);
+            console.log(`[${programName}] says: ${data}`);
 
             if (options.onOutput) {
                 options.onOutput(data);
@@ -40,7 +41,7 @@ export class ProcessFacade {
         });
 
         subprocess.stderr.on("data", function (data) {
-            console.error(`${program}: ${data}`);
+            console.error(`[${programName}] says: ${data}`);
 
             if (options.onError) {
                 options.onError(data);
@@ -48,7 +49,7 @@ export class ProcessFacade {
         });
 
         subprocess.on("close", function (code) {
-            console.log(`${program} / exit: ${code}`);
+            console.log(`[${programName}] exits: ${code}`);
 
             if (options.onClose) {
                 options.onClose(code);
@@ -68,5 +69,9 @@ export class FsFacade {
         let parsedPath = path.parse(filePath);
         let withoutExtension = path.join(parsedPath.dir, parsedPath.name);
         return withoutExtension;
+    }
+
+    public static getFilename(filePath: string) {
+        return path.basename(filePath);
     }
 }
