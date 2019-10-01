@@ -126,7 +126,7 @@ function createTemporaryFile(fileName: string, content: string) {
 }
 
 function startDebugServer() {
-	killServerIfRunning(function() {
+	killServerIfRunning(function () {
 		performStartDebugServer();
 	});
 }
@@ -146,7 +146,7 @@ function killServerIfRunning(callback: CallableFunction) {
 		console.error(`fuser: ${data}`);
 	});
 
-	subprocess.on("close", function(code) {
+	subprocess.on("close", function (code) {
 		console.log(`fuser exit: ${code}`);
 		callback();
 	});
