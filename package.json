@@ -109,6 +109,7 @@
 		"vscode-test": "^1.2.0"
 	},
 	"dependencies": {
+		"@types/request": "^2.48.3",
 		"request": "^2.88.0"
 	}
 }
