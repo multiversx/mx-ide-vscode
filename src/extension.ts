@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import path = require('path');
 import os = require('os');
-import { Debugger } from './debugger';
+import { SimpleDebugger } from './debugger';
 import { MySettings } from './settings';
 import { ProcessFacade, FsFacade } from './utils';
 import { Builder } from './builder';
@@ -38,7 +38,7 @@ function buildCurrentFile() {
 
 function runCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
-	
+	SimpleDebugger.debugFile(filePath);
 }
 
 function buildAndRunCurrentFile() {
