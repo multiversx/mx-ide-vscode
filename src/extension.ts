@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
 import path = require('path');
 import os = require('os');
-import { SimpleDebugger } from './debugger';
-import { MySettings } from './settings';
-import { ProcessFacade, FsFacade } from './utils';
+import { SimpleDebugger, RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
 
@@ -26,7 +24,7 @@ function wrapTry(action: CallableFunction) {
 		try {
 			action();
 		} catch (error) {
-			vscode.window.showErrorMessage(error.message);
+			Presenter.showError(error.message);
 		}
 	};
 }
@@ -47,28 +45,5 @@ function buildAndRunCurrentFile() {
 }
 
 function startDebugServer() {
-	killServerIfRunning(function () {
-		performStartDebugServer();
-	});
-}
-
-function killServerIfRunning(callback: CallableFunction) {
-	let port: any = MySettings.getRestApiPort();
-
-	ProcessFacade.execute({
-		program: "fuser",
-		args: ["-k", `${port}/tcp`],
-		onClose: callback
-	});
-}
-
-function performStartDebugServer() {
-	let toolPath: any = MySettings.getRestApiToolPath();
-	let configPath: any = MySettings.getRestApiConfigPath();
-	let port: any = MySettings.getRestApiConfigPath();
-
-	ProcessFacade.execute({
-		program: toolPath,
-		args: ["--rest-api-port", port, "--config", configPath]
-	});
+	RestDebugger.startServer();
 }

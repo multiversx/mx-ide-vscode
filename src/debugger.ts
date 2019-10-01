@@ -22,3 +22,33 @@ export class SimpleDebugger {
         Presenter.displayContentInNewTab(output);
     }
 }
+
+export class RestDebugger {
+
+    public static startServer() {
+        RestDebugger.killServerIfRunning(function () {
+            RestDebugger.performStartDebugServer();
+        });
+    }
+
+    private static killServerIfRunning(callback: CallableFunction) {
+        let port: any = MySettings.getRestApiPort();
+    
+        ProcessFacade.execute({
+            program: "fuser",
+            args: ["-k", `${port}/tcp`],
+            onClose: callback
+        });
+    }
+    
+    private static performStartDebugServer() {
+        let toolPath: any = MySettings.getRestApiToolPath();
+        let configPath: any = MySettings.getRestApiConfigPath();
+        let port: any = MySettings.getRestApiConfigPath();
+    
+        ProcessFacade.execute({
+            program: toolPath,
+            args: ["--rest-api-port", port, "--config", configPath]
+        });
+    }
+}
