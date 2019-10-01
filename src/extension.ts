@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import path = require('path');
 import os = require('os');
-import { ApiClient } from './apiClient';
+import { Debugger } from './debugger';
 import { MySettings } from './settings';
 import { ProcessFacade, FsFacade } from './utils';
 import { Builder } from './builder';
@@ -31,11 +31,6 @@ function wrapTry(action: CallableFunction) {
 	};
 }
 
-function raisePromiseError(error: any) {
-	vscode.window.showErrorMessage(error.message);
-	throw error;
-}
-
 function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
 	Builder.buildFile(filePath);
@@ -43,21 +38,7 @@ function buildCurrentFile() {
 
 function runCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
-	let filePathWithoutExtension = FsFacade.removeExtension(filePath);
-	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
-	let simpleDebugToolPath: any = MySettings.getSimpleDebugToolPath();
-
-	let options: vscode.InputBoxOptions = {
-		value: "yourFunction param1 param2 param3",
-		prompt: "Enter transaction data (function and parameters)"
-	};
-
-	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => { }, raisePromiseError);
-
-	function onInputFulfilled(userInput: any) {
-		let output = ProcessFacade.executeSync(`${simpleDebugToolPath} "${filePath_wasm}" ${userInput}`, true);
-		Presenter.displayContentInNewTab(output);
-	}
+	
 }
 
 function buildAndRunCurrentFile() {
