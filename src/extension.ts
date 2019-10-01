@@ -5,6 +5,7 @@ import { ApiClient } from './apiClient';
 import { MySettings } from './settings';
 import { ProcessFacade, FsFacade } from './utils';
 import { Builder } from './builder';
+import { Presenter } from './presenter';
 
 export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
@@ -36,12 +37,12 @@ function raisePromiseError(error: any) {
 }
 
 function buildCurrentFile() {
-	let filePath = getActiveFilePath();
+	let filePath = Presenter.getActiveFilePath();
 	Builder.buildFile(filePath);
 }
 
 function runCurrentFile() {
-	let filePath = getActiveFilePath();
+	let filePath = Presenter.getActiveFilePath();
 	let parsedPath = path.parse(filePath);
 	let filePathWithoutExtension = path.join(parsedPath.dir, parsedPath.name);
 	let filePath_wasm = `${filePathWithoutExtension}.wasm`;
@@ -55,29 +56,14 @@ function runCurrentFile() {
 	vscode.window.showInputBox(options).then(onInputFulfilled, raisePromiseError).then(() => { }, raisePromiseError);
 
 	function onInputFulfilled(userInput: any) {
-		// simple debug
 		let output = ProcessFacade.executeSync(`${simpleDebugToolPath} "${filePath_wasm}" ${userInput}`, true);
-		let outputFile = FsFacade.createTempFile("simple_output.txt", output);
-
-		let uri = vscode.Uri.file(outputFile);
-		vscode.window.showTextDocument(uri);
+		Presenter.displayContentInNewTab(output);
 	}
 }
 
 function buildAndRunCurrentFile() {
 	buildCurrentFile();
 	runCurrentFile();
-}
-
-function getActiveFilePath() {
-	let activeTextEditor = vscode.window.activeTextEditor;
-
-	if (!activeTextEditor) {
-		throw new Error("Open a file!");
-	}
-
-	let path = activeTextEditor.document.uri.fsPath;
-	return path;
 }
 
 function startDebugServer() {
