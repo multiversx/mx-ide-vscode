@@ -14,6 +14,10 @@ export class MySettings {
         return MySettings.getConfigurationValue("restApi.configPath");
     }
 
+    public static getRestApiGenesisPath() {
+        return MySettings.getConfigurationValue("restApi.genesisPath");
+    }
+
     public static getSimpleDebugToolPath() {
         return MySettings.getConfigurationValue("simpleDebugToolPath");
     }

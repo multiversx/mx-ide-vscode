@@ -81,6 +81,11 @@
 					"type": "string",
 					"default": "config.toml",
 					"description": "Debug server configuration path."
+				},
+				"elrond.restApi.genesisPath": {
+					"type": "string",
+					"default": "genesis.json",
+					"description": "Debug server genesis path."
 				}
 			}
 		}

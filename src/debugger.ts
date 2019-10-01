@@ -33,22 +33,23 @@ export class RestDebugger {
 
     private static killServerIfRunning(callback: CallableFunction) {
         let port: any = MySettings.getRestApiPort();
-    
+
         ProcessFacade.execute({
             program: "fuser",
             args: ["-k", `${port}/tcp`],
             onClose: callback
         });
     }
-    
+
     private static performStartDebugServer() {
         let toolPath: any = MySettings.getRestApiToolPath();
-        let configPath: any = MySettings.getRestApiConfigPath();
         let port: any = MySettings.getRestApiConfigPath();
-    
+        let configPath: any = MySettings.getRestApiConfigPath();
+        let genesisPath: any = MySettings.getRestApiGenesisPath();
+
         ProcessFacade.execute({
             program: toolPath,
-            args: ["--rest-api-port", port, "--config", configPath]
+            args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath]
         });
     }
 }
