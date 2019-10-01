@@ -32,7 +32,7 @@ export class RestDebugger {
     }
 
     private static killServerIfRunning(callback: CallableFunction) {
-        let port: any = MySettings.getRestApiPort();
+        let port: any = MySettings.getRestDebuggerPort();
 
         ProcessFacade.execute({
             program: "fuser",
@@ -42,10 +42,10 @@ export class RestDebugger {
     }
 
     private static performStartDebugServer() {
-        let toolPath: any = MySettings.getRestApiToolPath();
-        let port: any = MySettings.getRestApiConfigPath();
-        let configPath: any = MySettings.getRestApiConfigPath();
-        let genesisPath: any = MySettings.getRestApiGenesisPath();
+        let toolPath: any = MySettings.getRestDebuggerToolPath();
+        let port: any = MySettings.getRestDebuggerConfigPath();
+        let configPath: any = MySettings.getRestDebuggerConfigPath();
+        let genesisPath: any = MySettings.getRestDebuggerGenesisPath();
 
         ProcessFacade.execute({
             program: toolPath,

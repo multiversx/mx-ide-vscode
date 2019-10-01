@@ -2,19 +2,19 @@ import * as vscode from 'vscode';
 
 export class MySettings {
 
-    public static getRestApiPort() {
+    public static getRestDebuggerPort() {
         return MySettings.getConfigurationValue("restApi.port");
     }
 
-    public static getRestApiToolPath() {
+    public static getRestDebuggerToolPath() {
         return MySettings.getConfigurationValue("restApi.toolPath");
     }
 
-    public static getRestApiConfigPath() {
+    public static getRestDebuggerConfigPath() {
         return MySettings.getConfigurationValue("restApi.configPath");
     }
 
-    public static getRestApiGenesisPath() {
+    public static getRestDebuggerGenesisPath() {
         return MySettings.getConfigurationValue("restApi.genesisPath");
     }
 
