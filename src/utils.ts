@@ -74,4 +74,9 @@ export class FsFacade {
     public static getFilename(filePath: string) {
         return path.basename(filePath);
     }
+
+    public static readFile(filePath: string) {
+        let content: string = fs.readFileSync(filePath, { encoding: "utf8" });
+        return content;
+    }
 }

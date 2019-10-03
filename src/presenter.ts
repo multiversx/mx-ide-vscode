@@ -1,8 +1,11 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { asyncErrorCatcher } from './errors';
+import { DebuggerMainView } from './debuggerMainView';
 
 export class Presenter {
+    static debuggerMainView : DebuggerMainView = new DebuggerMainView();
+
     public static showInfo(message: string) {
         vscode.window.showInformationMessage(message);
     }
@@ -40,15 +43,6 @@ export class Presenter {
     }
 
     public static showDebuggerMainView() {
-        let webViewOptions: any = {};
-
-        const panel = vscode.window.createWebviewPanel(
-            "debuggerMainView",
-            "Smart Contract Debugger",
-            vscode.ViewColumn.One,
-            webViewOptions
-        );
-
-        panel.webview.html = "<strong>Debugger</strong>";
+        Presenter.debuggerMainView.show();
     }
 }
