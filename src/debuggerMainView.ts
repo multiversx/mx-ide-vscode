@@ -9,7 +9,9 @@ export class DebuggerMainView {
 
     public show() {
         if (this.panel == null) {
-            let webViewOptions: any = {};
+            let webViewOptions: any = {
+                enableScripts: true
+            };
 
             this.panel = vscode.window.createWebviewPanel(
                 "debuggerMainView",
