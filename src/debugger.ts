@@ -2,6 +2,7 @@ import { FsFacade, ProcessFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import * as request from "request";
+import { MyExtension } from "./root";
 
 export class SimpleDebugger {
 
@@ -50,7 +51,16 @@ export class RestDebugger {
 
         ProcessFacade.execute({
             program: toolPath,
-            args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath]
+            args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
+            onOutput: function (data: any) {
+                MyExtension.EventBus.emit("debugger:output", data);
+            },
+            onError: function (data: any) {
+                MyExtension.EventBus.emit("debugger:error", data);
+            },
+            onClose: function (code: any) {
+                MyExtension.EventBus.emit("debugger:close", code);
+            }
         });
     }
 

@@ -4,13 +4,7 @@ import os = require('os');
 import { SimpleDebugger, RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
-
-export class EventBus extends vscode.EventEmitter<any> {}
-
-export class MyExtension {
-	public static ExtensionContext: vscode.ExtensionContext;
-	public static EventBus: EventBus = new EventBus();
-}
+import { MyExtension } from './root';
 
 export function activate(context: vscode.ExtensionContext) {
 	MyExtension.ExtensionContext = context;

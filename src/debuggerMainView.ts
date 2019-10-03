@@ -1,11 +1,34 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
-import { MyExtension } from './extension';
+import { MyExtension } from './root';
 
 export class DebuggerMainView {
     panel: vscode.WebviewPanel;
 
     constructor() {
+        this.listenToDebugger();
+    }
+
+    private listenToDebugger() {
+        const self = this;
+
+        MyExtension.EventBus.on("debugger:output", function (data) {
+            self.postMessageToPanel({ what: "debugger:output", data: data });
+        });
+
+        MyExtension.EventBus.on("debugger:error", function (data) {
+            self.postMessageToPanel({ what: "debugger:error", data: data });
+        });
+
+        MyExtension.EventBus.on("debugger:close", function (code) {
+            self.postMessageToPanel({ what: "debugger:close", data: code });
+        });
+    }
+
+    private postMessageToPanel(message: any) {
+        if (this.panel) {
+            this.panel.webview.postMessage(message);
+        }
     }
 
     public show() {
