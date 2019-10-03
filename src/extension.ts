@@ -6,6 +6,7 @@ import { Builder } from './builder';
 import { Presenter } from './presenter';
 
 export function activate(context: vscode.ExtensionContext) {
+	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.runCurrentFile', runCurrentFile);
 	registerCustomCommand(context, 'extension.buildAndRunCurrentFile', buildAndRunCurrentFile);
@@ -27,6 +28,10 @@ function wrapTry(action: CallableFunction) {
 			Presenter.showError(error.message);
 		}
 	};
+}
+
+function showDebugger() {
+	Presenter.showDebuggerMainView();
 }
 
 function buildCurrentFile() {

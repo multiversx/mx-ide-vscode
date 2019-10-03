@@ -10,6 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onCommand:extension.showDebugger",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.runCurrentFile",
 		"onCommand:extension.buildAndRunCurrentFile",
@@ -18,6 +19,10 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
+			{
+				"command": "extension.showDebugger",
+				"title": "Smart Contracts - show debugger"
+			},
 			{
 				"command": "extension.buildCurrentFile",
 				"title": "Smart Contracts - build current file"

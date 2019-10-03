@@ -38,4 +38,17 @@ export class Presenter {
             .then(options.onInput, asyncErrorCatcher)
             .then(() => { }, asyncErrorCatcher);
     }
+
+    public static showDebuggerMainView() {
+        let webViewOptions: any = {};
+
+        const panel = vscode.window.createWebviewPanel(
+            "debuggerMainView",
+            "Smart Contract Debugger",
+            vscode.ViewColumn.One,
+            webViewOptions
+        );
+
+        panel.webview.html = "<strong>Debugger</strong>";
+    }
 }
