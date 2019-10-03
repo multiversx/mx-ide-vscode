@@ -8,11 +8,17 @@ window.addEventListener("message", event => {
         appendToOutput($("<div>").text(eventData.data));
     } else if (what == "debugger:error") {
         appendToOutput($("<div class='text-danger'>").text(eventData.data));
+    } else if (what == "refreshSmartContracts") {
+        refreshSmartContracts(eventData.contracts);
     }
 });
 
 function appendToOutput(element) {
     $("#DebuggerStdout .payload").append(element);
+}
+
+function refreshSmartContracts(contracts) {
+    $(".smart-contracts").html(JSON.stringify(contracts));
 }
 
 $(function () {
@@ -27,4 +33,8 @@ $(function () {
             command: "stopDebugServer"
         })
     });
+
+    vscode.postMessage({
+        command: "refreshSmartContracts"
+    })
 });

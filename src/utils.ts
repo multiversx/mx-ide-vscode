@@ -3,6 +3,7 @@ import fs = require('fs');
 import os = require('os');
 import path = require('path');
 import { Root } from './root';
+import * as vscode from 'vscode';
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -94,5 +95,20 @@ export class FsFacade {
     public static getPathToContent() {
         let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");
+    }
+
+    public static getPathToWorkspace() {
+        let folders = vscode.workspace.workspaceFolders;
+        let workspaceFolder: vscode.WorkspaceFolder = folders ? folders[0] : null;
+
+        if (workspaceFolder) {
+            return workspaceFolder.uri.fsPath;
+        }
+    }
+
+    public static getAllFilesInWorkspace() {
+        let folder: string = FsFacade.getPathToWorkspace();
+        let files = fs.readdirSync(folder);
+        return files;
     }
 }

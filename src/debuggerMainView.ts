@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { Root } from './root';
 import { RestDebugger } from './debugger';
+import { SmartContract } from './smartContract';
 
 export class DebuggerMainView {
     panel: vscode.WebviewPanel;
@@ -58,6 +59,8 @@ export class DebuggerMainView {
     }
 
     private listenToPanel() {
+        var self = this;
+
         this.panel.webview.onDidReceiveMessage(
             message => {
                 var command = message.command;
@@ -66,6 +69,8 @@ export class DebuggerMainView {
                     RestDebugger.startServer();
                 } else if (command == "stopDebugServer") {
                     RestDebugger.stopServer(null);
+                } else if (command == "refreshSmartContracts") {
+                   self.refreshSmartContracts(); 
                 }
             },
             undefined,
@@ -91,5 +96,10 @@ export class DebuggerMainView {
         let uri = vscode.Uri.file(pathToContent);
         let baseHref = this.panel.webview.asWebviewUri(uri);
         return baseHref;
+    }
+
+    private refreshSmartContracts() {
+        let contracts = SmartContract.getAll();
+        this.postMessageToPanel({ what: "refreshSmartContracts", contracts: contracts });
     }
 }
