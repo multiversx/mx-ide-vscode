@@ -2,7 +2,7 @@ import { FsFacade, ProcessFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import * as request from "request";
-import { MyExtension } from "./root";
+import { Root } from "./root";
 
 export class SimpleDebugger {
 
@@ -21,6 +21,7 @@ export class SimpleDebugger {
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
         let simpleDebugToolPath: any = MySettings.getSimpleDebugToolPath();
         let output = ProcessFacade.executeSync(`${simpleDebugToolPath} "${filePath_wasm}" ${input}`, true);
+        
         Presenter.displayContentInNewTab(output);
     }
 }
@@ -28,12 +29,12 @@ export class SimpleDebugger {
 export class RestDebugger {
 
     public static startServer() {
-        RestDebugger.killServerIfRunning(function () {
+        RestDebugger.stopServer(function () {
             RestDebugger.performStartDebugServer();
         });
     }
 
-    private static killServerIfRunning(callback: CallableFunction) {
+    public static stopServer(callback: CallableFunction) {
         let port: any = MySettings.getRestDebuggerPort();
 
         ProcessFacade.execute({
@@ -53,15 +54,19 @@ export class RestDebugger {
             program: toolPath,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
             onOutput: function (data: any) {
-                MyExtension.EventBus.emit("debugger:output", data);
+                Root.EventBus.emit("debugger:output", data);
             },
             onError: function (data: any) {
-                MyExtension.EventBus.emit("debugger:error", data);
+                Root.EventBus.emit("debugger:error", data);
             },
             onClose: function (code: any) {
-                MyExtension.EventBus.emit("debugger:close", code);
+                Root.EventBus.emit("debugger:close", code);
+                Presenter.showInfo("Debug server stopped.");
             }
         });
+
+        Root.EventBus.emit("debugger:started");
+        Presenter.showInfo("Debug server started.");
     }
 
     public static deploySmartContract() {

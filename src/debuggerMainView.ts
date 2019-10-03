@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
-import { MyExtension } from './root';
+import { Root } from './root';
+import { RestDebugger } from './debugger';
 
 export class DebuggerMainView {
     panel: vscode.WebviewPanel;
@@ -12,15 +13,15 @@ export class DebuggerMainView {
     private listenToDebugger() {
         const self = this;
 
-        MyExtension.EventBus.on("debugger:output", function (data) {
+        Root.EventBus.on("debugger:output", function (data) {
             self.postMessageToPanel({ what: "debugger:output", data: data });
         });
 
-        MyExtension.EventBus.on("debugger:error", function (data) {
+        Root.EventBus.on("debugger:error", function (data) {
             self.postMessageToPanel({ what: "debugger:error", data: data });
         });
 
-        MyExtension.EventBus.on("debugger:close", function (code) {
+        Root.EventBus.on("debugger:close", function (code) {
             self.postMessageToPanel({ what: "debugger:close", data: code });
         });
     }
@@ -51,13 +52,31 @@ export class DebuggerMainView {
             webViewOptions
         );
 
+        this.listenToPanel();
+
+        this.panel.webview.html = this.getHtmlContent();
+    }
+
+    private listenToPanel() {
+        this.panel.webview.onDidReceiveMessage(
+            message => {
+                var command = message.command;
+
+                if (command == "startDebugServer") {
+                    RestDebugger.startServer();
+                } else if (command == "stopDebugServer") {
+                    RestDebugger.stopServer(null);
+                }
+            },
+            undefined,
+            Root.ExtensionContext.subscriptions
+        );
+
         this.panel.onDidDispose(
             () => { this.panel = null; },
             null,
-            MyExtension.ExtensionContext.subscriptions
+            Root.ExtensionContext.subscriptions
         );
-
-        this.panel.webview.html = this.getHtmlContent();
     }
 
     private getHtmlContent() {

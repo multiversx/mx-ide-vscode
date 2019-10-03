@@ -2,7 +2,7 @@ import child_process = require('child_process');
 import fs = require('fs');
 import os = require('os');
 import path = require('path');
-import { MyExtension } from './root';
+import { Root } from './root';
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -92,7 +92,7 @@ export class FsFacade {
     }
 
     public static getPathToContent() {
-        let extensionPath = MyExtension.ExtensionContext.extensionPath;
+        let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");
     }
 }

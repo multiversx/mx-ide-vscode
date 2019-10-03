@@ -4,10 +4,10 @@ import os = require('os');
 import { SimpleDebugger, RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
-import { MyExtension } from './root';
+import { Root } from './root';
 
 export function activate(context: vscode.ExtensionContext) {
-	MyExtension.ExtensionContext = context;
+	Root.ExtensionContext = context;
 
 	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
