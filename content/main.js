@@ -34,7 +34,9 @@ $(function () {
         })
     });
 
-    vscode.postMessage({
-        command: "refreshSmartContracts"
-    })
+    $(".btn-refresh-smart-contracts").click(function () {
+        vscode.postMessage({
+            command: "refreshSmartContracts"
+        })
+    });
 });

@@ -4,6 +4,7 @@ import os = require('os');
 import path = require('path');
 import { Root } from './root';
 import * as vscode from 'vscode';
+import glob = require('glob');
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -82,6 +83,11 @@ export class FsFacade {
         return text;
     }
 
+    public static readBinaryFile(filePath: string) {
+        let buffer: Buffer = fs.readFileSync(filePath);
+        return buffer;
+    }
+
     public static readFileInContent(filePath: string) {
         filePath = FsFacade.getPathInContent(filePath);
         return FsFacade.readFile(filePath);
@@ -106,9 +112,13 @@ export class FsFacade {
         }
     }
 
-    public static getAllFilesInWorkspace() {
+    public static getFilesInWorkspaceByExtension(extension: string) {
         let folder: string = FsFacade.getPathToWorkspace();
-        let files = fs.readdirSync(folder);
+        let files = glob.sync(`${folder}/**/*${extension}`, {});
         return files;
+    }
+
+    public static fileExists(filePath: string) : boolean {
+        return fs.existsSync(filePath);
     }
 }

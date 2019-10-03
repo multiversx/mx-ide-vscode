@@ -69,12 +69,12 @@ export class RestDebugger {
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract() {
+    public static deploySmartContract(code: string) {
         let url = RestDebugger.buildUrl("deploy");
         let options: any = {
             json: {
                 "SndAddress": "foobar",
-                "Code": "base64(?)",
+                "Code": code,
                 "Args": []
             }
         };
