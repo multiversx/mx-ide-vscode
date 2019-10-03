@@ -77,14 +77,22 @@ export class FsFacade {
     }
 
     public static readFile(filePath: string) {
-
-        let content: string = fs.readFileSync(filePath, { encoding: "utf8" });
-        return content;
+        let text: string = fs.readFileSync(filePath, { encoding: "utf8" });
+        return text;
     }
 
-    public static readBundledFile(filePath: string) {
+    public static readFileInContent(filePath: string) {
+        filePath = FsFacade.getPathInContent(filePath);
+        return FsFacade.readFile(filePath);
+    }
+
+    public static getPathInContent(filePath: string) {
+        let absolutePath = path.join(FsFacade.getPathToContent(), filePath);
+        return absolutePath;
+    }
+    
+    public static getPathToContent() {
         let extensionPath = Locator.ExtensionContext.extensionPath;
-        let absolutePath = path.join(extensionPath, "content", filePath);
-        return FsFacade.readFile(absolutePath);
+        return path.join(extensionPath, "content");
     }
 }

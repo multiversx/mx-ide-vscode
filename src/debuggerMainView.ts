@@ -18,7 +18,17 @@ export class DebuggerMainView {
                 webViewOptions
             );
 
-            this.panel.webview.html = FsFacade.readBundledFile("debuggerMainView.html");
+            let html: string = FsFacade.readFileInContent("debuggerMainView.html");
+            let baseHref = this.getBaseHref();
+            html = html.replace("{{baseHref}}", baseHref.toString());
+            this.panel.webview.html = html;
         }
+    }
+    
+    private getBaseHref() {
+        let pathToContent = FsFacade.getPathToContent();
+        let uri = vscode.Uri.file(pathToContent);
+        let baseHref = this.panel.webview.asWebviewUri(uri);
+        return baseHref;
     }
 }
