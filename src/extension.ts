@@ -4,8 +4,11 @@ import os = require('os');
 import { SimpleDebugger, RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
+import { Locator } from './locator';
 
 export function activate(context: vscode.ExtensionContext) {
+	Locator.ExtensionContext = context;
+
 	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.runCurrentFile', runCurrentFile);

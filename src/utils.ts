@@ -2,6 +2,7 @@ import child_process = require('child_process');
 import fs = require('fs');
 import os = require('os');
 import path = require('path');
+import { Locator } from './locator';
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -76,7 +77,14 @@ export class FsFacade {
     }
 
     public static readFile(filePath: string) {
+
         let content: string = fs.readFileSync(filePath, { encoding: "utf8" });
         return content;
+    }
+
+    public static readBundledFile(filePath: string) {
+        let extensionPath = Locator.ExtensionContext.extensionPath;
+        let absolutePath = path.join(extensionPath, "content", filePath);
+        return FsFacade.readFile(absolutePath);
     }
 }

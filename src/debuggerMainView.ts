@@ -18,7 +18,7 @@ export class DebuggerMainView {
                 webViewOptions
             );
 
-            this.panel.webview.html = FsFacade.readFile("debuggerMainView.html");
+            this.panel.webview.html = FsFacade.readBundledFile("debuggerMainView.html");
         }
     }
 }
