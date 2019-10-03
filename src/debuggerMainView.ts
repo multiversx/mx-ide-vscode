@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
+import { Locator } from './locator';
 
 export class DebuggerMainView {
     panel: vscode.WebviewPanel;
@@ -8,25 +9,41 @@ export class DebuggerMainView {
     }
 
     public show() {
-        if (this.panel == null) {
-            let webViewOptions: any = {
-                enableScripts: true
-            };
-
-            this.panel = vscode.window.createWebviewPanel(
-                "debuggerMainView",
-                "Smart Contract Debugger",
-                vscode.ViewColumn.One,
-                webViewOptions
-            );
-
-            let html: string = FsFacade.readFileInContent("debuggerMainView.html");
-            let baseHref = this.getBaseHref();
-            html = html.replace("{{baseHref}}", baseHref.toString());
-            this.panel.webview.html = html;
+        if (!this.panel) {
+            this.initializePanel();
         }
+
+        this.panel.reveal(vscode.ViewColumn.One);
     }
-    
+
+    private initializePanel() {
+        let webViewOptions: any = {
+            enableScripts: true
+        };
+
+        this.panel = vscode.window.createWebviewPanel(
+            "debuggerMainView",
+            "Smart Contract Debugger",
+            undefined,
+            webViewOptions
+        );
+
+        this.panel.onDidDispose(
+            () => { this.panel = null; },
+            null,
+            Locator.ExtensionContext.subscriptions
+        );
+
+        this.panel.webview.html = this.getHtmlContent();
+    }
+
+    private getHtmlContent() {
+        let html: string = FsFacade.readFileInContent("debuggerMainView.html");
+        let baseHref = this.getBaseHref();
+        html = html.replace("{{baseHref}}", baseHref.toString());
+        return html;
+    }
+
     private getBaseHref() {
         let pathToContent = FsFacade.getPathToContent();
         let uri = vscode.Uri.file(pathToContent);
