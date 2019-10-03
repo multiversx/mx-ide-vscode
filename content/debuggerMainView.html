@@ -36,6 +36,36 @@
                         <div class="col-sm-12 mt-3">
                             <h3>Smart contracts</h3>
                             <button class="btn btn-success btn-lg btn-refresh-smart-contracts">Refresh</button>
+
+                            <script id="TemplateSmartContractPanel" type="text/template">
+                                <div>
+                                    <% _.each(contracts, function(contract) { %>
+                                        <div class="card mt-2 mb-2">
+                                                <h3 class="card-header"><%= contract.SourceFile %></h3>
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Special title treatment</h5>
+                                                    <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+                                                </div>
+                                                
+                                                <div class="card-body">
+                                                    <p class="card-text">Some quick example text to build on the card title and
+                                                        make up the bulk of the card's content.</p>
+                                                </div>
+                                                <div class="card-body">
+                                                    <button class="btn btn-info btn-lg btn-build-contract">Build</button>
+        
+                                                    <% if (contract.BytecodeFile) { %>
+                                                        <button class="btn btn-info btn-lg btn-build-deploy">Deploy</button>
+                                                    <% } %>
+                                                </div>
+                                                <div class="card-footer text-muted">
+                                                    2 days ago
+                                                </div>
+                                            </div>
+                                    <% }) %>
+                                </div>
+                            </script>
+
                             <div class="smart-contracts"></div>
                         </div>
                     </div>
@@ -50,6 +80,7 @@
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="popper.min.js"></script>
     <script type="text/javascript" src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="underscore.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
 </body>
 

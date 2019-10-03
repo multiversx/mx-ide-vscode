@@ -18,7 +18,10 @@ function appendToOutput(element) {
 }
 
 function refreshSmartContracts(contracts) {
-    $(".smart-contracts").html(JSON.stringify(contracts));
+    var htmlTemplate = $("#TemplateSmartContractPanel").html();
+    var compiled = _.template(htmlTemplate);
+    var html = compiled({ contracts: contracts });
+    $(".smart-contracts").html(html);
 }
 
 $(function () {
