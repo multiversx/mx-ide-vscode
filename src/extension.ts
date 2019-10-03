@@ -4,10 +4,16 @@ import os = require('os');
 import { SimpleDebugger, RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
-import { Locator } from './locator';
+
+export class EventBus extends vscode.EventEmitter<any> {}
+
+export class MyExtension {
+	public static ExtensionContext: vscode.ExtensionContext;
+	public static EventBus: EventBus = new EventBus();
+}
 
 export function activate(context: vscode.ExtensionContext) {
-	Locator.ExtensionContext = context;
+	MyExtension.ExtensionContext = context;
 
 	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);

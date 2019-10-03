@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
-import { Locator } from './locator';
+import { MyExtension } from './extension';
 
 export class DebuggerMainView {
     panel: vscode.WebviewPanel;
@@ -31,7 +31,7 @@ export class DebuggerMainView {
         this.panel.onDidDispose(
             () => { this.panel = null; },
             null,
-            Locator.ExtensionContext.subscriptions
+            MyExtension.ExtensionContext.subscriptions
         );
 
         this.panel.webview.html = this.getHtmlContent();
