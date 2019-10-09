@@ -2,12 +2,13 @@ import { FsFacade } from "./utils";
 import { RestDebugger } from "./debugger";
 
 export class SmartContract {
+    public readonly FriendlyId: string;
     public readonly SourceFile: string;
     public BytecodeFile: string;
 
     constructor(sourceFile: string) {
         this.SourceFile = sourceFile;
-        
+        this.FriendlyId = FsFacade.removeExtension(FsFacade.getFilename(sourceFile));
         let bytecodeFileTest = `${FsFacade.removeExtension(sourceFile)}.wasm`;
 
         if (FsFacade.fileExists(bytecodeFileTest)) {

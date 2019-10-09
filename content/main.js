@@ -146,11 +146,11 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     onClickBuild: function () {
-
+        app.talkToVscode("buildSmartContract", { id: this.model.get("FriendlyId") });
     },
 
     onClickDeploy: function () {
-        app.talkToVscode("deploySmartContract", { });
+        app.talkToVscode("deploySmartContract", { id: this.model.get("FriendlyId") });
     }
 });
 

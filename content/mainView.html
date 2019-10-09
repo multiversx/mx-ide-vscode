@@ -75,15 +75,11 @@
     <script id="TemplateSmartContractPanel" type="text/template">
         <div>
             <div class="card mt-2 mb-2">
-                <h3 class="card-header"><%= contract.SourceFile %></h3>
+                <h3 class="card-header"><%= contract.FriendlyId %></h3>
+
                 <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <h6 class="card-subtitle text-muted">Support card subtitle</h6>
-                </div>
-                
-                <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and
-                        make up the bulk of the card's content.</p>
+                    <p class="card-title">Source: <strong><%= contract.SourceFile %></strong></p>
+                    <p class="card-title">Bytecode: <strong><%= contract.BytecodeFile || "none yet" %></strong></p>
                 </div>
                 <div class="card-body">
                     <button class="btn btn-info btn-lg btn-build-contract">Build</button>
@@ -93,7 +89,7 @@
                     <% } %>
                 </div>
                 <div class="card-footer text-muted">
-                    2 days ago
+                    ... days ago
                 </div>
             </div>
         </div>
