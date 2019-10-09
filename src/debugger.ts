@@ -70,7 +70,7 @@ export class RestDebugger {
     }
 
     public static deploySmartContract(code: string) {
-        let url = RestDebugger.buildUrl("deploy");
+        let url = RestDebugger.buildUrl("vm-values/deploy");
         let options: any = {
             json: {
                 "SndAddress": "foobar",
@@ -80,6 +80,7 @@ export class RestDebugger {
         };
 
         request.post(url, options, function (error: any, response: any, body: any) {
+            console.log("url", url);
             console.error("error:", error);
             console.log("statusCode:", response && response.statusCode);
             console.log("body:", body);
@@ -87,7 +88,7 @@ export class RestDebugger {
     }
 
     private static buildUrl(relative: string) {
-        let port: any = MySettings.getRestDebuggerConfigPath();
+        let port: any = MySettings.getRestDebuggerPort();
         return `http://localhost:${port}/${relative}`;
     }
 }

@@ -2,17 +2,18 @@ import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { Root } from './root';
 import { RestDebugger } from './debugger';
-import { SmartContract } from './smartContract';
+import { SmartContract, SmartContractsCollection } from './smartContract';
+import { Builder } from './builder';
 
 export class MainView {
     panel: vscode.WebviewPanel;
 
     constructor() {
-        this.listenToDebugger();
-        this.listenToWebView();
+        this.listenToDebuggerEvents();
+        this.listenToWebViewEvents();
     }
 
-    private listenToDebugger() {
+    private listenToDebuggerEvents() {
         const self = this;
 
         Root.EventBus.on("debugger:output", function (data) {
@@ -34,19 +35,32 @@ export class MainView {
         }
     }
 
-    private listenToWebView() {
+    private listenToWebViewEvents() {
         let self = this;
 
-        Root.EventBus.on("view-message:startDebugServer", function (code) {
+        Root.EventBus.on("view-message:startDebugServer", function () {
             RestDebugger.startServer();
         });
 
-        Root.EventBus.on("view-message:stopDebugServer", function (code) {
+        Root.EventBus.on("view-message:stopDebugServer", function () {
             RestDebugger.stopServer(null);
         });
 
-        Root.EventBus.on("view-message:refreshSmartContracts", function (code) {
-            self.refreshSmartContracts();
+        Root.EventBus.on("view-message:refreshSmartContracts", function () {
+            SmartContractsCollection.syncWithWorkspace();
+            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+        });
+
+        Root.EventBus.on("view-message:buildSmartContract", function (payload) {
+            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
+            contract.build();
+            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+        });
+
+        Root.EventBus.on("view-message:deploySmartContract", function (payload) {
+            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
+            contract.deployToDebugger();
+            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
         });
     }
 
@@ -70,12 +84,12 @@ export class MainView {
             webViewOptions
         );
 
-        this.listenToPanel();
+        this.startListeningToPanel();
 
         this.panel.webview.html = this.getHtmlContent();
     }
 
-    private listenToPanel() {
+    private startListeningToPanel() {
         this.panel.webview.onDidReceiveMessage(
             message => {
                 Root.EventBus.emit(`view-message:${message.what}`, message.payload || {});
@@ -103,10 +117,5 @@ export class MainView {
         let uri = vscode.Uri.file(pathToContent);
         let baseHref = this.panel.webview.asWebviewUri(uri);
         return baseHref;
-    }
-
-    private refreshSmartContracts() {
-        let contracts = SmartContract.getAll();
-        this.talkToWebView("refreshSmartContracts", contracts);
     }
 }
