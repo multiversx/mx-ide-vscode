@@ -1,4 +1,5 @@
 var app = {};
+app.events = _.extend({}, Backbone.Events);
 
 $(function () {
     main();
@@ -81,21 +82,37 @@ var SmartContractsListView = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.collection.on("reset", this.render, this);
+        this.childViews = [];
+        this.listenTo(this.collection, "reset", this.render);
         this.render();
     },
 
     render: function () {
-        this.collection.each(this.renderContract, this);
+        this.removeChildViews();
+        this.createChildViews();
         return this;
     },
 
-    renderContract: function (contract) {
-        app.log("renderContract");
-        app.log(contract);
+    removeChildViews: function () {
+        _.each(this.childViews, function (childView) {
+            childView.remove();
+        });
+
+        this.childViews = [];
     },
 
-    onClickRefreshSmartContracts: function() {
+    createChildViews: function () {
+        this.collection.each(this.createChildView, this);
+    },
+
+    createChildView: function (contract) {
+        var childView = new SmartContractPanelView({ model: contract });
+        childView.render();
+        this.$el.append(childView.$el);
+        this.childViews.push(childView);
+    },
+
+    onClickRefreshSmartContracts: function () {
         app.tellVsCode({
             command: "refreshSmartContracts"
         })
@@ -109,12 +126,17 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.listenTo(this.model, "change", this.render);
+        this.listenTo(this.model, "change", this.onModelChange);
+    },
+
+    onModelChange: function () {
+        this.render();
     },
 
     render: function () {
-        var template = underscoreTemplates["TemplateSmartContractPanel"];
-        var html = template({ contract: this.model });
+        var template = app.underscoreTemplates["TemplateSmartContractPanel"];
+        var contract = this.model.toJSON();
+        var html = template({ contract: contract });
         this.$el.html(html);
         return this;
     }
@@ -142,12 +164,12 @@ var ManageDebugServerView = Backbone.View.extend({
     }
 });
 
-app.tellVsCode = function(message) {
+app.tellVsCode = function (message) {
     app.log(message);
     app.vscode.postMessage(message);
 };
 
-app.log = function(message) {
+app.log = function (message) {
     console.log(message);
 
     if (typeof message !== "string") {
@@ -157,14 +179,3 @@ app.log = function(message) {
     var element = $("<div>").text(message);
     $("#ExtensionConsole .payload").append(element);
 };
-
-app.error = function(message) {
-    console.error(message);
-    var element = $("<div class='text-danger'>").text(message);
-    $("#ExtensionConsole .payload").append(element);
-};
-
-window.addEventListener("error", (event) => {
-    app.error(`${event.type}: ${event.message}\n`);
-    throw event.error;
-});
