@@ -34,7 +34,7 @@ function wrapTry(action: CallableFunction) {
 }
 
 function showDebugger() {
-	Presenter.showDebuggerMainView();
+	Presenter.showMainView();
 }
 
 function buildCurrentFile() {
