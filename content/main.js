@@ -91,12 +91,12 @@ var SmartContractsListView = Backbone.View.extend({
     },
 
     renderContract: function (contract) {
-        console.log("renderContract");
-        console.log(contract);
+        app.log("renderContract");
+        app.log(contract);
     },
 
     onClickRefreshSmartContracts: function() {
-        app.vscode.postMessage({
+        app.tellVsCode({
             command: "refreshSmartContracts"
         })
     }
@@ -130,14 +130,41 @@ var ManageDebugServerView = Backbone.View.extend({
     },
 
     onClickStartDebugServer: function () {
-        app.vscode.postMessage({
+        app.tellVsCode({
             command: "startDebugServer"
         })
     },
 
     onClickStopDebugServer: function () {
-        app.vscode.postMessage({
+        app.tellVsCode({
             command: "stopDebugServer"
         })
     }
+});
+
+app.tellVsCode = function(message) {
+    app.log(message);
+    app.vscode.postMessage(message);
+};
+
+app.log = function(message) {
+    console.log(message);
+
+    if (typeof message !== "string") {
+        message = JSON.stringify(message, null, 4);
+    }
+
+    var element = $("<div>").text(message);
+    $("#ExtensionConsole .payload").append(element);
+};
+
+app.error = function(message) {
+    console.error(message);
+    var element = $("<div class='text-danger'>").text(message);
+    $("#ExtensionConsole .payload").append(element);
+};
+
+window.addEventListener("error", (event) => {
+    app.error(`${event.type}: ${event.message}\n`);
+    throw event.error;
 });
