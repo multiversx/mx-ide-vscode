@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { asyncErrorCatcher } from './errors';
-import { DebuggerMainView } from './debuggerMainView';
+import { DebuggerMainView as MainView } from './mainView';
 
 export class Presenter {
-    static debuggerMainView : DebuggerMainView = new DebuggerMainView();
+    static debuggerMainView : MainView = new MainView();
 
     public static showInfo(message: string) {
         vscode.window.showInformationMessage(message);

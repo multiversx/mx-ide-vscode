@@ -4,7 +4,7 @@ import { Root } from './root';
 import { RestDebugger } from './debugger';
 import { SmartContract } from './smartContract';
 
-export class DebuggerMainView {
+export class MainView {
     panel: vscode.WebviewPanel;
 
     constructor() {
@@ -47,7 +47,7 @@ export class DebuggerMainView {
         };
 
         this.panel = vscode.window.createWebviewPanel(
-            "debuggerMainView",
+            "mainView",
             "Smart Contract Debugger",
             undefined,
             webViewOptions
@@ -85,7 +85,7 @@ export class DebuggerMainView {
     }
 
     private getHtmlContent() {
-        let html: string = FsFacade.readFileInContent("debuggerMainView.html");
+        let html: string = FsFacade.readFileInContent("mainView.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
         return html;
