@@ -9,7 +9,12 @@ function main() {
     app.vscode = acquireVsCodeApi();
     app.smartContracts = new SmartContractsCollection();
     initializeUnderscoreTemplates();
-    listenToVsCodeMessages();
+    listenToExtensionMessages();
+
+    // Listen to vscode extension messages.
+    window.addEventListener("message", event => {
+        app.events.trigger(`extension-message:${event.data.what}`, event.data.payload || {});
+    });
 
     app.manageDebugServerView = new ManageDebugServerView({
         el: ".manage-debug-server-view"
@@ -34,18 +39,17 @@ function initializeUnderscoreTemplates() {
     });
 }
 
-function listenToVsCodeMessages() {
-    window.addEventListener("message", event => {
-        var eventData = event.data;
-        var what = eventData.what;
+function listenToExtensionMessages() {
+    app.events.on("extension-message:debugger:output", function (payload) {
+        onMessageDebuggerOutput(payload);
+    });
 
-        if (what == "debugger:output") {
-            onMessageDebuggerOutput(eventData.data);
-        } else if (what == "debugger:error") {
-            onMessageDebuggerError(eventData.data);
-        } else if (what == "refreshSmartContracts") {
-            onMessageRefreshSmartContracts(eventData.contracts);
-        }
+    app.events.on("extension-message:debugger:error", function (payload) {
+        onMessageDebuggerError(payload);
+    });
+
+    app.events.on("extension-message:refreshSmartContracts", function (payload) {
+        onMessageRefreshSmartContracts(payload);
     });
 }
 
@@ -113,9 +117,7 @@ var SmartContractsListView = Backbone.View.extend({
     },
 
     onClickRefreshSmartContracts: function () {
-        app.tellVsCode({
-            command: "refreshSmartContracts"
-        })
+        app.talkToVscode("refreshSmartContracts");
     }
 });
 
@@ -123,6 +125,8 @@ var SmartContractPanelView = Backbone.View.extend({
     tagName: "div",
 
     events: {
+        "click .btn-build-contract": "onClickBuild",
+        "click .btn-deploy-contract": "onClickDeploy",
     },
 
     initialize: function () {
@@ -139,6 +143,14 @@ var SmartContractPanelView = Backbone.View.extend({
         var html = template({ contract: contract });
         this.$el.html(html);
         return this;
+    },
+
+    onClickBuild: function () {
+
+    },
+
+    onClickDeploy: function () {
+        app.talkToVscode("deploySmartContract", { });
     }
 });
 
@@ -152,21 +164,18 @@ var ManageDebugServerView = Backbone.View.extend({
     },
 
     onClickStartDebugServer: function () {
-        app.tellVsCode({
-            command: "startDebugServer"
-        })
+        app.talkToVscode("startDebugServer");
     },
 
     onClickStopDebugServer: function () {
-        app.tellVsCode({
-            command: "stopDebugServer"
-        })
+        app.talkToVscode("stopDebugServer");
     }
 });
 
-app.tellVsCode = function (message) {
-    app.log(message);
-    app.vscode.postMessage(message);
+app.talkToVscode = function (what, payload) {
+    app.log(what);
+    app.log(payload);
+    app.vscode.postMessage({ what: what, payload: payload });
 };
 
 app.log = function (message) {

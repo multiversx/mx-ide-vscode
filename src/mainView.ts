@@ -9,28 +9,45 @@ export class MainView {
 
     constructor() {
         this.listenToDebugger();
+        this.listenToWebView();
     }
 
     private listenToDebugger() {
         const self = this;
 
         Root.EventBus.on("debugger:output", function (data) {
-            self.postMessageToPanel({ what: "debugger:output", data: data });
+            self.talkToWebView("debugger:output", data);
         });
 
         Root.EventBus.on("debugger:error", function (data) {
-            self.postMessageToPanel({ what: "debugger:error", data: data });
+            self.talkToWebView("debugger:error", data);
         });
 
         Root.EventBus.on("debugger:close", function (code) {
-            self.postMessageToPanel({ what: "debugger:close", data: code });
+            self.talkToWebView("debugger:close", code);
         });
     }
 
-    private postMessageToPanel(message: any) {
+    private talkToWebView(what: string, payload: any) {
         if (this.panel) {
-            this.panel.webview.postMessage(message);
+            this.panel.webview.postMessage({ what: what, payload: payload });
         }
+    }
+
+    private listenToWebView() {
+        let self = this;
+
+        Root.EventBus.on("view-message:startDebugServer", function (code) {
+            RestDebugger.startServer();
+        });
+
+        Root.EventBus.on("view-message:stopDebugServer", function (code) {
+            RestDebugger.stopServer(null);
+        });
+
+        Root.EventBus.on("view-message:refreshSmartContracts", function (code) {
+            self.refreshSmartContracts();
+        });
     }
 
     public show() {
@@ -59,19 +76,9 @@ export class MainView {
     }
 
     private listenToPanel() {
-        var self = this;
-
         this.panel.webview.onDidReceiveMessage(
             message => {
-                var command = message.command;
-
-                if (command == "startDebugServer") {
-                    RestDebugger.startServer();
-                } else if (command == "stopDebugServer") {
-                    RestDebugger.stopServer(null);
-                } else if (command == "refreshSmartContracts") {
-                   self.refreshSmartContracts(); 
-                }
+                Root.EventBus.emit(`view-message:${message.what}`, message.payload || {});
             },
             undefined,
             Root.ExtensionContext.subscriptions
@@ -100,6 +107,6 @@ export class MainView {
 
     private refreshSmartContracts() {
         let contracts = SmartContract.getAll();
-        this.postMessageToPanel({ what: "refreshSmartContracts", contracts: contracts });
+        this.talkToWebView("refreshSmartContracts", contracts);
     }
 }
