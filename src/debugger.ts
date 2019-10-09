@@ -21,7 +21,7 @@ export class SimpleDebugger {
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
         let simpleDebugToolPath: any = MySettings.getSimpleDebugToolPath();
         let output = ProcessFacade.executeSync(`${simpleDebugToolPath} "${filePath_wasm}" ${input}`, true);
-        
+
         Presenter.displayContentInNewTab(output);
     }
 }
@@ -69,11 +69,11 @@ export class RestDebugger {
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract(code: string) {
+    public static deploySmartContract(senderAddress: string, code: string) {
         let url = RestDebugger.buildUrl("vm-values/deploy");
         let options: any = {
             json: {
-                "SndAddress": "foobar",
+                "SndAddress": senderAddress,
                 "Code": code,
                 "Args": []
             }

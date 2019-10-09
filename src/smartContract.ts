@@ -26,10 +26,10 @@ export class SmartContract {
         Builder.buildFile(this.SourceFile);
     }
 
-    public deployToDebugger() {
+    public deployToDebugger(senderAddress: string) {
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
         let hexCode = buffer.toString("hex");
-        RestDebugger.deploySmartContract(hexCode);
+        RestDebugger.deploySmartContract(senderAddress, hexCode);
     }
 }
 

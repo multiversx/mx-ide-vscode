@@ -59,7 +59,7 @@ export class MainView {
 
         Root.EventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.deployToDebugger();
+            contract.deployToDebugger(payload.senderAddress);
             self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
         });
     }

@@ -20,6 +20,10 @@ function main() {
         el: ".manage-debug-server-view"
     });
 
+    app.configurationView = new ConfigurationView({
+        el: ".configuration-view"
+    });
+
     app.smartContractsListView = new SmartContractsListView({
         el: ".smart-contracts-list-view",
         collection: app.smartContracts
@@ -150,7 +154,12 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     onClickDeploy: function () {
-        app.talkToVscode("deploySmartContract", { id: this.model.get("FriendlyId") });
+        var senderAddress = app.configurationView.getSenderAddress();
+
+        app.talkToVscode("deploySmartContract", {
+            id: this.model.get("FriendlyId"),
+            senderAddress: senderAddress
+        });
     }
 });
 
@@ -169,6 +178,18 @@ var ManageDebugServerView = Backbone.View.extend({
 
     onClickStopDebugServer: function () {
         app.talkToVscode("stopDebugServer");
+    }
+});
+
+var ConfigurationView = Backbone.View.extend({
+    events: {
+    },
+
+    initialize: function () {
+    },
+
+    getSenderAddress() {
+        return this.$el.find("[name='SenderAddress']").val();
     }
 });
 
