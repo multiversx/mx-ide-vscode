@@ -67,6 +67,17 @@ function listenToExtensionMessages() {
         $("#DebuggerStdout .payload").append($("<div class='text-danger'>").text(payload));
     });
 
+    // Debugger dialogue
+    app.events.on("extension-message:debugger-dialogue:request", function (payload) {
+        $("#RestDialogue .payload").append($("<div>").text(payload.url));
+        $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
+    });
+
+    app.events.on("extension-message:debugger-dialogue:response", function (payload) {
+        $("#RestDialogue .payload").append($("<div>").text(payload.url));
+        $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
+    });
+
     // Others
     app.events.on("extension-message:refreshSmartContracts", function (payload) {
         onMessageRefreshSmartContracts(payload);

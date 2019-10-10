@@ -6,6 +6,7 @@ import { Root } from './root';
 import * as vscode from 'vscode';
 import glob = require('glob');
 import eventBus from './eventBus';
+import request = require('request');
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -138,5 +139,29 @@ export class FsFacade {
 
     public static fileExists(filePath: string) : boolean {
         return fs.existsSync(filePath);
+    }
+}
+
+export class RestFacade {
+    public static post(options: any) {
+        let url = options.url;
+        let data = options.data;
+        let eventTag = options.eventTag;
+
+        let postOptions: any = {
+            json: data
+        };
+
+        if (eventTag) {
+            eventBus.emit(`${eventTag}:request`, { url: url, data: data });
+        }
+
+        request.post(url, postOptions, function (error: any, response: any, body: any) {
+            eventBus.emit(`${eventTag}:response`, { url: url, data: body });
+            console.log("url", url);
+            console.error("error:", error);
+            console.log("statusCode:", response && response.statusCode);
+            console.log("body:", body);
+        });
     }
 }

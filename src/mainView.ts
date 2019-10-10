@@ -24,6 +24,10 @@ export class MainView {
         eventBus.on("debugger:*", function (data, what) {
             self.talkToWebView(what, data);
         });
+
+        eventBus.on("debugger-dialogue:*", function (data, what) {
+            self.talkToWebView(what, data);
+        });
     }
 
     private listenToWebviewEvents() {

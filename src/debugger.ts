@@ -1,4 +1,4 @@
-import { FsFacade, ProcessFacade } from "./utils";
+import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import * as request from "request";
@@ -65,19 +65,15 @@ export class RestDebugger {
 
     public static deploySmartContract(senderAddress: string, code: string) {
         let url = RestDebugger.buildUrl("vm-values/deploy");
-        let options: any = {
-            json: {
+
+        RequestsFacade.post({
+            url: url,
+            data: {
                 "SndAddress": senderAddress,
                 "Code": code,
                 "Args": []
-            }
-        };
-
-        request.post(url, options, function (error: any, response: any, body: any) {
-            console.log("url", url);
-            console.error("error:", error);
-            console.log("statusCode:", response && response.statusCode);
-            console.log("body:", body);
+            },
+            eventTag: "debugger-dialogue"
         });
     }
 
