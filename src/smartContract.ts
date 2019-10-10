@@ -1,6 +1,7 @@
 import { FsFacade } from "./utils";
 import { RestDebugger } from "./debugger";
 import { Builder } from "./builder";
+import _ = require("underscore");
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -11,11 +12,6 @@ export class SmartContract {
     constructor(sourceFile: string) {
         this.SourceFile = sourceFile;
         this.FriendlyId = FsFacade.removeExtension(FsFacade.getFilename(sourceFile));
-        let bytecodeFileTest = `${FsFacade.removeExtension(sourceFile)}.wasm`;
-
-        if (FsFacade.fileExists(bytecodeFileTest)) {
-            this.BytecodeFile = bytecodeFileTest;
-        }
     }
 
     public isBuilt(): boolean {
@@ -35,16 +31,36 @@ export class SmartContract {
             self.Address = data.data;
         });
     }
+
+    public syncWithWorkspace() {
+        let bytecodeFileTest = `${FsFacade.removeExtension(this.SourceFile)}.wasm`;
+
+        if (FsFacade.fileExists(bytecodeFileTest)) {
+            this.BytecodeFile = bytecodeFileTest;
+        }
+    }
 }
 
 export class SmartContractsCollection {
-    public static Items: SmartContract[];
+    public static Items: SmartContract[] = [];
 
     public static syncWithWorkspace() {
-        // todo: do a smarter sync, without loosing existing SmartContract objects.
-        // or: keep global map of (friendlyId, scAddress) here.
-        let sourceFiles = FsFacade.getFilesInWorkspaceByExtension(".c");
-        this.Items = sourceFiles.map(e => new SmartContract(e));
+        let sourceFilesNow = FsFacade.getFilesInWorkspaceByExtension(".c");
+        let smartContractsNow = sourceFilesNow.map(e => new SmartContract(e));
+        let smartContractsBefore = this.Items;
+
+        // Keep data after sync.
+        smartContractsNow.forEach(contractNow => {
+            let contractBefore = smartContractsBefore.find(e => e.FriendlyId == contractNow.FriendlyId);
+            
+            if (contractBefore) {
+                contractNow.Address = contractBefore.Address;
+            }
+
+            contractNow.syncWithWorkspace();
+        });
+
+        this.Items = smartContractsNow;
     }
 
     public static getById(id: string): SmartContract {

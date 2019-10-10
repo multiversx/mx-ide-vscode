@@ -49,13 +49,13 @@ export class MainView {
         eventBus.on("view-message:buildSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.build();
-            self.doRefreshSmartContracts(); // todo: build.then(doRefresh)
+            //self.doRefreshSmartContracts(); // todo: build.then(doRefresh)
         });
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.deployToDebugger(payload.senderAddress);
-            self.doRefreshSmartContracts(); // todo: deploy.then(doRefresh)
+            //self.doRefreshSmartContracts(); // todo: deploy.then(doRefresh)
         });
     }
 
