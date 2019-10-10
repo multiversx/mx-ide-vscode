@@ -2,7 +2,7 @@ import { FsFacade, ProcessFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import * as request from "request";
-import { Root } from "./root";
+import eventBus from "./eventBus";
 
 export class SimpleDebugger {
 
@@ -53,19 +53,13 @@ export class RestDebugger {
         ProcessFacade.execute({
             program: toolPath,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
-            onOutput: function (data: any) {
-                Root.EventBus.emit("debugger:output", data);
-            },
-            onError: function (data: any) {
-                Root.EventBus.emit("debugger:error", data);
-            },
+            eventTag: "debugger",
             onClose: function (code: any) {
-                Root.EventBus.emit("debugger:close", code);
                 Presenter.showInfo("Debug server stopped.");
             }
         });
 
-        Root.EventBus.emit("debugger:started");
+        eventBus.emit("debugger:started");
         Presenter.showInfo("Debug server started.");
     }
 

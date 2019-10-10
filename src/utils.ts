@@ -5,6 +5,7 @@ import path = require('path');
 import { Root } from './root';
 import * as vscode from 'vscode';
 import glob = require('glob');
+import eventBus from './eventBus';
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -31,6 +32,7 @@ export class ProcessFacade {
         let programName = FsFacade.getFilename(program);
         let args = options.args;
         let subprocess = child_process.spawn(program, args);
+        let eventTag = options.eventTag;
 
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
@@ -41,6 +43,10 @@ export class ProcessFacade {
             if (options.onOutput) {
                 options.onOutput(data);
             }
+
+            if (eventTag) {
+                eventBus.emit(`${eventTag}:output`, data);
+            }
         });
 
         subprocess.stderr.on("data", function (data) {
@@ -49,6 +55,10 @@ export class ProcessFacade {
             if (options.onError) {
                 options.onError(data);
             }
+
+            if (eventTag) {
+                eventBus.emit(`${eventTag}:error`, data);
+            }
         });
 
         subprocess.on("close", function (code) {
@@ -56,6 +66,10 @@ export class ProcessFacade {
 
             if (options.onClose) {
                 options.onClose(code);
+            }
+
+            if (eventTag) {
+                eventBus.emit(`${eventTag}:close`, code);
             }
         });
     }

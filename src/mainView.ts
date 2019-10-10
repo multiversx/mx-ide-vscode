@@ -4,6 +4,7 @@ import { Root } from './root';
 import { RestDebugger } from './debugger';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import { Builder } from './builder';
+import eventBus from './eventBus';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -16,15 +17,15 @@ export class MainView {
     private listenToDebuggerEvents() {
         const self = this;
 
-        Root.EventBus.on("debugger:output", function (data) {
+        eventBus.on("debugger:output", function (data) {
             self.talkToWebView("debugger:output", data);
         });
 
-        Root.EventBus.on("debugger:error", function (data) {
+        eventBus.on("debugger:error", function (data) {
             self.talkToWebView("debugger:error", data);
         });
 
-        Root.EventBus.on("debugger:close", function (code) {
+        eventBus.on("debugger:close", function (code) {
             self.talkToWebView("debugger:close", code);
         });
     }
@@ -38,26 +39,26 @@ export class MainView {
     private listenToWebViewEvents() {
         let self = this;
 
-        Root.EventBus.on("view-message:startDebugServer", function () {
+        eventBus.on("view-message:startDebugServer", function () {
             RestDebugger.startServer();
         });
 
-        Root.EventBus.on("view-message:stopDebugServer", function () {
+        eventBus.on("view-message:stopDebugServer", function () {
             RestDebugger.stopServer(null);
         });
 
-        Root.EventBus.on("view-message:refreshSmartContracts", function () {
+        eventBus.on("view-message:refreshSmartContracts", function () {
             SmartContractsCollection.syncWithWorkspace();
             self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
         });
 
-        Root.EventBus.on("view-message:buildSmartContract", function (payload) {
+        eventBus.on("view-message:buildSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.build();
             self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
         });
 
-        Root.EventBus.on("view-message:deploySmartContract", function (payload) {
+        eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.deployToDebugger(payload.senderAddress);
             self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
@@ -92,7 +93,7 @@ export class MainView {
     private startListeningToPanel() {
         this.panel.webview.onDidReceiveMessage(
             message => {
-                Root.EventBus.emit(`view-message:${message.what}`, message.payload || {});
+                eventBus.emit(`view-message:${message.what}`, message.payload || {});
             },
             undefined,
             Root.ExtensionContext.subscriptions
