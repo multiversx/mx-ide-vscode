@@ -115,6 +115,8 @@
 	},
 	"dependencies": {
 		"@types/request": "^2.48.3",
-		"request": "^2.88.0"
+		"@types/underscore": "^1.9.3",
+		"request": "^2.88.0",
+		"underscore": "^1.9.1"
 	}
 }
