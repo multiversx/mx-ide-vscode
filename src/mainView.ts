@@ -10,33 +10,23 @@ export class MainView {
     panel: vscode.WebviewPanel;
 
     constructor() {
-        this.listenToDebuggerEvents();
-        this.listenToWebViewEvents();
+        this.forwardCoreEventsToWebview();
+        this.listenToWebviewEvents();
     }
 
-    private listenToDebuggerEvents() {
+    private forwardCoreEventsToWebview() {
         const self = this;
 
-        eventBus.on("debugger:output", function (data) {
-            self.talkToWebView("debugger:output", data);
+        eventBus.on("builder:*", function (data, what) {
+            self.talkToWebView(what, data);
         });
 
-        eventBus.on("debugger:error", function (data) {
-            self.talkToWebView("debugger:error", data);
-        });
-
-        eventBus.on("debugger:close", function (code) {
-            self.talkToWebView("debugger:close", code);
+        eventBus.on("debugger:*", function (data, what) {
+            self.talkToWebView(what, data);
         });
     }
 
-    private talkToWebView(what: string, payload: any) {
-        if (this.panel) {
-            this.panel.webview.postMessage({ what: what, payload: payload });
-        }
-    }
-
-    private listenToWebViewEvents() {
+    private listenToWebviewEvents() {
         let self = this;
 
         eventBus.on("view-message:startDebugServer", function () {
@@ -63,6 +53,12 @@ export class MainView {
             contract.deployToDebugger(payload.senderAddress);
             self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
         });
+    }
+
+    private talkToWebView(what: string, payload: any) {
+        if (this.panel) {
+            this.panel.webview.postMessage({ what: what, payload: payload });
+        }
     }
 
     public show() {

@@ -37,6 +37,10 @@ export class ProcessFacade {
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
 
+        if (eventTag) {
+            eventBus.emit(`${eventTag}:started`, { program: program, args: args });
+        }
+        
         subprocess.stdout.on("data", function (data) {
             console.log(`[${programName}] says: ${data}`);
 

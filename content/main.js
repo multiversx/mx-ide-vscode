@@ -44,29 +44,33 @@ function initializeUnderscoreTemplates() {
 }
 
 function listenToExtensionMessages() {
+    // Builder
+    app.events.on("extension-message:builder:started", function (payload) {
+        $("#BuilderStdout .payload").append($("<div class='text-warning'>").text(payload.program));
+        $("#BuilderStdout .payload").append($("<div class='text-warning'>").text(JSON.stringify(payload.args)));
+    });
+
+    app.events.on("extension-message:builder:output", function (payload) {
+        $("#BuilderStdout .payload").append($("<div>").text(payload));
+    });
+
+    app.events.on("extension-message:builder:error", function (payload) {
+        $("#BuilderStdout .payload").append($("<div class='text-danger'>").text(payload));
+    });
+
+    // Debugger
     app.events.on("extension-message:debugger:output", function (payload) {
-        onMessageDebuggerOutput(payload);
+        $("#DebuggerStdout .payload").append($("<div>").text(payload));
     });
 
     app.events.on("extension-message:debugger:error", function (payload) {
-        onMessageDebuggerError(payload);
+        $("#DebuggerStdout .payload").append($("<div class='text-danger'>").text(payload));
     });
 
+    // Others
     app.events.on("extension-message:refreshSmartContracts", function (payload) {
         onMessageRefreshSmartContracts(payload);
     });
-}
-
-function onMessageDebuggerOutput(data) {
-    appendToOutput($("<div>").text(data));
-}
-
-function onMessageDebuggerError(data) {
-    appendToOutput($("<div class='text-danger'>").text(data));
-}
-
-function appendToOutput(element) {
-    $("#DebuggerStdout .payload").append(element);
 }
 
 function onMessageRefreshSmartContracts(contracts) {
