@@ -8,6 +8,19 @@ content-type: application/json
 
 ###
 
+POST http://localhost:8080/vm-values/run HTTP/1.1
+content-type: application/json
+
+{
+    "SndAddress": "d4105de8e44aee9d4be670401cec546e5df381028e805012386a05acf76518d9",
+    "ScAddress": "00000000000000000500982df489fbcc7890007d3b9a0c5b874d0547b3d918d9",
+    "Value": 10,
+    "FuncName": "topUp",
+    "Args": []
+}
+
+###
+
 POST http://localhost:8080/vm-values/string HTTP/1.1
 content-type: application/json
 

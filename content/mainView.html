@@ -106,6 +106,24 @@
                     <% if (contract.BytecodeFile) { %>
                         <button class="btn btn-info btn-lg btn-deploy-contract">Deploy</button>
                     <% } %>
+
+                    <% if (contract.Address) { %>
+                        <form class="mt-3">
+                            <fieldset>
+                                <legend>Run function</legend>
+                                <div class="form-group">
+                                    <label>Function name</label>
+                                    <input name="FunctionName" type="text" class="form-control" placeholder="topUp">
+                                    <small class="form-text text-muted">An exported function of your smart contract.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Function arguments</label>
+                                    <textarea name="FunctionArgs" class="form-control" rows="3"></textarea>
+                                    <small class="form-text text-muted">Use a line break to seprate more arguments.</small>
+                                </div>
+                            </fieldset>
+                        </form>
+                    <% } %>
                 </div>
                 <div class="card-footer text-muted">
                     ... days ago
