@@ -73,7 +73,7 @@ function listenToExtensionMessages() {
         $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
     });
 
-    app.events.on("extension-message:debugger-dialogue:response", function (payload) {
+    app.events.on("extension-message:debugger-dialogue:complete", function (payload) {
         $("#RestDialogue .payload").append($("<div>").text(payload.url));
         $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
     });

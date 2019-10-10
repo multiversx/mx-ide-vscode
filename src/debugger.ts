@@ -63,7 +63,7 @@ export class RestDebugger {
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract(senderAddress: string, code: string) {
+    public static deploySmartContract(senderAddress: string, code: string, success: CallableFunction) {
         let url = RestDebugger.buildUrl("vm-values/deploy");
 
         RequestsFacade.post({
@@ -73,7 +73,8 @@ export class RestDebugger {
                 "Code": code,
                 "Args": []
             },
-            eventTag: "debugger-dialogue"
+            eventTag: "debugger-dialogue",
+            success: success
         });
     }
 

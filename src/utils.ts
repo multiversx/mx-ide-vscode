@@ -41,7 +41,7 @@ export class ProcessFacade {
         if (eventTag) {
             eventBus.emit(`${eventTag}:started`, { program: program, args: args });
         }
-        
+
         subprocess.stdout.on("data", function (data) {
             console.log(`[${programName}] says: ${data}`);
 
@@ -137,7 +137,7 @@ export class FsFacade {
         return files;
     }
 
-    public static fileExists(filePath: string) : boolean {
+    public static fileExists(filePath: string): boolean {
         return fs.existsSync(filePath);
     }
 }
@@ -147,8 +147,9 @@ export class RestFacade {
         let url = options.url;
         let data = options.data;
         let eventTag = options.eventTag;
+        let success = options.success;
 
-        let postOptions: any = {
+        let requestOptions: any = {
             json: data
         };
 
@@ -156,12 +157,16 @@ export class RestFacade {
             eventBus.emit(`${eventTag}:request`, { url: url, data: data });
         }
 
-        request.post(url, postOptions, function (error: any, response: any, body: any) {
-            eventBus.emit(`${eventTag}:response`, { url: url, data: body });
-            console.log("url", url);
-            console.error("error:", error);
-            console.log("statusCode:", response && response.statusCode);
-            console.log("body:", body);
+        request.post(url, requestOptions, function (error: any, response: any, body: any) {
+            if (error) {
+                eventBus.emit(`${eventTag}:error`, { url: url, data: error });
+            } else {
+                eventBus.emit(`${eventTag}:response`, { url: url, data: body });
+
+                if (success) {
+                    success(body);
+                }
+            }
         });
     }
 }

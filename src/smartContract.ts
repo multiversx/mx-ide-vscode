@@ -27,9 +27,13 @@ export class SmartContract {
     }
 
     public deployToDebugger(senderAddress: string) {
+        let self = this;
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
         let hexCode = buffer.toString("hex");
-        RestDebugger.deploySmartContract(senderAddress, hexCode);
+
+        RestDebugger.deploySmartContract(senderAddress, hexCode, function(data: any) {
+            self.Address = data.data;
+        });
     }
 }
 

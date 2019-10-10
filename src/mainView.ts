@@ -35,6 +35,7 @@ export class MainView {
 
         eventBus.on("view-message:startDebugServer", function () {
             RestDebugger.startServer();
+            self.doRefreshSmartContracts();
         });
 
         eventBus.on("view-message:stopDebugServer", function () {
@@ -42,21 +43,25 @@ export class MainView {
         });
 
         eventBus.on("view-message:refreshSmartContracts", function () {
-            SmartContractsCollection.syncWithWorkspace();
-            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+            self.doRefreshSmartContracts();
         });
 
         eventBus.on("view-message:buildSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.build();
-            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+            self.doRefreshSmartContracts(); // todo: build.then(doRefresh)
         });
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.deployToDebugger(payload.senderAddress);
-            self.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+            self.doRefreshSmartContracts(); // todo: deploy.then(doRefresh)
         });
+    }
+
+    private doRefreshSmartContracts() {
+        SmartContractsCollection.syncWithWorkspace();
+        this.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
     }
 
     private talkToWebView(what: string, payload: any) {
