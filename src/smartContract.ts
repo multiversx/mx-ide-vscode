@@ -32,6 +32,10 @@ export class SmartContract {
         });
     }
 
+    public runFunction(senderAddress: string, functionName: string, functionArgs: string[]) {
+        
+    }
+
     public syncWithWorkspace() {
         let bytecodeFileTest = `${FsFacade.removeExtension(this.SourceFile)}.wasm`;
 

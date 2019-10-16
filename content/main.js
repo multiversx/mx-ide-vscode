@@ -146,6 +146,7 @@ var SmartContractPanelView = Backbone.View.extend({
     events: {
         "click .btn-build-contract": "onClickBuild",
         "click .btn-deploy-contract": "onClickDeploy",
+        "click .btn-run-contract": "onClickRun",
     },
 
     initialize: function () {
@@ -175,7 +176,30 @@ var SmartContractPanelView = Backbone.View.extend({
             id: this.model.get("FriendlyId"),
             senderAddress: senderAddress
         });
-    }
+    },
+
+    onClickRun: function () {
+        var senderAddress = app.configurationView.getSenderAddress();
+        var functionName = this.getFunctionName();
+        var functionArgs = this.getFunctionArgs();
+
+        app.talkToVscode("runSmartContract", {
+            id: this.model.get("FriendlyId"),
+            senderAddress: senderAddress,
+            functionName: functionName,
+            functionArgs: functionArgs
+        });
+    },
+
+    getFunctionName: function() {
+        return this.$el.find("[name='FunctionName']").val();
+    },
+
+    getFunctionArgs: function() {
+        var argsString = this.$el.find("[name='FunctionArgs']").val();
+        var args = argsString.split("\n");
+        return args;
+    },
 });
 
 var ManageDebugServerView = Backbone.View.extend({

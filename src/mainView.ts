@@ -3,7 +3,6 @@ import { FsFacade } from './utils';
 import { Root } from './root';
 import { RestDebugger } from './debugger';
 import { SmartContract, SmartContractsCollection } from './smartContract';
-import { Builder } from './builder';
 import eventBus from './eventBus';
 
 export class MainView {
@@ -56,6 +55,11 @@ export class MainView {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.deployToDebugger(payload.senderAddress);
             //self.doRefreshSmartContracts(); // todo: deploy.then(doRefresh)
+        });
+
+        eventBus.on("view-message:runSmartContract", function (payload) {
+            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
+            contract.runFunction(payload.senderAddress, payload.functionName, payload.functionArgs);
         });
     }
 

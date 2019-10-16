@@ -113,7 +113,7 @@
                                 <legend>Run function</legend>
                                 <div class="form-group">
                                     <label>Function name</label>
-                                    <input name="FunctionName" type="text" class="form-control" placeholder="topUp">
+                                    <input name="FunctionName" type="text" class="form-control" required placeholder="myExportedFunction">
                                     <small class="form-text text-muted">An exported function of your smart contract.</small>
                                 </div>
                                 <div class="form-group">
@@ -121,6 +121,7 @@
                                     <textarea name="FunctionArgs" class="form-control" rows="3"></textarea>
                                     <small class="form-text text-muted">Use a line break to seprate more arguments.</small>
                                 </div>
+                                <button class="btn btn-success btn-run-contract" type="button">Call function</button>
                             </fieldset>
                         </form>
                     <% } %>
