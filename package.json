@@ -12,8 +12,6 @@
 	"activationEvents": [
 		"onCommand:extension.showDebugger",
 		"onCommand:extension.buildCurrentFile",
-		"onCommand:extension.runCurrentFile",
-		"onCommand:extension.buildAndRunCurrentFile",
 		"onCommand:extension.startDebugServer"
 	],
 	"main": "./out/extension.js",
@@ -26,14 +24,6 @@
 			{
 				"command": "extension.buildCurrentFile",
 				"title": "Smart Contracts - build current file"
-			},
-			{
-				"command": "extension.runCurrentFile",
-				"title": "Smart Contracts - run current file"
-			},
-			{
-				"command": "extension.buildAndRunCurrentFile",
-				"title": "Smart Contracts - build & run current file"
 			},
 			{
 				"command": "extension.startDebugServer",
@@ -66,11 +56,6 @@
 					"type": "string",
 					"default": "wasm-ld",
 					"description": "wasm-ld tool."
-				},
-				"elrond.simpleDebugToolPath": {
-					"type": "string",
-					"default": "elrond-go-node-debug",
-					"description": "Simple debug tool."
 				},
 				"elrond.restApi.toolPath": {
 					"type": "string",

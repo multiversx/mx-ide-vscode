@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import path = require('path');
 import os = require('os');
-import { SimpleDebugger, RestDebugger } from './debugger';
+import { RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
 import { Root } from './root';
@@ -11,8 +11,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
-	registerCustomCommand(context, 'extension.runCurrentFile', runCurrentFile);
-	registerCustomCommand(context, 'extension.buildAndRunCurrentFile', buildAndRunCurrentFile);
 	registerCustomCommand(context, 'extension.startDebugServer', startDebugServer);
 }
 
@@ -40,16 +38,6 @@ function showDebugger() {
 function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
 	Builder.buildFile(filePath);
-}
-
-function runCurrentFile() {
-	let filePath = Presenter.getActiveFilePath();
-	SimpleDebugger.debugFile(filePath);
-}
-
-function buildAndRunCurrentFile() {
-	buildCurrentFile();
-	runCurrentFile();
 }
 
 function startDebugServer() {

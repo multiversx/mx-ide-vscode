@@ -18,10 +18,6 @@ export class MySettings {
         return MySettings.getConfigurationValue("restApi.genesisPath");
     }
 
-    public static getSimpleDebugToolPath() {
-        return MySettings.getConfigurationValue("simpleDebugToolPath");
-    }
-
     public static getClangPath() {
         return MySettings.getConfigurationValue("clangPath");
     }
