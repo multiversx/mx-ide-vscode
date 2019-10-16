@@ -33,7 +33,7 @@
 		"menus": {
 			"editor/context": [
 				{
-					"command": "extension.buildAndRunCurrentFile",
+					"command": "extension.buildCurrentFile",
 					"group": "dummyGroup",
 					"when": "resourceExtname == .c"
 				}
