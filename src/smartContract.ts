@@ -33,7 +33,8 @@ export class SmartContract {
     }
 
     public runFunction(senderAddress: string, functionName: string, functionArgs: string[]) {
-        
+        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, function(data: any) {
+        });
     }
 
     public syncWithWorkspace() {

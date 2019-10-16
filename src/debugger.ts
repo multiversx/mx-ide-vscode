@@ -55,6 +55,23 @@ export class RestDebugger {
         });
     }
 
+    public static runSmartContract(senderAddress: string, scAddress: string, functionName: string, functionArgs: string[], success: CallableFunction) {
+        let url = RestDebugger.buildUrl("vm-values/run");
+
+        RequestsFacade.post({
+            url: url,
+            data: {
+                "SndAddress": senderAddress,
+                "ScAddress": scAddress,
+                "Value": "0",
+                "FuncName": functionName,
+                "Args": functionArgs
+            },
+            eventTag: "debugger-dialogue",
+            success: success
+        });
+    }
+
     private static buildUrl(relative: string) {
         let port: any = MySettings.getRestDebuggerPort();
         return `http://localhost:${port}/${relative}`;
