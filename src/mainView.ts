@@ -27,6 +27,10 @@ export class MainView {
         eventBus.on("debugger-dialogue:*", function (data, what) {
             self.talkToWebView(what, data);
         });
+
+        eventBus.on("smart-contract:*", function(data, what) {
+            self.talkToWebView(what, data);
+        });
     }
 
     private listenToWebviewEvents() {

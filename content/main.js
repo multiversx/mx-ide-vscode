@@ -13,6 +13,8 @@ function main() {
 
     // Listen to vscode extension messages.
     window.addEventListener("message", event => {
+        app.log("INCOMING MESSAGE: " + event.data.what);
+        app.log(event.data.payload);
         app.events.trigger(`extension-message:${event.data.what}`, event.data.payload || {});
     });
 
@@ -65,6 +67,10 @@ function listenToExtensionMessages() {
 
     app.events.on("extension-message:debugger:error", function (payload) {
         $("#DebuggerStdout .payload").append($("<div class='text-danger'>").text(payload));
+    });
+
+    app.events.on("extension-message:smart-contract:on-vm-output", function (payload) {
+
     });
 
     // Debugger dialogue
@@ -233,7 +239,7 @@ var ConfigurationView = Backbone.View.extend({
 });
 
 app.talkToVscode = function (what, payload) {
-    app.log(what);
+    app.log("OUTGOING MESSAGE: " + what);
     app.log(payload);
     app.vscode.postMessage({ what: what, payload: payload });
 };

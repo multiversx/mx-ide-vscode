@@ -22,13 +22,15 @@ export class RestDebugger {
     }
 
     private static performStartDebugServer() {
-        let toolPath: any = MySettings.getRestDebuggerToolPath();
+        let toolPath = MySettings.getRestDebuggerToolPath();
+        let toolPathFolder = FsFacade.getFolder(toolPath);
         let port: any = MySettings.getRestDebuggerConfigPath();
         let configPath: any = MySettings.getRestDebuggerConfigPath();
         let genesisPath: any = MySettings.getRestDebuggerGenesisPath();
 
         ProcessFacade.execute({
             program: toolPath,
+            workingDirectory: toolPathFolder,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
             eventTag: "debugger",
             onClose: function (code: any) {
@@ -68,12 +70,24 @@ export class RestDebugger {
                 "Args": functionArgs
             },
             eventTag: "debugger-dialogue",
-            success: success
+            success: function(data: any) {
+                let vmOutput = RestDebugger.readTracedVMOutput(scAddress);
+                success(data, vmOutput);
+            }
         });
     }
 
     private static buildUrl(relative: string) {
         let port: any = MySettings.getRestDebuggerPort();
         return `http://localhost:${port}/${relative}`;
+    }
+
+    public static readTracedVMOutput(scAddress: string) : any {
+        let toolPath = MySettings.getRestDebuggerToolPath();
+        let toolPathFolder = FsFacade.getFolder(toolPath);
+        let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
+        let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
+        let vmOutput = JSON.parse(traceJson);
+        return vmOutput;
     }
 }

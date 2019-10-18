@@ -6,8 +6,8 @@ export class MySettings {
         return MySettings.getConfigurationValue("restApi.port");
     }
 
-    public static getRestDebuggerToolPath() {
-        return MySettings.getConfigurationValue("restApi.toolPath");
+    public static getRestDebuggerToolPath() : string {
+        return MySettings.getConfigurationValue("restApi.toolPath").toString();
     }
 
     public static getRestDebuggerConfigPath() {

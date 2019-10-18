@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import glob = require('glob');
 import eventBus from './eventBus';
 import request = require('request');
+import _ = require('underscore');
 
 export class ProcessFacade {
     public static executeSync(command: string, silentOnError: boolean = false) {
@@ -31,10 +32,16 @@ export class ProcessFacade {
     public static execute(options: any) {
         let program = options.program;
         let programName = FsFacade.getFilename(program);
+        let workingDirectory = options.workingDirectory;
         let args = options.args;
-        let subprocess = child_process.spawn(program, args);
         let eventTag = options.eventTag;
 
+        let spawnOptions: child_process.SpawnOptions = {
+            cwd: workingDirectory
+        };
+
+        let subprocess = child_process.spawn(program, args, spawnOptions);
+        
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
 
@@ -97,6 +104,10 @@ export class FsFacade {
         return path.basename(filePath);
     }
 
+    public static getFolder(filePath: string) {
+        return path.dirname(filePath);
+    }
+
     public static readFile(filePath: string) {
         let text: string = fs.readFileSync(filePath, { encoding: "utf8" });
         return text;
@@ -139,6 +150,24 @@ export class FsFacade {
 
     public static fileExists(filePath: string): boolean {
         return fs.existsSync(filePath);
+    }
+
+    public static readLatestFileInFolder(...pathParts: string[]) : string {
+        let latest = FsFacade.getLatestFileInFolder(...pathParts);
+        let content = FsFacade.readFile(latest);
+        return content;
+    }
+
+    public static getLatestFileInFolder(...pathParts: string[]) : string {
+        let folder = path.join(...pathParts);
+        let files = fs.readdirSync(folder);
+        let latest = _.max(files, function (fileName) {
+            let fullpath = path.join(folder, fileName);
+            return fs.statSync(fullpath).mtime;
+        });
+
+        let fullpath = path.join(folder, latest);
+        return fullpath;
     }
 }
 

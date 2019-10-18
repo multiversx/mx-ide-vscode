@@ -2,6 +2,7 @@ import { FsFacade } from "./utils";
 import { RestDebugger } from "./debugger";
 import { Builder } from "./builder";
 import _ = require("underscore");
+import eventBus from "./eventBus";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -33,7 +34,13 @@ export class SmartContract {
     }
 
     public runFunction(senderAddress: string, functionName: string, functionArgs: string[]) {
-        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, function(data: any) {
+        let self = this;
+
+        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, function(data: any, vmOutput: any) {
+            eventBus.emit("smart-contract:on-vm-output", {
+                id: self.FriendlyId,
+                vmOutput: vmOutput
+            });
         });
     }
 
