@@ -63,7 +63,7 @@ export class MainView {
 
         eventBus.on("view-message:runSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.runFunction(payload.senderAddress, payload.functionName, payload.functionArgs);
+            contract.runFunction(payload);
         });
     }
 

@@ -35,12 +35,11 @@ export class SmartContract {
         });
     }
 
-    public runFunction(senderAddress: string, functionName: string, functionArgs: string[]) {
+    public runFunction(options: any) {
         let self = this;
 
         this.LatestRun = new SmartContractRun();
-        this.LatestRun.FunctionName = functionName;
-        this.LatestRun.FunctionArgs = functionArgs;
+        this.LatestRun.Options = options;
 
         function onSucces(data: any, vmOutput: any) {
             self.LatestRun.VMOutput = vmOutput;
@@ -50,7 +49,8 @@ export class SmartContract {
             self.LatestRun.VMOutput = {};
         }
 
-        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, onSucces, onError);
+        options.scAddress = this.Address;
+        RestDebugger.runSmartContract(options, onSucces, onError);
     }
 
     public syncWithWorkspace() {
@@ -92,13 +92,18 @@ export class SmartContractsCollection {
 }
 
 class SmartContractRun {
-    public FunctionName: string;
-    public FunctionArgs: string[];
+    public Options: any;
     public VMOutput: any;
 
     constructor() {
-        this.FunctionName = "nothing";
-        this.FunctionArgs = [];
+        this.Options = {
+            functionName: "nothing",
+            functionArgs: [],
+            value: 0,
+            maximumGas: 42,
+            gasPrice: 0.01
+        };
+
         this.VMOutput = {};
     }
 }

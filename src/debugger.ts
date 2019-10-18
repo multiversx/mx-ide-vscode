@@ -57,27 +57,21 @@ export class RestDebugger {
         });
     }
 
-    public static runSmartContract(
-        senderAddress: string,
-        scAddress: string,
-        functionName: string,
-        functionArgs: string[],
-        success: CallableFunction,
-        error: CallableFunction) {
+    public static runSmartContract(runOptions: any, success: CallableFunction, error: CallableFunction) {
         let url = RestDebugger.buildUrl("vm-values/run");
 
         RequestsFacade.post({
             url: url,
             data: {
-                "SndAddress": senderAddress,
-                "ScAddress": scAddress,
-                "Value": "0",
-                "FuncName": functionName,
-                "Args": functionArgs
+                "SndAddress": runOptions.senderAddress,
+                "ScAddress": runOptions.scAddress,
+                "Value": runOptions.value.toString(),
+                "FuncName": runOptions.functionName,
+                "Args": runOptions.functionArgs
             },
             eventTag: "debugger-dialogue",
             success: function (data: any) {
-                let vmOutput = RestDebugger.readTracedVMOutput(scAddress);
+                let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
                 success(data, vmOutput);
             },
             error: error
