@@ -9,10 +9,12 @@ export class SmartContract {
     public readonly SourceFile: string;
     public BytecodeFile: string;
     public Address: string;
+    public LatestRun: SmartContractRun;
 
     constructor(sourceFile: string) {
         this.SourceFile = sourceFile;
         this.FriendlyId = FsFacade.removeExtension(FsFacade.getFilename(sourceFile));
+        this.LatestRun = new SmartContractRun();
     }
 
     public isBuilt(): boolean {
@@ -36,12 +38,19 @@ export class SmartContract {
     public runFunction(senderAddress: string, functionName: string, functionArgs: string[]) {
         let self = this;
 
-        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, function(data: any, vmOutput: any) {
-            eventBus.emit("smart-contract:on-vm-output", {
-                id: self.FriendlyId,
-                vmOutput: vmOutput
-            });
-        });
+        this.LatestRun = new SmartContractRun();
+        this.LatestRun.FunctionName = functionName;
+        this.LatestRun.FunctionArgs = functionArgs;
+
+        function onSucces(data: any, vmOutput: any) {
+            self.LatestRun.VMOutput = vmOutput;
+        }
+
+        function onError() {
+            self.LatestRun.VMOutput = {};
+        }
+
+        RestDebugger.runSmartContract(senderAddress, this.Address, functionName, functionArgs, onSucces, onError);
     }
 
     public syncWithWorkspace() {
@@ -67,6 +76,7 @@ export class SmartContractsCollection {
             
             if (contractBefore) {
                 contractNow.Address = contractBefore.Address;
+                contractNow.LatestRun = contractBefore.LatestRun;
             }
 
             contractNow.syncWithWorkspace();
@@ -78,5 +88,17 @@ export class SmartContractsCollection {
     public static getById(id: string): SmartContract {
         let item = this.Items.find(e => e.FriendlyId == id);
         return item;
+    }
+}
+
+class SmartContractRun {
+    public FunctionName: string;
+    public FunctionArgs: string[];
+    public VMOutput: any;
+
+    constructor() {
+        this.FunctionName = "nothing";
+        this.FunctionArgs = [];
+        this.VMOutput = {};
     }
 }

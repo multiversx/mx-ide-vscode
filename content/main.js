@@ -69,10 +69,6 @@ function listenToExtensionMessages() {
         $("#DebuggerStdout .payload").append($("<div class='text-danger'>").text(payload));
     });
 
-    app.events.on("extension-message:smart-contract:on-vm-output", function (payload) {
-
-    });
-
     // Debugger dialogue
     app.events.on("extension-message:debugger-dialogue:request", function (payload) {
         $("#RestDialogue .payload").append($("<div>").text(payload.url));
@@ -168,7 +164,22 @@ var SmartContractPanelView = Backbone.View.extend({
         var contract = this.model.toJSON();
         var html = template({ contract: contract });
         this.$el.html(html);
+        this.renderVMOutput();
+
         return this;
+    },
+
+    renderVMOutput: function() {
+        if (this.VMOutputView) {
+            this.VMOutputView.remove();
+        }
+
+        this.VMOutputView = new VMOutputView({ 
+            el: this.$el.find(".vm-output-view"),
+            model: this.model.get("LatestRun")
+        });
+
+        this.VMOutputView.render();
     },
 
     onClickBuild: function () {
@@ -205,6 +216,21 @@ var SmartContractPanelView = Backbone.View.extend({
         var argsString = this.$el.find("[name='FunctionArgs']").val();
         var args = argsString.split("\n");
         return args;
+    },
+});
+
+var VMOutputView = Backbone.View.extend({
+    tagName: "div",
+
+    initialize: function () {
+        this.render();
+    },
+
+    render: function () {
+        var template = app.underscoreTemplates["TemplateVMOutput"];
+        var html = template({ data: this.model.VMOutput || {} });
+        this.$el.html(html);
+        return this;
     },
 });
 

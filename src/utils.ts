@@ -176,7 +176,8 @@ export class RestFacade {
         let url = options.url;
         let data = options.data;
         let eventTag = options.eventTag;
-        let success = options.success;
+        let successCallback = options.success;
+        let errorCallback = options.error;
 
         let requestOptions: any = {
             json: data
@@ -187,13 +188,19 @@ export class RestFacade {
         }
 
         request.post(url, requestOptions, function (error: any, response: any, body: any) {
-            if (error) {
+            let isErrorneous = error || (response.statusCode == 500);
+
+            if (isErrorneous) {
                 eventBus.emit(`${eventTag}:error`, { url: url, data: error });
+
+                if (errorCallback) {
+                    errorCallback();
+                }
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
 
-                if (success) {
-                    success(body);
+                if (successCallback) {
+                    successCallback(body);
                 }
             }
         });

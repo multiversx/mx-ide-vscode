@@ -57,7 +57,13 @@ export class RestDebugger {
         });
     }
 
-    public static runSmartContract(senderAddress: string, scAddress: string, functionName: string, functionArgs: string[], success: CallableFunction) {
+    public static runSmartContract(
+        senderAddress: string,
+        scAddress: string,
+        functionName: string,
+        functionArgs: string[],
+        success: CallableFunction,
+        error: CallableFunction) {
         let url = RestDebugger.buildUrl("vm-values/run");
 
         RequestsFacade.post({
@@ -70,10 +76,11 @@ export class RestDebugger {
                 "Args": functionArgs
             },
             eventTag: "debugger-dialogue",
-            success: function(data: any) {
+            success: function (data: any) {
                 let vmOutput = RestDebugger.readTracedVMOutput(scAddress);
                 success(data, vmOutput);
-            }
+            },
+            error: error
         });
     }
 
@@ -82,7 +89,7 @@ export class RestDebugger {
         return `http://localhost:${port}/${relative}`;
     }
 
-    public static readTracedVMOutput(scAddress: string) : any {
+    public static readTracedVMOutput(scAddress: string): any {
         let toolPath = MySettings.getRestDebuggerToolPath();
         let toolPathFolder = FsFacade.getFolder(toolPath);
         let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
