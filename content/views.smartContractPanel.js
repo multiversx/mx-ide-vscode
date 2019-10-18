@@ -56,7 +56,7 @@ var SmartContractPanelView = Backbone.View.extend({
         var functionName = this.getFunctionName();
         var functionArgs = this.getFunctionArgs();
         var value = this.getRunValue();
-        var maximumGas = this.getMaximumGas();
+        var gasLimit = this.getGasLimit();
         var gasPrice = this.getGasPrice();
 
         app.talkToVscode("runSmartContract", {
@@ -65,7 +65,7 @@ var SmartContractPanelView = Backbone.View.extend({
             functionName: functionName,
             functionArgs: functionArgs,
             value: value,
-            maximumGas: maximumGas,
+            gasLimit: gasLimit,
             gasPrice: gasPrice
         });
     },
@@ -84,12 +84,12 @@ var SmartContractPanelView = Backbone.View.extend({
         return this.$el.find("[name='Value']").val();
     },
 
-    getMaximumGas: function() {
-        return this.$el.find("[name='MaximumGas']").val();
+    getGasLimit: function() {
+        return Number(this.$el.find("[name='GasLimit']").val());
     },
 
     getGasPrice: function() {
-        return this.$el.find("[name='GasPrice']").val();
+        return Number(this.$el.find("[name='GasPrice']").val());
     }
 });
 

@@ -99,9 +99,9 @@ class SmartContractRun {
         this.Options = {
             functionName: "nothing",
             functionArgs: [],
-            value: 0,
-            maximumGas: 42,
-            gasPrice: 0.01
+            value: 42,
+            gasLimit: 5432,
+            gasPrice: 1
         };
 
         this.VMOutput = {};

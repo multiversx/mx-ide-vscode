@@ -66,6 +66,8 @@ export class RestDebugger {
                 "SndAddress": runOptions.senderAddress,
                 "ScAddress": runOptions.scAddress,
                 "Value": runOptions.value.toString(),
+                "GasLimit": runOptions.gasLimit,
+                "GasPrice": runOptions.gasPrice,
                 "FuncName": runOptions.functionName,
                 "Args": runOptions.functionArgs
             },

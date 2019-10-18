@@ -137,14 +137,14 @@
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group">
-                                                    <label>Maximum gas</label>
-                                                    <input name="MaximumGas" type="text" class="form-control" required placeholder="42" value="<%= contract.LatestRun.Options.maximumGas %>">
+                                                    <label>Gas limit</label>
+                                                    <input name="GasLimit" type="number" class="form-control" required placeholder="42" value="<%= contract.LatestRun.Options.gasLimit %>">
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group">
-                                                    <label>Maximum gas</label>
-                                                    <input name="GasPrice" type="text" class="form-control" required placeholder="0.1" value="<%= contract.LatestRun.Options.gasPrice %>">
+                                                    <label>Gas price</label>
+                                                    <input name="GasPrice" type="number" class="form-control" required placeholder="1" value="<%= contract.LatestRun.Options.gasPrice %>">
                                                 </div>
                                             </div>
                                         </div>
