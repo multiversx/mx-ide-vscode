@@ -6,18 +6,17 @@ import eventBus from "./eventBus";
 export class RestDebugger {
 
     public static startServer() {
-        RestDebugger.stopServer(function () {
-            RestDebugger.performStartDebugServer();
-        });
+        RestDebugger.stopServer()
+            .catch(() => { })
+            .finally(() => RestDebugger.performStartDebugServer());
     }
 
-    public static stopServer(callback: CallableFunction) {
+    public static stopServer(): Promise<any> {
         let port: any = MySettings.getRestDebuggerPort();
 
-        ProcessFacade.execute({
+        return ProcessFacade.execute({
             program: "fuser",
-            args: ["-k", `${port}/tcp`],
-            onClose: callback
+            args: ["-k", `${port}/tcp`]
         });
     }
 
@@ -32,17 +31,18 @@ export class RestDebugger {
             program: toolPath,
             workingDirectory: toolPathFolder,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
-            eventTag: "debugger",
-            onClose: function (code: any) {
-                Presenter.showInfo("Debug server stopped.");
-            }
+            eventTag: "debugger"
+        })
+        .catch(() => { })
+        .then(() => {
+            Presenter.showInfo("Debug server stopped.");
         });
 
         eventBus.emit("debugger:started");
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract(senderAddress: string, code: string) : Promise<any> {
+    public static deploySmartContract(senderAddress: string, code: string): Promise<any> {
         let url = RestDebugger.buildUrl("vm-values/deploy");
 
         return RequestsFacade.post({
@@ -56,10 +56,10 @@ export class RestDebugger {
         });
     }
 
-    public static runSmartContract(runOptions: any) : Promise<any> {
+    public static async runSmartContract(runOptions: any): Promise<any> {
         let url = RestDebugger.buildUrl("vm-values/run");
 
-        return RequestsFacade.post({
+        await RequestsFacade.post({
             url: url,
             data: {
                 "SndAddress": runOptions.senderAddress,
@@ -71,10 +71,10 @@ export class RestDebugger {
                 "Args": runOptions.functionArgs
             },
             eventTag: "debugger-dialogue"
-        }).then(data => {
-            let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
-            return vmOutput;
         });
+
+        let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
+        return vmOutput;
     }
 
     private static buildUrl(relative: string) {

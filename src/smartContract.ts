@@ -2,7 +2,6 @@ import { FsFacade } from "./utils";
 import { RestDebugger } from "./debugger";
 import { Builder } from "./builder";
 import _ = require("underscore");
-import eventBus from "./eventBus";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -21,32 +20,32 @@ export class SmartContract {
         return this.BytecodeFile ? true : false;
     }
 
-    public build() {
-        Builder.buildFile(this.SourceFile);
+    public build(): Promise<any> {
+        return Builder.buildFile(this.SourceFile);
     }
 
-    public deployToDebugger(senderAddress: string): Promise<any> {
+    public async deployToDebugger(senderAddress: string): Promise<any> {
         let self = this;
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
         let hexCode = buffer.toString("hex");
 
-        return RestDebugger.deploySmartContract(senderAddress, hexCode).then(data => {
-            self.Address = data.data;
-        });
+        const response = await RestDebugger.deploySmartContract(senderAddress, hexCode);
+        self.Address = response.data;
     }
 
-    public runFunction(options: any): Promise<any> {
+    public async runFunction(options: any): Promise<any> {
         let self = this;
         this.LatestRun = new SmartContractRun();
         this.LatestRun.Options = options;
 
         options.scAddress = this.Address;
-        
-        return RestDebugger.runSmartContract(options).then(vmOutput => {
+
+        try {
+            const vmOutput = await RestDebugger.runSmartContract(options);
             self.LatestRun.VMOutput = vmOutput;
-        }).catch(() => {
+        } catch (e) {
             self.LatestRun.VMOutput = {};
-        })
+        }
     }
 
     public syncWithWorkspace() {

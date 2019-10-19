@@ -29,7 +29,13 @@ export class ProcessFacade {
         return output;
     }
 
-    public static execute(options: any) {
+    public static execute(options: any): Promise<any> {
+        var resolve: any, reject: any;
+        let promise = new Promise((_resolve, _reject) => {
+            resolve = _resolve;
+            reject = _reject;
+        });
+
         let program = options.program;
         let programName = FsFacade.getFilename(program);
         let workingDirectory = options.workingDirectory;
@@ -83,7 +89,15 @@ export class ProcessFacade {
             if (eventTag) {
                 eventBus.emit(`${eventTag}:close`, code);
             }
+
+            if (code == 0) {
+                resolve(code);
+            } else {
+                reject(code);
+            }
         });
+
+        return promise;
     }
 }
 

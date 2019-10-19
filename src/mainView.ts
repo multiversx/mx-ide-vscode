@@ -42,7 +42,7 @@ export class MainView {
         });
 
         eventBus.on("view-message:stopDebugServer", function () {
-            RestDebugger.stopServer(null);
+            RestDebugger.stopServer().catch(() => {});
         });
 
         eventBus.on("view-message:refreshSmartContracts", function () {
@@ -51,8 +51,7 @@ export class MainView {
 
         eventBus.on("view-message:buildSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.build();
-            //self.doRefreshSmartContracts(); // todo: build.then(doRefresh)
+            contract.build().then(() => { self.doRefreshSmartContracts() });
         });
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
