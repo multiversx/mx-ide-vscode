@@ -39,16 +39,12 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     onClickBuild: function () {
-        app.talkToVscode("buildSmartContract", { id: this.model.get("FriendlyId") });
+        this.model.build();
     },
 
     onClickDeploy: function () {
         var senderAddress = app.configurationView.getSenderAddress();
-
-        app.talkToVscode("deploySmartContract", {
-            id: this.model.get("FriendlyId"),
-            senderAddress: senderAddress
-        });
+        this.model.deploy({ senderAddress: senderAddress });
     },
 
     onClickRun: function () {
@@ -59,8 +55,7 @@ var SmartContractPanelView = Backbone.View.extend({
         var gasLimit = this.getGasLimit();
         var gasPrice = this.getGasPrice();
 
-        app.talkToVscode("runSmartContract", {
-            id: this.model.get("FriendlyId"),
+        this.model.run({
             senderAddress: senderAddress,
             functionName: functionName,
             functionArgs: functionArgs,
