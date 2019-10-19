@@ -42,25 +42,24 @@ export class RestDebugger {
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract(senderAddress: string, code: string, success: CallableFunction) {
+    public static deploySmartContract(senderAddress: string, code: string) : Promise<any> {
         let url = RestDebugger.buildUrl("vm-values/deploy");
 
-        RequestsFacade.post({
+        return RequestsFacade.post({
             url: url,
             data: {
                 "SndAddress": senderAddress,
                 "Code": code,
                 "Args": []
             },
-            eventTag: "debugger-dialogue",
-            success: success
+            eventTag: "debugger-dialogue"
         });
     }
 
-    public static runSmartContract(runOptions: any, success: CallableFunction, error: CallableFunction) {
+    public static runSmartContract(runOptions: any) : Promise<any> {
         let url = RestDebugger.buildUrl("vm-values/run");
 
-        RequestsFacade.post({
+        return RequestsFacade.post({
             url: url,
             data: {
                 "SndAddress": runOptions.senderAddress,
@@ -71,12 +70,10 @@ export class RestDebugger {
                 "FuncName": runOptions.functionName,
                 "Args": runOptions.functionArgs
             },
-            eventTag: "debugger-dialogue",
-            success: function (data: any) {
-                let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
-                success(data, vmOutput);
-            },
-            error: error
+            eventTag: "debugger-dialogue"
+        }).then(data => {
+            let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
+            return vmOutput;
         });
     }
 

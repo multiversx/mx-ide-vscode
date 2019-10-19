@@ -25,32 +25,28 @@ export class SmartContract {
         Builder.buildFile(this.SourceFile);
     }
 
-    public deployToDebugger(senderAddress: string) {
+    public deployToDebugger(senderAddress: string): Promise<any> {
         let self = this;
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
         let hexCode = buffer.toString("hex");
 
-        RestDebugger.deploySmartContract(senderAddress, hexCode, function(data: any) {
+        return RestDebugger.deploySmartContract(senderAddress, hexCode).then(data => {
             self.Address = data.data;
         });
     }
 
-    public runFunction(options: any) {
+    public runFunction(options: any): Promise<any> {
         let self = this;
-
         this.LatestRun = new SmartContractRun();
         this.LatestRun.Options = options;
 
-        function onSucces(data: any, vmOutput: any) {
-            self.LatestRun.VMOutput = vmOutput;
-        }
-
-        function onError() {
-            self.LatestRun.VMOutput = {};
-        }
-
         options.scAddress = this.Address;
-        RestDebugger.runSmartContract(options, onSucces, onError);
+        
+        return RestDebugger.runSmartContract(options).then(vmOutput => {
+            self.LatestRun.VMOutput = vmOutput;
+        }).catch(() => {
+            self.LatestRun.VMOutput = {};
+        })
     }
 
     public syncWithWorkspace() {
@@ -73,7 +69,7 @@ export class SmartContractsCollection {
         // Keep data after sync.
         smartContractsNow.forEach(contractNow => {
             let contractBefore = smartContractsBefore.find(e => e.FriendlyId == contractNow.FriendlyId);
-            
+
             if (contractBefore) {
                 contractNow.Address = contractBefore.Address;
                 contractNow.LatestRun = contractBefore.LatestRun;

@@ -28,7 +28,7 @@ export class MainView {
             self.talkToWebView(what, data);
         });
 
-        eventBus.on("smart-contract:*", function(data, what) {
+        eventBus.on("smart-contract:*", function (data, what) {
             self.talkToWebView(what, data);
         });
     }
@@ -57,13 +57,12 @@ export class MainView {
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.deployToDebugger(payload.senderAddress);
-            //self.doRefreshSmartContracts(); // todo: deploy.then(doRefresh)
+            contract.deployToDebugger(payload.senderAddress).then(() => { self.doRefreshSmartContracts() });
         });
 
         eventBus.on("view-message:runSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.runFunction(payload);
+            contract.runFunction(payload).then(() => { self.doRefreshSmartContracts() });
         });
     }
 

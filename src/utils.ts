@@ -172,13 +172,16 @@ export class FsFacade {
 }
 
 export class RestFacade {
-    public static post(options: any) {
+    public static post(options: any) : Promise<any> {
+        var resolve: any, reject: any;
+        let promise = new Promise((_resolve, _reject) => {
+            resolve = _resolve;
+            reject = _reject;
+        });
+
         let url = options.url;
         let data = options.data;
         let eventTag = options.eventTag;
-        let successCallback = options.success;
-        let errorCallback = options.error;
-
         let requestOptions: any = {
             json: data
         };
@@ -192,17 +195,13 @@ export class RestFacade {
 
             if (isErrorneous) {
                 eventBus.emit(`${eventTag}:error`, { url: url, data: error });
-
-                if (errorCallback) {
-                    errorCallback();
-                }
+                reject();
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
-
-                if (successCallback) {
-                    successCallback(body);
-                }
+                resolve(body);
             }
         });
+
+        return promise;
     }
 }
