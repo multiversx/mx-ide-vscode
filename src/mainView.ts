@@ -121,6 +121,8 @@ export class MainView {
         let html: string = FsFacade.readFileInContent("mainView.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
+        html = html.replace("{{template.smartContractPanel.html}}", FsFacade.readFileInContent("template.smartContractPanel.html"));
+        html = html.replace("{{template.vmOutput.html}}", FsFacade.readFileInContent("template.vmOutput.html"));
         return html;
     }
 
