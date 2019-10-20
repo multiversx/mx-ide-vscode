@@ -25,17 +25,17 @@ var SmartContractPanelView = Backbone.View.extend({
         return this;
     },
 
-    renderVMOutput: function() {
-        if (this.VMOutputView) {
-            this.VMOutputView.remove();
+    renderVMOutput: function () {
+        if (this.vmOutputView) {
+            this.vmOutputView.remove();
         }
 
-        this.VMOutputView = new VMOutputView({ 
+        this.vmOutputView = new VMOutputView({
             el: this.$el.find(".vm-output-view"),
             model: this.model.get("LatestRun")
         });
 
-        this.VMOutputView.render();
+        this.vmOutputView.render();
     },
 
     onClickBuild: function () {
@@ -43,8 +43,11 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     onClickDeploy: function () {
-        var senderAddress = app.configurationView.getSenderAddress();
-        this.model.deploy({ senderAddress: senderAddress });
+        var deployDialog = new DeployDialog({
+            model: this.model
+        });
+
+        deployDialog.show();
     },
 
     onClickRun: function () {
@@ -65,25 +68,25 @@ var SmartContractPanelView = Backbone.View.extend({
         });
     },
 
-    getFunctionName: function() {
+    getFunctionName: function () {
         return this.$el.find("[name='FunctionName']").val();
     },
 
-    getFunctionArgs: function() {
+    getFunctionArgs: function () {
         var argsString = this.$el.find("[name='FunctionArgs']").val();
         var args = argsString.split("\n");
         return args;
     },
 
-    getRunValue: function() {
+    getRunValue: function () {
         return this.$el.find("[name='Value']").val();
     },
 
-    getGasLimit: function() {
+    getGasLimit: function () {
         return Number(this.$el.find("[name='GasLimit']").val());
     },
 
-    getGasPrice: function() {
+    getGasPrice: function () {
         return Number(this.$el.find("[name='GasPrice']").val());
     }
 });

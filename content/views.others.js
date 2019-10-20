@@ -21,9 +21,5 @@ var ConfigurationView = Backbone.View.extend({
     },
 
     initialize: function () {
-    },
-
-    getSenderAddress() {
-        return this.$el.find("[name='SenderAddress']").val();
     }
 });
