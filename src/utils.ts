@@ -209,11 +209,12 @@ export class RestFacade {
         }
 
         request.post(url, requestOptions, function (error: any, response: any, body: any) {
-            let isErrorneous = error || (response.statusCode == 500);
+            let statusCode = response ? response.statusCode : null;
+            let isErrorneous = error || statusCode == 500;
 
             if (isErrorneous) {
                 eventBus.emit(`${eventTag}:error`, { url: url, data: error });
-                reject();
+                reject({ error: error, status: statusCode });
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
                 resolve(body);

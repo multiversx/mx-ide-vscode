@@ -33,10 +33,10 @@ export class RestDebugger {
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
             eventTag: "debugger"
         })
-        .catch(() => { })
-        .then(() => {
-            Presenter.showInfo("Debug server stopped.");
-        });
+            .catch(() => { })
+            .finally(() => {
+                Presenter.showInfo("Debug server stopped.");
+            });
 
         eventBus.emit("debugger:started");
         Presenter.showInfo("Debug server started.");
@@ -53,6 +53,8 @@ export class RestDebugger {
                 "Args": []
             },
             eventTag: "debugger-dialogue"
+        }).catch(e => {
+            Presenter.showError(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
         });
     }
 
