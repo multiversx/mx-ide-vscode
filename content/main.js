@@ -87,7 +87,7 @@ function listenToExtensionMessages() {
 }
 
 function onMessageRefreshSmartContracts(contracts) {
-    app.smartContracts.reset(contracts);
+    app.smartContracts.set(contracts);
 }
 
 app.talkToVscode = function (what, payload) {

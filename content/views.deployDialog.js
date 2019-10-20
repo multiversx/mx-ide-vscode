@@ -9,15 +9,24 @@ var DeployDialog = Backbone.View.extend({
     },
 
     initialize: function () {
+        this.listenTo(this.model, "change", this.onModelChange);
+        this.render();
+    },
+
+    onModelChange: function() {
         this.render();
     },
 
     render: function () {
         var template = app.underscoreTemplates["TemplateDeployDialog"];
-        var html = template({});
+        var contract = this.model.toJSON();
+        var html = template({ contract: contract });
         this.$el.html(html);
-        this.$el.modal({ show: false });
-        this.$el.appendTo("body");
+
+        if (!$.contains(document, this.el)) {
+            this.$el.appendTo("body");
+            this.$el.modal({ show: false });
+        }
 
         return this;
     },

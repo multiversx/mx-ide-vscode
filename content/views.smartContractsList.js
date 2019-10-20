@@ -7,7 +7,7 @@ var SmartContractsListView = Backbone.View.extend({
 
     initialize: function () {
         this.childViews = [];
-        this.listenTo(this.collection, "reset", this.render);
+        this.listenTo(this.collection, "update", this.render);
         this.render();
     },
 

@@ -1,18 +1,20 @@
 var SmartContract = Backbone.Model.extend({
+    idAttribute: "FriendlyId",
+
     initialize: function () {
     },
 
     build: function() {
-        app.talkToVscode("buildSmartContract", { id: this.get("FriendlyId") });
+        app.talkToVscode("buildSmartContract", { id: this.id });
     },
 
     deploy: function(payload) {
-        payload.id = this.get("FriendlyId");
+        payload.id = this.id;
         app.talkToVscode("deploySmartContract", payload);
     },
 
     run: function(payload) {
-        payload.id = this.get("FriendlyId");
+        payload.id = this.id;
         app.talkToVscode("runSmartContract", payload);
     }
 });

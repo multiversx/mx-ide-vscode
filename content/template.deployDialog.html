@@ -1,4 +1,4 @@
-<div class="modal-dialog">
+<div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">Deploy Smart Contract</h4>
@@ -13,11 +13,20 @@
                         value="d4105de8e44aee9d4be670401cec546e5df381028e805012386a05acf76518d9" />
                 </div>
             </form>
+
+            <% if (contract.Address) { %>
+                <div class="form-group">
+                    <label class="">Deployed at address:</label>
+                    <input class="form-control" name="" type="text" value="<%= contract.Address %>" readonly />
+                </div>
+            <% } %>
         </div>
 
         <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-info btn-submit">Deploy</button>
+            <button type="button" class="btn btn-info btn-submit">
+                <%= contract.Address ? "Deploy again" : "Deploy" %>
+            </button>
         </div>
     </div>
 </div>
