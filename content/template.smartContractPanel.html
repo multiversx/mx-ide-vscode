@@ -3,9 +3,21 @@
         <h4 class="card-header"><%= contract.FriendlyId %></h3>
 
         <div class="card-body">
-            <div>Source: <strong><%= contract.SourceFile %></strong></div>
-            <div>Bytecode: <strong><%= contract.BytecodeFile || "none yet" %></strong></div>
-            <div>Address: <strong><%= contract.Address || "none yet" %></strong></div>
+            <div>
+                Source: 
+                <strong><%= contract.SourceFile %></strong>
+                <span class="text-muted"><%= contract.SourceFileTimestamp %></span>
+            </div>
+            <div>
+                Bytecode: 
+                <strong><%= contract.BytecodeFile || "none yet" %></strong>
+                <span class="text-muted"><%= contract.BytecodeFileTimestamp %></span>
+            </div>
+            <div>
+                Address: 
+                <strong><%= contract.Address || "none yet" %></strong>
+                <span class="text-muted"><%= contract.AddressTimestamp %></span>
+            </div>
 
             <div class="mt-2">
                 <button class="btn btn-info btn-lg btn-build-contract">Build</button>

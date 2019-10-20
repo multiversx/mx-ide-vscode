@@ -183,6 +183,10 @@ export class FsFacade {
         let fullpath = path.join(folder, latest);
         return fullpath;
     }
+
+    public static getModifiedOn(filePath: string): Date {
+        return fs.statSync(filePath).mtime;
+    }
 }
 
 export class RestFacade {

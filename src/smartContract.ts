@@ -6,8 +6,11 @@ import _ = require("underscore");
 export class SmartContract {
     public readonly FriendlyId: string;
     public readonly SourceFile: string;
+    public SourceFileTimestamp: Date;
     public BytecodeFile: string;
+    public BytecodeFileTimestamp: Date;
     public Address: string;
+    public AddressTimestamp: Date;
     public LatestRun: SmartContractRun;
 
     constructor(sourceFile: string) {
@@ -31,6 +34,7 @@ export class SmartContract {
 
         const response = await RestDebugger.deploySmartContract(senderAddress, hexCode);
         self.Address = response.data;
+        self.AddressTimestamp = new Date();
     }
 
     public async runFunction(options: any): Promise<any> {
@@ -49,10 +53,13 @@ export class SmartContract {
     }
 
     public syncWithWorkspace() {
+        this.SourceFileTimestamp = FsFacade.getModifiedOn(this.SourceFile);
+
         let bytecodeFileTest = `${FsFacade.removeExtension(this.SourceFile)}.wasm`;
 
         if (FsFacade.fileExists(bytecodeFileTest)) {
             this.BytecodeFile = bytecodeFileTest;
+            this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
         }
     }
 }
@@ -71,6 +78,7 @@ export class SmartContractsCollection {
 
             if (contractBefore) {
                 contractNow.Address = contractBefore.Address;
+                contractNow.AddressTimestamp = contractBefore.AddressTimestamp;
                 contractNow.LatestRun = contractBefore.LatestRun;
             }
 
