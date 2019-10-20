@@ -51,43 +51,11 @@ var SmartContractPanelView = Backbone.View.extend({
     },
 
     onClickRun: function () {
-        var senderAddress = app.configurationView.getSenderAddress();
-        var functionName = this.getFunctionName();
-        var functionArgs = this.getFunctionArgs();
-        var value = this.getRunValue();
-        var gasLimit = this.getGasLimit();
-        var gasPrice = this.getGasPrice();
-
-        this.model.run({
-            senderAddress: senderAddress,
-            functionName: functionName,
-            functionArgs: functionArgs,
-            value: value,
-            gasLimit: gasLimit,
-            gasPrice: gasPrice
+        var runDialog = new RunDialog({
+            model: this.model
         });
-    },
 
-    getFunctionName: function () {
-        return this.$el.find("[name='FunctionName']").val();
-    },
-
-    getFunctionArgs: function () {
-        var argsString = this.$el.find("[name='FunctionArgs']").val();
-        var args = argsString.split("\n");
-        return args;
-    },
-
-    getRunValue: function () {
-        return this.$el.find("[name='Value']").val();
-    },
-
-    getGasLimit: function () {
-        return Number(this.$el.find("[name='GasLimit']").val());
-    },
-
-    getGasPrice: function () {
-        return Number(this.$el.find("[name='GasPrice']").val());
+        runDialog.show();
     }
 });
 

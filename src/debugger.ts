@@ -73,6 +73,8 @@ export class RestDebugger {
                 "Args": runOptions.functionArgs
             },
             eventTag: "debugger-dialogue"
+        }).catch(e => {
+            Presenter.showError(`Cannot run. Perhaps debug server is stopped? ${e.error}`);
         });
 
         let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);

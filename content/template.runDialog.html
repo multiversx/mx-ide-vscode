@@ -1,0 +1,63 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Run Smart Contract Function</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form>
+                <fieldset>
+                    <legend>Run function</legend>
+                    <div class="form-group">
+                        <label class="">Sender address:</label>
+                        <input class="form-control" name="SenderAddress" type="text"
+                            value="d4105de8e44aee9d4be670401cec546e5df381028e805012386a05acf76518d9" />
+                    </div>
+                    <div class="form-group">
+                        <label>Function name</label>
+                        <input name="FunctionName" type="text" class="form-control" required
+                            placeholder="myExportedFunction" value="<%= contract.LatestRun.Options.functionName %>">
+                        <small class="form-text text-muted">An exported function of your smart
+                            contract.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Function arguments</label>
+                        <textarea name="FunctionArgs" class="form-control"
+                            rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
+                        <small class="form-text text-muted">Use a line break to seprate more
+                            arguments.</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Value</label>
+                                <input name="Value" type="text" class="form-control" required placeholder="0"
+                                    value="<%= contract.LatestRun.Options.value %>">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Gas limit</label>
+                                <input name="GasLimit" type="number" class="form-control" required placeholder="42"
+                                    value="<%= contract.LatestRun.Options.gasLimit %>">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Gas price</label>
+                                <input name="GasPrice" type="number" class="form-control" required placeholder="1"
+                                    value="<%= contract.LatestRun.Options.gasPrice %>">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-info btn-submit">Run</button>
+        </div>
+    </div>
+</div>
