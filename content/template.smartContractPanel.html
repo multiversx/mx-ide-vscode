@@ -1,20 +1,20 @@
 <div>
     <div class="card mt-2 mb-2">
-        <h3 class="card-header"><%= contract.FriendlyId %></h3>
+        <h4 class="card-header"><%= contract.FriendlyId %></h3>
 
         <div class="card-body">
-            <p class="card-title">Source: <strong><%= contract.SourceFile %></strong></p>
-            <p class="card-title">Bytecode: <strong><%= contract.BytecodeFile || "none yet" %></strong></p>
-            <p class="card-title">Address: <strong><%= contract.Address || "none yet" %></strong></p>
-        </div>
-        <div class="card-body">
-            <button class="btn btn-info btn-lg btn-build-contract">Build</button>
+            <div>Source: <strong><%= contract.SourceFile %></strong></div>
+            <div>Bytecode: <strong><%= contract.BytecodeFile || "none yet" %></strong></div>
+            <div>Address: <strong><%= contract.Address || "none yet" %></strong></div>
 
-            <% if (contract.BytecodeFile) { %>
+            <div class="mt-2">
+                <button class="btn btn-info btn-lg btn-build-contract">Build</button>
+
+                <% if (contract.BytecodeFile) { %>
                 <button class="btn btn-info btn-lg btn-deploy-contract">Deploy</button>
-            <% } %>
+                <% } %>
 
-            <% if (contract.Address) { %>
+                <% if (contract.Address) { %>
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <form>
@@ -22,31 +22,39 @@
                                 <legend>Run function</legend>
                                 <div class="form-group">
                                     <label>Function name</label>
-                                    <input name="FunctionName" type="text" class="form-control" required placeholder="myExportedFunction" value="<%= contract.LatestRun.Options.functionName %>">
-                                    <small class="form-text text-muted">An exported function of your smart contract.</small>
+                                    <input name="FunctionName" type="text" class="form-control" required
+                                        placeholder="myExportedFunction"
+                                        value="<%= contract.LatestRun.Options.functionName %>">
+                                    <small class="form-text text-muted">An exported function of your smart
+                                        contract.</small>
                                 </div>
                                 <div class="form-group">
                                     <label>Function arguments</label>
-                                    <textarea name="FunctionArgs" class="form-control" rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
-                                    <small class="form-text text-muted">Use a line break to seprate more arguments.</small>
+                                    <textarea name="FunctionArgs" class="form-control"
+                                        rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
+                                    <small class="form-text text-muted">Use a line break to seprate more
+                                        arguments.</small>
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label>Value</label>
-                                            <input name="Value" type="text" class="form-control" required placeholder="0" value="<%= contract.LatestRun.Options.value %>">
+                                            <input name="Value" type="text" class="form-control" required
+                                                placeholder="0" value="<%= contract.LatestRun.Options.value %>">
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label>Gas limit</label>
-                                            <input name="GasLimit" type="number" class="form-control" required placeholder="42" value="<%= contract.LatestRun.Options.gasLimit %>">
+                                            <input name="GasLimit" type="number" class="form-control" required
+                                                placeholder="42" value="<%= contract.LatestRun.Options.gasLimit %>">
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label>Gas price</label>
-                                            <input name="GasPrice" type="number" class="form-control" required placeholder="1" value="<%= contract.LatestRun.Options.gasPrice %>">
+                                            <input name="GasPrice" type="number" class="form-control" required
+                                                placeholder="1" value="<%= contract.LatestRun.Options.gasPrice %>">
                                         </div>
                                     </div>
                                 </div>
@@ -54,12 +62,13 @@
                             </fieldset>
                         </form>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <div class="vm-output-view"></div>
                     </div>
                 </div>
-            <% } %>
+                <% } %>
+            </div>
         </div>
     </div>
 </div>
