@@ -8,7 +8,8 @@ var DeployDialog = Backbone.View.extend({
         "click .btn-submit": "onClickSubmit"
     },
 
-    initialize: function () {
+    initialize: function (options) {
+        this.onTestnet = options.onTestnet;
         this.listenTo(this.model, "change", this.onModelChange);
         this.render();
     },
@@ -20,7 +21,7 @@ var DeployDialog = Backbone.View.extend({
     render: function () {
         var template = app.underscoreTemplates["TemplateDeployDialog"];
         var contract = this.model.toJSON();
-        var html = template({ contract: contract });
+        var html = template({ contract: contract, onTestnet: this.onTestnet });
         this.$el.html(html);
 
         if (!$.contains(document, this.el)) {
