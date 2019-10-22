@@ -8,6 +8,7 @@ $(function () {
 function main() {
     app.vscode = acquireVsCodeApi();
     app.smartContracts = new SmartContractsCollection();
+    app.restDialogue = new RestDialogueCollection();
     initializeUnderscoreTemplates();
     listenToExtensionMessages();
 
@@ -29,6 +30,11 @@ function main() {
     app.smartContractsListView = new SmartContractsListView({
         el: ".smart-contracts-list-view",
         collection: app.smartContracts
+    });
+
+    app.restDialogueListView = new RestDialogueListView({
+        el: "#RestDialogue .payload",
+        collection: app.restDialogue
     });
 }
 
@@ -67,17 +73,6 @@ function listenToExtensionMessages() {
 
     app.events.on("extension-message:debugger:error", function (payload) {
         $("#DebuggerStdout .payload").append($("<div class='text-danger'>").text(payload));
-    });
-
-    // Debugger dialogue
-    app.events.on("extension-message:debugger-dialogue:request", function (payload) {
-        $("#RestDialogue .payload").append($("<div>").text(payload.url));
-        $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
-    });
-
-    app.events.on("extension-message:debugger-dialogue:response", function (payload) {
-        $("#RestDialogue .payload").append($("<div>").text(payload.url));
-        $("#RestDialogue .payload").append($("<div>").text(JSON.stringify(payload.data, null, 4)));
     });
 
     // Others

@@ -125,6 +125,7 @@ export class MainView {
         html = html.replace("{{template.deployDialog.html}}", FsFacade.readFileInContent("template.deployDialog.html"));
         html = html.replace("{{template.runDialog.html}}", FsFacade.readFileInContent("template.runDialog.html"));
         html = html.replace("{{template.vmOutput.html}}", FsFacade.readFileInContent("template.vmOutput.html"));
+        html = html.replace("{{template.restDialogueItem.html}}", FsFacade.readFileInContent("template.restDialogueItem.html"));
         return html;
     }
 

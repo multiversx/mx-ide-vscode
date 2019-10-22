@@ -53,7 +53,7 @@
                             <h3>Smart contracts</h3>
 
                             <div class="smart-contracts-list-view">
-                                <button class="btn btn-success btn-lg btn-refresh-smart-contracts">Refresh</button>
+                                <button class="btn btn-success btn-lg btn-refresh-smart-contracts">Refresh list</button>
                             </div>
                         </div>
                     </div>
@@ -67,8 +67,8 @@
                     </pre>
                 </div>
                 <div class="tab-pane" id="RestDialogue">
-                    <pre class="payload mt-3">
-                    </pre>
+                    <div class="payload mt-3">
+                    </div>
                 </div>
                 <div class="tab-pane" id="ExtensionConsole">
                     <pre class="payload mt-3">
@@ -84,17 +84,20 @@
     <script type="text/javascript" src="vendor/backbone.min.js"></script>
 
     <script type="text/javascript" src="models.js"></script>
+    <script type="text/javascript" src="models.restDialogue.js"></script>
     <script type="text/javascript" src="views.smartContractsList.js"></script>
     <script type="text/javascript" src="views.smartContractPanel.js"></script>
     <script type="text/javascript" src="views.deployDialog.js"></script>
     <script type="text/javascript" src="views.runDialog.js"></script>
     <script type="text/javascript" src="views.others.js"></script>
+    <script type="text/javascript" src="views.restDialogue.js"></script>
     <script type="text/javascript" src="main.js"></script>
 
     <script id="TemplateSmartContractPanel" type="text/template">{{template.smartContractPanel.html}}</script>
     <script id="TemplateDeployDialog" type="text/template">{{template.deployDialog.html}}</script>
     <script id="TemplateRunDialog" type="text/template">{{template.runDialog.html}}</script>
     <script id="TemplateVMOutput" type="text/template">{{template.vmOutput.html}}</script>
+    <script id="TemplateRestDialogueItem" type="text/template">{{template.restDialogueItem.html}}</script>
 </body>
 
 </html>
