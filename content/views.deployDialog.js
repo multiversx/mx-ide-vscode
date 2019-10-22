@@ -5,7 +5,8 @@ var DeployDialog = Backbone.View.extend({
     events: {
         "shown.bs.modal": "onBootstrapModalShown",
         "hidden.bs.modal": "onBootstrapModalHidden",
-        "click .btn-submit": "onClickSubmit"
+        "click .btn-submit": "onClickSubmit",
+        "change input[name='PrivateKeyFile']": "onChangePrivateKey"
     },
 
     initialize: function (options) {
@@ -14,7 +15,7 @@ var DeployDialog = Backbone.View.extend({
         this.render();
     },
 
-    onModelChange: function() {
+    onModelChange: function () {
         this.render();
     },
 
@@ -40,17 +41,40 @@ var DeployDialog = Backbone.View.extend({
         this.$el.modal("hide");
     },
 
-    onBootstrapModalShown: function() {
+    onBootstrapModalShown: function () {
     },
 
-    onBootstrapModalHidden: function() {
+    onBootstrapModalHidden: function () {
         this.$el.data('modal', null);
         this.remove();
     },
 
-    onClickSubmit: function() {
+    onChangePrivateKey: function (event) {
+        var self = this;
+        var file = event.currentTarget.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function (onloadEvent) {
+            self.privateKey = onloadEvent.target.result;
+        };
+
+        reader.readAsText(file);
+    },
+
+    onClickSubmit: function () {
+        var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
-        this.model.deploy({ senderAddress: senderAddress });
+
+        this.model.deploy({
+            testnetNodeEndpoint: testnetNodeEndpoint,
+            privateKey: this.privateKey,
+            senderAddress: senderAddress,
+            onTestnet: this.onTestnet
+        });
+    },
+
+    getTestnetNodeEndpoint() {
+        return this.$el.find("[name='TestnetNodeEndpoint']").val();
     },
 
     getSenderAddress() {
