@@ -42,7 +42,40 @@ export class RestDebugger {
         Presenter.showInfo("Debug server started.");
     }
 
-    public static deploySmartContract(senderAddress: string, code: string): Promise<any> {
+    public static deploySmartContract(options: any): Promise<any> {
+        let onTestnet = options.onTestnet;
+        let privateKey = options.privateKey;
+        let senderAddress = options.senderAddress;
+        let code = options.code;
+
+        let promise: Promise<any>;
+
+        if (onTestnet) {
+            promise = RestDebugger.deploySmartContractOnTestnet(privateKey, code);
+        } else {
+            promise = RestDebugger.deploySmartContractOnDebugNode(senderAddress, code);
+        }
+
+        return promise.catch(e => {
+            Presenter.showError(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
+        });
+    }
+
+    private static deploySmartContractOnTestnet(privateKey: string, code: string): Promise<any> {
+        let url = RestDebugger.buildUrl("vm-values/deployOnTestnet");
+
+        return RequestsFacade.post({
+            url: url,
+            data: {
+                "PrivateKey": privateKey,
+                "Code": code,
+                "Args": []
+            },
+            eventTag: "debugger-dialogue"
+        });
+    }
+
+    private static deploySmartContractOnDebugNode(senderAddress: string, code: string): Promise<any> {
         let url = RestDebugger.buildUrl("vm-values/deploy");
 
         return RequestsFacade.post({
@@ -53,8 +86,6 @@ export class RestDebugger {
                 "Args": []
             },
             eventTag: "debugger-dialogue"
-        }).catch(e => {
-            Presenter.showError(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
         });
     }
 

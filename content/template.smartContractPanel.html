@@ -17,6 +17,11 @@
                 <strong><%= contract.Address || "none yet" %></strong>
                 <span class="text-muted"><%= contract.AddressTimestamp %></span>
             </div>
+            <div>
+                Address on Testnet:
+                <strong><%= contract.AddressOnTestnet || "none yet" %></strong>
+                <span class="text-muted"><%= contract.AddressOnTestnetTimestamp %></span>
+            </div>
 
             <div class="mt-2">
                 <button class="btn btn-info btn-build-contract">Build</button>
@@ -28,10 +33,16 @@
 
                 <% if (contract.Address) { %>
                 <button class="btn btn-info btn-run-contract" type="button">Run function</button>
-                <button class="btn btn-warning btn-run-contract-testnet" type="button">Run function on Testnet</button>
+                <% } %>
 
+                <% if (contract.AddressOnTestnet) { %>
+                <button class="btn btn-warning btn-run-contract-testnet" type="button">Run function on Testnet</button>
+                <% } %>
+
+                <% if (contract.Address) { %>
                 <div class="row mt-3">
-                    <div class="col-md-6">
+                    <div class="col-sm-12">
+                        <h5>VM output (on debug node)</h5>
                         <div class="vm-output-view"></div>
                     </div>
                 </div>

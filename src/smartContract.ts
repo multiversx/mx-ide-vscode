@@ -11,6 +11,8 @@ export class SmartContract {
     public BytecodeFileTimestamp: Date;
     public Address: string;
     public AddressTimestamp: Date;
+    public AddressOnTestnet: string;
+    public AddressOnTestnetTimestamp: Date;
     public LatestRun: SmartContractRun;
 
     constructor(sourceFile: string) {
@@ -27,14 +29,20 @@ export class SmartContract {
         return Builder.buildFile(this.SourceFile);
     }
 
-    public async deployToDebugger(senderAddress: string): Promise<any> {
+    public async deployToDebugger(options: any): Promise<any> {
         let self = this;
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
-        let hexCode = buffer.toString("hex");
+        options.code = buffer.toString("hex");
 
-        const response = await RestDebugger.deploySmartContract(senderAddress, hexCode);
-        self.Address = response.data;
-        self.AddressTimestamp = new Date();
+        const response = await RestDebugger.deploySmartContract(options);
+
+        if (options.onTestnet) {
+            self.AddressOnTestnet = response.data;
+            self.AddressOnTestnetTimestamp = new Date();
+        } else {
+            self.Address = response.data;
+            self.AddressTimestamp = new Date();
+        }
     }
 
     public async runFunction(options: any): Promise<any> {
@@ -79,6 +87,8 @@ export class SmartContractsCollection {
             if (contractBefore) {
                 contractNow.Address = contractBefore.Address;
                 contractNow.AddressTimestamp = contractBefore.AddressTimestamp;
+                contractNow.AddressOnTestnet = contractBefore.AddressOnTestnet;
+                contractNow.AddressOnTestnetTimestamp = contractBefore.AddressOnTestnetTimestamp;
                 contractNow.LatestRun = contractBefore.LatestRun;
             }
 

@@ -56,7 +56,7 @@ export class MainView {
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.deployToDebugger(payload.senderAddress).then(() => { self.doRefreshSmartContracts() });
+            contract.deployToDebugger(payload).then(() => { self.doRefreshSmartContracts() });
         });
 
         eventBus.on("view-message:runSmartContract", function (payload) {
