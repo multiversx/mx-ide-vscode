@@ -50,7 +50,11 @@ export class SmartContract {
         this.LatestRun = new SmartContractRun();
         this.LatestRun.Options = options;
 
-        options.scAddress = this.Address;
+        if (options.onTestnet) {
+            options.scAddress = this.AddressOnTestnet;
+        } else {
+            options.scAddress = this.Address;
+        }
 
         try {
             const vmOutput = await RestDebugger.runSmartContract(options);

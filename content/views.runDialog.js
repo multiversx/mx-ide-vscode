@@ -5,22 +5,24 @@ var RunDialog = Backbone.View.extend({
     events: {
         "shown.bs.modal": "onBootstrapModalShown",
         "hidden.bs.modal": "onBootstrapModalHidden",
-        "click .btn-submit": "onClickSubmit"
+        "click .btn-submit": "onClickSubmit",
+        "change input[name='PrivateKeyFile']": "onChangePrivateKey"
     },
 
-    initialize: function () {
+    initialize: function (options) {
+        this.onTestnet = options.onTestnet;
         this.listenTo(this.model, "change", this.onModelChange);
         this.render();
     },
 
-    onModelChange: function() {
+    onModelChange: function () {
         this.render();
     },
 
     render: function () {
         var template = app.underscoreTemplates["TemplateRunDialog"];
         var contract = this.model.toJSON();
-        var html = template({ contract: contract });
+        var html = template({ contract: contract, onTestnet: this.onTestnet });
         this.$el.html(html);
 
         if (!$.contains(document, this.el)) {
@@ -39,15 +41,28 @@ var RunDialog = Backbone.View.extend({
         this.$el.modal("hide");
     },
 
-    onBootstrapModalShown: function() {
+    onBootstrapModalShown: function () {
     },
 
-    onBootstrapModalHidden: function() {
+    onBootstrapModalHidden: function () {
         this.$el.data('modal', null);
         this.remove();
     },
 
-    onClickSubmit: function() {
+    onChangePrivateKey: function (event) {
+        var self = this;
+        var file = event.currentTarget.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function (onloadEvent) {
+            self.privateKey = onloadEvent.target.result;
+        };
+
+        reader.readAsText(file);
+    },
+
+    onClickSubmit: function () {
+        var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
         var functionName = this.getFunctionName();
         var functionArgs = this.getFunctionArgs();
@@ -56,13 +71,20 @@ var RunDialog = Backbone.View.extend({
         var gasPrice = this.getGasPrice();
 
         this.model.run({
+            testnetNodeEndpoint: testnetNodeEndpoint,
+            privateKey: this.privateKey,
             senderAddress: senderAddress,
             functionName: functionName,
             functionArgs: functionArgs,
             value: value,
             gasLimit: gasLimit,
-            gasPrice: gasPrice
+            gasPrice: gasPrice,
+            onTestnet: this.onTestnet
         });
+    },
+
+    getTestnetNodeEndpoint() {
+        return this.$el.find("[name='TestnetNodeEndpoint']").val();
     },
 
     getSenderAddress() {

@@ -17,13 +17,12 @@
                     <input class="form-control" type="file" name="PrivateKeyFile" accept=".pem" />
                 </div>
                 <% } else { %>
-                <% } %>
-
                 <div class="form-group">
                     <label class="">Sender address:</label>
                     <input class="form-control" name="SenderAddress" type="text"
                         value="d4105de8e44aee9d4be670401cec546e5df381028e805012386a05acf76518d9" />
                 </div>
+                <% } %>
             </form>
 
             <% if (onTestnet) { %>

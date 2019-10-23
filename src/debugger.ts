@@ -67,6 +67,9 @@ export class RestDebugger {
         await RequestsFacade.post({
             url: url,
             data: {
+                "OnTestnet": runOptions.onTestnet,
+                "PrivateKey": runOptions.privateKey,
+                "TestnetNodeEndpoint": runOptions.testnetNodeEndpoint,
                 "SndAddress": runOptions.senderAddress,
                 "ScAddress": runOptions.scAddress,
                 "Value": runOptions.value.toString(),
@@ -80,7 +83,13 @@ export class RestDebugger {
             Presenter.showError(`Cannot run. Perhaps debug server is stopped? ${e.error}`);
         });
 
-        let vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
+        let vmOutput: any = {};
+
+        if (runOptions.onTestnet) {
+        } else {
+            vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
+        }
+        
         return vmOutput;
     }
 
