@@ -18,16 +18,8 @@ export class MySettings {
         return MySettings.getConfigurationValue("restApi.genesisPath");
     }
 
-    public static getClangPath() {
-        return MySettings.getConfigurationValue("clangPath");
-    }
-
-    public static getLlcPath() {
-        return MySettings.getConfigurationValue("llcPath");
-    }
-
-    public static getWasmLdPath() {
-        return MySettings.getConfigurationValue("wasmLdPath");
+    public static getBuildToolsFolder() : string {
+        return MySettings.getConfigurationValue("buildToolsFolder").toString();
     }
 
     private static getConfigurationValue(key: string) {

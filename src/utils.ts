@@ -187,6 +187,10 @@ export class FsFacade {
     public static getModifiedOn(filePath: string): Date {
         return fs.statSync(filePath).mtime;
     }
+
+    public static markAsExecutable(filePath: string) {
+        fs.chmodSync(filePath, "+x");
+    }
 }
 
 export class RestFacade {
@@ -238,11 +242,13 @@ export class RestFacade {
 
         request.get(url)
             .on("response", function (response) {
-                resolve();
             })
             .on("error", function (error) {
                 reject({ error: error });
                 console.error(error);
+            })
+            .on("complete", function (response) {
+                resolve();
             })
             .pipe(writeStream);
 

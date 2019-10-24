@@ -12,9 +12,10 @@ export class Builder {
         let filePath_o = `${filePathWithoutExtension}.o`;
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
 
-        let clangPath: any = MySettings.getClangPath();
-        let llcPath: any = MySettings.getLlcPath();
-        let wasmLdPath: any = MySettings.getWasmLdPath();
+        let toolsFolder = MySettings.getBuildToolsFolder();
+        let clangPath: any = path.join(toolsFolder, "clang-9");
+        let llcPath: any = path.join(toolsFolder, "llc");
+        let wasmLdPath: any = path.join(toolsFolder, "wasm-ld");
         let symsFilePath = FsFacade.createTempFile("main.syms", Syms.getMainSymsAsText());
 
         function doClang(): Promise<any> {

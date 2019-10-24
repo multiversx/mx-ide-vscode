@@ -65,6 +65,10 @@ export class MainView {
             contract.runFunction(payload).then(() => { self.doRefreshSmartContracts() });
         });
 
+        eventBus.on("view-message:environment-refresh", function () {
+            self.doRefreshEnvironment();
+        });
+
         eventBus.on("view-message:environment-install-build-tools", function (payload) {
             MyEnvironment.installBuildTools();
         });
@@ -77,6 +81,10 @@ export class MainView {
     private doRefreshSmartContracts() {
         SmartContractsCollection.syncWithWorkspace();
         this.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
+    }
+
+    private doRefreshEnvironment() {
+        this.talkToWebView("refreshEnvironment", MyEnvironment.getSnapshot());
     }
 
     private talkToWebView(what: string, payload: any) {

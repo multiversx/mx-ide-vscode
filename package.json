@@ -42,20 +42,10 @@
 		"configuration": {
 			"title": "vscode-elrond-c",
 			"properties": {
-				"elrond.clangPath": {
+				"elrond.buildToolsFolder": {
 					"type": "string",
-					"default": "clang",
-					"description": "clang tool."
-				},
-				"elrond.llcPath": {
-					"type": "string",
-					"default": "llc",
-					"description": "llc tool."
-				},
-				"elrond.wasmLdPath": {
-					"type": "string",
-					"default": "wasm-ld",
-					"description": "wasm-ld tool."
+					"default": "/home/Elrond/llvm",
+					"description": "Folder for build tools."
 				},
 				"elrond.restApi.toolPath": {
 					"type": "string",

@@ -9,6 +9,7 @@ function main() {
     app.vscode = acquireVsCodeApi();
     app.smartContracts = new SmartContractsCollection();
     app.restDialogue = new RestDialogueCollection();
+    app.environment = new EnvironmentModel();
     initializeUnderscoreTemplates();
     listenToExtensionMessages();
 
@@ -28,7 +29,8 @@ function main() {
     });
 
     app.environmentView = new EnvironmentView({
-        el: ".environment-view"
+        el: ".environment-view",
+        model: app.environment
     });
 
     app.smartContractsListView = new SmartContractsListView({
@@ -82,6 +84,10 @@ function listenToExtensionMessages() {
     // Others
     app.events.on("extension-message:refreshSmartContracts", function (payload) {
         onMessageRefreshSmartContracts(payload);
+    });
+
+    app.events.on("extension-message:refreshEnvironment", function (payload) {
+        app.environment.set(payload);
     });
 }
 
