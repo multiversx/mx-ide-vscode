@@ -189,7 +189,7 @@ export class FsFacade {
     }
 
     public static markAsExecutable(filePath: string) {
-        fs.chmodSync(filePath, "+x");
+        fs.chmodSync(filePath, "755");
     }
 
     public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
