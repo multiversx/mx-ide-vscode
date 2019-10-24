@@ -191,6 +191,32 @@ export class FsFacade {
     public static markAsExecutable(filePath: string) {
         fs.chmodSync(filePath, "+x");
     }
+
+    public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
+        return ProcessFacade.execute({
+            program: "unzip",
+            args: [archivePath, "-d", destinationFolder]
+        });
+    }
+
+    public static untar(archivePath: string, destinationFolder: string): Promise<any> {
+        return ProcessFacade.execute({
+            program: "tar",
+            args: ["-C", destinationFolder, "-xzf", ""]
+        });
+    }
+
+    public static createFolderIfNotExists(folderPath: string) {
+        let parentFolder = path.dirname(folderPath);
+
+        if (!fs.existsSync(parentFolder)) {
+            throw new Error(`Parent folder ${parentFolder} does not exist.`);
+        }
+
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath);
+        }
+    }
 }
 
 export class RestFacade {
@@ -229,6 +255,8 @@ export class RestFacade {
     }
 
     public static download(options: any): Promise<any> {
+        const waitBeforeCloseStream = 500;
+
         var resolve: any, reject: any;
         let promise = new Promise((_resolve, _reject) => {
             resolve = _resolve;
@@ -237,18 +265,40 @@ export class RestFacade {
 
         let url = options.url;
         let destination = options.destination;
-
         let writeStream: fs.WriteStream = fs.createWriteStream(destination);
+
+        console.log(`Downloading: ${url}`);
+        console.log(`Destination: ${destination}`);
+
+        let contentLength = Number.MAX_SAFE_INTEGER;
+        let downloaded = 0;
+        let progress = 0;
 
         request.get(url)
             .on("response", function (response) {
+                contentLength = parseInt(response.headers['content-length']);
+            })
+            .on("data", function (chunk) {
+                downloaded += chunk.length;
+                progress = downloaded / contentLength;
+                let percentage = Math.round(progress * 100);
+                eventBus.emit("download", {
+                    url: url,
+                    file: destination,
+                    progress: progress,
+                    percentage: percentage
+                });
             })
             .on("error", function (error) {
-                reject({ error: error });
                 console.error(error);
+                writeStream.close();
+                reject({ error: error });
             })
             .on("complete", function (response) {
-                resolve();
+                setTimeout(function () {
+                    writeStream.close();
+                    resolve();
+                }, waitBeforeCloseStream);
             })
             .pipe(writeStream);
 

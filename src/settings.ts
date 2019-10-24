@@ -6,20 +6,8 @@ export class MySettings {
         return MySettings.getConfigurationValue("restApi.port");
     }
 
-    public static getRestDebuggerToolPath() : string {
-        return MySettings.getConfigurationValue("restApi.toolPath").toString();
-    }
-
-    public static getRestDebuggerConfigPath() {
-        return MySettings.getConfigurationValue("restApi.configPath");
-    }
-
-    public static getRestDebuggerGenesisPath() {
-        return MySettings.getConfigurationValue("restApi.genesisPath");
-    }
-
-    public static getBuildToolsFolder() : string {
-        return MySettings.getConfigurationValue("buildToolsFolder").toString();
+    public static getIdeFolder() : string {
+        return MySettings.getConfigurationValue("ideFolder").toString();
     }
 
     private static getConfigurationValue(key: string) {

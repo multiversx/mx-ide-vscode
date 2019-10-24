@@ -42,30 +42,15 @@
 		"configuration": {
 			"title": "vscode-elrond-c",
 			"properties": {
-				"elrond.buildToolsFolder": {
+				"elrond.ideFolder": {
 					"type": "string",
-					"default": "/home/Elrond/llvm",
-					"description": "Folder for build tools."
-				},
-				"elrond.restApi.toolPath": {
-					"type": "string",
-					"default": "elrond-go-node-debug-api",
-					"description": "Debug server executable."
+					"default": "/home/someone/Elrond/ide",
+					"description": "Folder for ide tools."
 				},
 				"elrond.restApi.port": {
 					"type": "number",
 					"default": "8080",
 					"description": "Debug server port."
-				},
-				"elrond.restApi.configPath": {
-					"type": "string",
-					"default": "config.toml",
-					"description": "Debug server configuration path."
-				},
-				"elrond.restApi.genesisPath": {
-					"type": "string",
-					"default": "genesis.json",
-					"description": "Debug server genesis path."
 				}
 			}
 		}

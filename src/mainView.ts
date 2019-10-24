@@ -32,6 +32,10 @@ export class MainView {
         eventBus.on("smart-contract:*", function (data, what) {
             self.talkToWebView(what, data);
         });
+
+        eventBus.on("download", function (data, what) {
+            self.talkToWebView(what, data);
+        });
     }
 
     private listenToWebviewEvents() {
@@ -71,6 +75,10 @@ export class MainView {
 
         eventBus.on("view-message:environment-install-build-tools", function (payload) {
             MyEnvironment.installBuildTools();
+        });
+
+        eventBus.on("view-message:environment-install-go", function (payload) {
+            MyEnvironment.installGo();
         });
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {

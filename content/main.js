@@ -85,10 +85,6 @@ function listenToExtensionMessages() {
     app.events.on("extension-message:refreshSmartContracts", function (payload) {
         onMessageRefreshSmartContracts(payload);
     });
-
-    app.events.on("extension-message:refreshEnvironment", function (payload) {
-        app.environment.set(payload);
-    });
 }
 
 function onMessageRefreshSmartContracts(contracts) {

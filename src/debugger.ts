@@ -2,6 +2,7 @@ import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import eventBus from "./eventBus";
+import path = require('path');
 
 export class RestDebugger {
 
@@ -21,11 +22,11 @@ export class RestDebugger {
     }
 
     private static performStartDebugServer() {
-        let toolPath = MySettings.getRestDebuggerToolPath();
-        let toolPathFolder = FsFacade.getFolder(toolPath);
-        let port: any = MySettings.getRestDebuggerConfigPath();
-        let configPath: any = MySettings.getRestDebuggerConfigPath();
-        let genesisPath: any = MySettings.getRestDebuggerGenesisPath();
+        let toolPathFolder = RestDebugger.getFolderPath();
+        let toolPath = RestDebugger.getToolPath();
+        let port: any = MySettings.getRestDebuggerPort();
+        let configPath: any = path.join(toolPathFolder, "config", "config.toml");
+        let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
 
         ProcessFacade.execute({
             program: toolPath,
@@ -89,7 +90,7 @@ export class RestDebugger {
         } else {
             vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
         }
-        
+
         return vmOutput;
     }
 
@@ -99,11 +100,22 @@ export class RestDebugger {
     }
 
     public static readTracedVMOutput(scAddress: string): any {
-        let toolPath = MySettings.getRestDebuggerToolPath();
-        let toolPathFolder = FsFacade.getFolder(toolPath);
+        let idePath = MySettings.getIdeFolder();
+        let toolPathFolder = path.join(idePath, "node-debug");
         let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
         let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
         let vmOutput = JSON.parse(traceJson);
         return vmOutput;
+    }
+
+    public static getFolderPath(): string {
+        let idePath = MySettings.getIdeFolder();
+        let subfolder = path.join(idePath, "node-debug");
+        return subfolder;
+    }
+
+    public static getToolPath(): string {
+        let toolPath = path.join(RestDebugger.getFolderPath(), "debugWithRestApi");
+        return toolPath;
     }
 }
