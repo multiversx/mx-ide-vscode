@@ -9,7 +9,7 @@ import { Root } from './root';
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
 
-	registerCustomCommand(context, 'extension.showDebugger', showDebugger);
+	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startDebugServer', startDebugServer);
 }
@@ -31,7 +31,7 @@ function wrapTry(action: CallableFunction) {
 	};
 }
 
-function showDebugger() {
+function openIDE() {
 	Presenter.showMainView();
 }
 

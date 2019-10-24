@@ -1,7 +1,7 @@
 {
-	"name": "vscode-elrond-c",
-	"displayName": "Elrond Smart Contract Development in C",
-	"description": "VS Code extension to enable Elrond smart contract development in C",
+	"name": "vscode-elrond-ide",
+	"displayName": "Elrond IDE",
+	"description": "Elrond IDE",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.38.0"
@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.showDebugger",
+		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startDebugServer"
 	],
@@ -18,8 +18,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.showDebugger",
-				"title": "Smart Contracts - show debugger"
+				"command": "extension.openIDE",
+				"title": "Elrond - open IDE"
 			},
 			{
 				"command": "extension.buildCurrentFile",
@@ -45,7 +45,7 @@
 				"elrond.ideFolder": {
 					"type": "string",
 					"default": "/home/someone/Elrond/ide",
-					"description": "Folder for ide tools."
+					"description": "Folder for IDE tools."
 				},
 				"elrond.restApi.port": {
 					"type": "number",
