@@ -47,7 +47,7 @@ export class ProcessFacade {
         };
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
-        
+
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
 
@@ -166,13 +166,13 @@ export class FsFacade {
         return fs.existsSync(filePath);
     }
 
-    public static readLatestFileInFolder(...pathParts: string[]) : string {
+    public static readLatestFileInFolder(...pathParts: string[]): string {
         let latest = FsFacade.getLatestFileInFolder(...pathParts);
         let content = FsFacade.readFile(latest);
         return content;
     }
 
-    public static getLatestFileInFolder(...pathParts: string[]) : string {
+    public static getLatestFileInFolder(...pathParts: string[]): string {
         let folder = path.join(...pathParts);
         let files = fs.readdirSync(folder);
         let latest = _.max(files, function (fileName) {
@@ -190,7 +190,7 @@ export class FsFacade {
 }
 
 export class RestFacade {
-    public static post(options: any) : Promise<any> {
+    public static post(options: any): Promise<any> {
         var resolve: any, reject: any;
         let promise = new Promise((_resolve, _reject) => {
             resolve = _resolve;
@@ -220,6 +220,31 @@ export class RestFacade {
                 resolve(body);
             }
         });
+
+        return promise;
+    }
+
+    public static download(options: any): Promise<any> {
+        var resolve: any, reject: any;
+        let promise = new Promise((_resolve, _reject) => {
+            resolve = _resolve;
+            reject = _reject;
+        });
+
+        let url = options.url;
+        let destination = options.destination;
+
+        let writeStream: fs.WriteStream = fs.createWriteStream(destination);
+
+        request.get(url)
+            .on("response", function (response) {
+                resolve();
+            })
+            .on("error", function (error) {
+                reject({ error: error });
+                console.error(error);
+            })
+            .pipe(writeStream);
 
         return promise;
     }
