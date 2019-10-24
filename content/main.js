@@ -27,6 +27,10 @@ function main() {
         el: ".configuration-view"
     });
 
+    app.environmentView = new EnvironmentView({
+        el: ".environment-view"
+    });
+
     app.smartContractsListView = new SmartContractsListView({
         el: ".smart-contracts-list-view",
         collection: app.smartContracts

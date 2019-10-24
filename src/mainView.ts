@@ -4,6 +4,7 @@ import { Root } from './root';
 import { RestDebugger } from './debugger';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
+import { MyEnvironment } from './myenvironment';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -63,6 +64,14 @@ export class MainView {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.runFunction(payload).then(() => { self.doRefreshSmartContracts() });
         });
+
+        eventBus.on("view-message:environment-install-build-tools", function (payload) {
+            MyEnvironment.installBuildTools();
+        });
+
+        eventBus.on("view-message:environment-install-debug-node", function (payload) {
+            MyEnvironment.installDebugNode();
+        });
     }
 
     private doRefreshSmartContracts() {
@@ -121,6 +130,7 @@ export class MainView {
         let html: string = FsFacade.readFileInContent("mainView.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
+        html = html.replace("{{partial.environment.html}}", FsFacade.readFileInContent("partial.environment.html"));
         html = html.replace("{{template.smartContractPanel.html}}", FsFacade.readFileInContent("template.smartContractPanel.html"));
         html = html.replace("{{template.deployDialog.html}}", FsFacade.readFileInContent("template.deployDialog.html"));
         html = html.replace("{{template.runDialog.html}}", FsFacade.readFileInContent("template.runDialog.html"));
