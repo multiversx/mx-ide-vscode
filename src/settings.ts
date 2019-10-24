@@ -10,6 +10,10 @@ export class MySettings {
         return MySettings.getConfigurationValue("ideFolder").toString();
     }
 
+    public static getDownloadMirrorUrl() : string {
+        return MySettings.getConfigurationValue("downloadMirror").toString();
+    }
+
     private static getConfigurationValue(key: string) {
         let configuration = vscode.workspace.getConfiguration("elrond");
         let value = configuration.get(key);

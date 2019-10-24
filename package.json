@@ -43,6 +43,11 @@
 		"configuration": {
 			"title": "vscode-elrond-ide",
 			"properties": {
+				"elrond.downloadMirror": {
+					"type": "string",
+					"default": "http://localhost/ElrondIDE",
+					"description": "Download mirror for Elrond IDE tools."
+				},
 				"elrond.ideFolder": {
 					"type": "string",
 					"default": "/home/someone/Elrond/ide",
