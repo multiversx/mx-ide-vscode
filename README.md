@@ -1,16 +1,12 @@
-# vscode-elrond-c README
+# vscode-elrond-ide README
 
-This is the README for your extension "vscode-elrond-c". After writing up a brief description, we recommend including the following sections.
+```
+code --install-extension vscode-elrond-ide-0.0.2.vsix
+```
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Todo.
 
 ## Requirements
 
@@ -24,36 +20,5 @@ This extension depends on:
 
 This extension contributes the following settings:
 
-* `elrond.clangPath`: `clang` tool.
-* `elrond.llcPath`: `llc` tool.
-* `elrond.wasmLdPath`: `wasm-ld` tool.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Development
-
-Restore dependencies in advance:
-
-```
-npm install
-```
+* `elrond.ideFolder`: base folder.
+* `elrond.restApi.port`: port of REST API (node-debug).

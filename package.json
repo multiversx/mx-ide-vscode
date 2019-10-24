@@ -2,7 +2,8 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.0.1",
+	"version": "0.0.2",
+	"publisher": "ElrondNetwork",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
@@ -40,7 +41,7 @@
 			]
 		},
 		"configuration": {
-			"title": "vscode-elrond-c",
+			"title": "vscode-elrond-ide",
 			"properties": {
 				"elrond.ideFolder": {
 					"type": "string",
@@ -67,16 +68,16 @@
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.38.0",
-		"glob": "^7.1.4",
+		"@types/request": "^2.48.3",
+		"@types/underscore": "^1.9.3",
 		"mocha": "^6.1.4",
 		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
 		"vscode-test": "^1.2.0"
 	},
 	"dependencies": {
-		"@types/request": "^2.48.3",
-		"@types/underscore": "^1.9.3",
 		"request": "^2.88.0",
-		"underscore": "^1.9.1"
+		"underscore": "^1.9.1",
+		"glob": "^7.1.4"
 	}
 }
