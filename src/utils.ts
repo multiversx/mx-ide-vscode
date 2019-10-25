@@ -273,6 +273,8 @@ export class RestFacade {
         let contentLength = Number.MAX_SAFE_INTEGER;
         let downloaded = 0;
         let progress = 0;
+        let percentage = 0;
+        let previousPercentage = -1;
 
         request.get(url)
             .on("response", function (response) {
@@ -281,13 +283,20 @@ export class RestFacade {
             .on("data", function (chunk) {
                 downloaded += chunk.length;
                 progress = downloaded / contentLength;
-                let percentage = Math.round(progress * 100);
-                eventBus.emit("download", {
-                    url: url,
-                    file: destination,
-                    progress: progress,
-                    percentage: percentage
-                });
+                percentage = Math.round(progress * 100);
+
+                if (percentage != previousPercentage) {
+                    eventBus.emit("download", {
+                        url: url,
+                        file: destination,
+                        progress: progress,
+                        percentage: percentage,
+                        downloaded: downloaded,
+                        length: contentLength
+                    });
+                }
+
+                previousPercentage = percentage;
             })
             .on("error", function (error) {
                 console.error(error);
