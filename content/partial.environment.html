@@ -34,11 +34,13 @@
         <div class="col-sm-12">
             <div class="downloads-progress"></div>
             <script id="TemplateDownloadsProgress" type="text/template">
-                <table class="table table-hover">
+                <h4>Downloads</h4>
+                <table class="table table-hover table-stripped">
                     <% _.each(downloads, function(value, key) { %>
                         <tr>
                             <td><%= value.percentage %> %</td>
-                            <td><%= key %></td>
+                            <td><%= value.url %></td>
+                            <td><%= value.file %></td>
                         </tr>
                     <% }) %>
                 </table>
