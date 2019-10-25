@@ -10,6 +10,7 @@ import { Builder } from './builder';
 
 export class MyEnvironment {
     static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
+    static readonly DebugNodeModuleToBuild: string = "elrond-go-node-debug-master/cmd/debugWithRestApi";
 
     static async installBuildTools(): Promise<any> {
         let toolsFolder = Builder.getToolsFolder();
@@ -90,11 +91,46 @@ export class MyEnvironment {
             destination: archivePath
         });
 
-        let folder = RestDebugger.getFolderPath();
-        FsFacade.createFolderIfNotExists(folder);
-        await FsFacade.unzip(archivePath, folder);
-
         Presenter.showInfo("node-debug downloaded.");
+
+        let goWorkspace = MyEnvironment.getGoWorkspaceFolder();
+        let goFolder = MyEnvironment.getGoFolder();
+        let goFolderBin = path.join(goFolder, "bin");
+        let goFolderTools = path.join(goFolder, "pkg", "tool", "linux_amd64");
+        FsFacade.createFolderIfNotExists(goWorkspace);
+        await FsFacade.unzip(archivePath, goWorkspace);
+
+        let moduleToBuild = path.join(goWorkspace, MyEnvironment.DebugNodeModuleToBuild);
+        let currentPath = process.env["PATH"];
+        let PATH = `${goFolderBin}:${goFolderTools}:${currentPath}`;
+        let GOPATH = goWorkspace;
+        let GOCACHE = path.join(idePath, "go-cache");
+        FsFacade.createFolderIfNotExists(GOCACHE);
+
+        await ProcessFacade.execute({
+            program: "go",
+            args: ["env"],
+            environment: {
+                PATH: PATH,
+                GOPATH: GOPATH,
+                GOCACHE: GOCACHE,
+                //CC: "cgo"
+            }
+        });
+        
+        await ProcessFacade.execute({
+            program: "go",
+            args: ["build", "."],
+            workingDirectory: moduleToBuild,
+            environment: {
+                PATH: PATH,
+                GOPATH: GOPATH,
+                GOCACHE: GOCACHE,
+                //CC: "cgo"
+            }
+        });
+
+        Presenter.showInfo("node-debug built.");
     }
 
     static async installGo(): Promise<any> {

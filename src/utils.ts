@@ -40,10 +40,12 @@ export class ProcessFacade {
         let programName = FsFacade.getFilename(program);
         let workingDirectory = options.workingDirectory;
         let args = options.args;
+        let environment = options.environment;
         let eventTag = options.eventTag;
 
         let spawnOptions: child_process.SpawnOptions = {
-            cwd: workingDirectory
+            cwd: workingDirectory,
+            env: environment
         };
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
@@ -195,7 +197,7 @@ export class FsFacade {
     public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
         return ProcessFacade.execute({
             program: "unzip",
-            args: [archivePath, "-d", destinationFolder]
+            args: ["-o", archivePath, "-d", destinationFolder]
         });
     }
 
