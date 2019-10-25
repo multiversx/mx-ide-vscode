@@ -15,12 +15,12 @@ export class MyEnvironment {
         let toolsFolder = Builder.getToolsFolder();
         FsFacade.createFolderIfNotExists(toolsFolder);
 
-        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm`
-        let llvmLicenseUrl = `${urlRoot}/LLVM_LICENSE.TXT`;
-        let clangBinUrl = `${urlRoot}/clang-9`;
-        let llcBinUrl = `${urlRoot}/llc`;
-        let wasmLdBinUrl = `${urlRoot}/wasm-ld`;
-        let lldBinUrl = `${urlRoot}/lld`;
+        let downloadUrl = MyEnvironment.getLlvmDownloadUrl();
+        let llvmLicenseUrl = `${downloadUrl}/LLVM_LICENSE.TXT`;
+        let clangBinUrl = `${downloadUrl}/clang-9`;
+        let llcBinUrl = `${downloadUrl}/llc`;
+        let wasmLdBinUrl = `${downloadUrl}/wasm-ld`;
+        let lldBinUrl = `${downloadUrl}/lld`;
 
         let llvmLicensePath = path.join(toolsFolder, "LLVM_LICENSE.TXT");
         let clangBinPath = path.join(toolsFolder, "clang-9");
@@ -65,6 +65,20 @@ export class MyEnvironment {
         FsFacade.markAsExecutable(llcBinPath);
         FsFacade.markAsExecutable(wasmLdBinPath);
         FsFacade.markAsExecutable(lldBinPath);
+    }
+
+    static getLlvmDownloadUrl() {
+        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm`;
+        let urlLinux: string = `${urlRoot}/linux`;
+        let urlMacOS: string = `${urlRoot}/macos`;
+
+        let platform = os.platform();
+
+        if (platform == "darwin") {
+            return urlMacOS;
+        }
+
+        return urlLinux;
     }
 
     static async installDebugNode(): Promise<any> {
