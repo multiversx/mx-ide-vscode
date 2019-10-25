@@ -116,7 +116,7 @@ export class MainView {
 
         this.panel = vscode.window.createWebviewPanel(
             "mainView",
-            "Smart Contract Debugger",
+            "Elrond IDE",
             undefined,
             webViewOptions
         );
