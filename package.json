@@ -45,7 +45,7 @@
 			"properties": {
 				"elrond.downloadMirror": {
 					"type": "string",
-					"default": "http://localhost/ElrondIDE",
+					"default": "https://workshop.elrond.com/ElrondIDE",
 					"description": "Download mirror for Elrond IDE tools."
 				},
 				"elrond.ideFolder": {

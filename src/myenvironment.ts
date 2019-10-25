@@ -16,7 +16,7 @@ export class MyEnvironment {
         let toolsFolder = Builder.getToolsFolder();
         FsFacade.createFolderIfNotExists(toolsFolder);
 
-        let downloadUrl = MyEnvironment.getLlvmDownloadUrl();
+        let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}/bin`;
         let llvmLicenseUrl = `${downloadUrl}/LLVM_LICENSE.TXT`;
         let clangBinUrl = `${downloadUrl}/clang-9`;
         let llcBinUrl = `${downloadUrl}/llc`;
