@@ -200,9 +200,10 @@ export class FsFacade {
     }
 
     public static untar(archivePath: string, destinationFolder: string): Promise<any> {
+        console.log(`Untar ${archivePath} to ${destinationFolder}.`)
         return ProcessFacade.execute({
             program: "tar",
-            args: ["-C", destinationFolder, "-xzf", ""]
+            args: ["-C", destinationFolder, "-xzf", archivePath]
         });
     }
 

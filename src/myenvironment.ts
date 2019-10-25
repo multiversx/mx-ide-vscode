@@ -106,6 +106,18 @@ export class MyEnvironment {
             url: url,
             destination: goArchivePath
         });
+
+        await FsFacade.untar(goArchivePath, ideFolder);
+    }
+
+    static getGoFolder(): string {
+        let ideFolder = MySettings.getIdeFolder();
+        return path.join(ideFolder, "go");
+    }
+
+    static getGoWorkspaceFolder(): string {
+        let ideFolder = MySettings.getIdeFolder();
+        return path.join(ideFolder, "go-workspace");
     }
 
     static getGoDownloadUrl(): string {
