@@ -7,6 +7,7 @@ var EnvironmentView = Backbone.View.extend({
     },
 
     initialize: function () {
+        this.downloadsProgress = {};
         this.listenTo(this.model, "change", this.onModelChange);
         this.listenTo(this.model, "change:downloading", this.onDownloadChange);
         this.doRefresh();
@@ -18,9 +19,9 @@ var EnvironmentView = Backbone.View.extend({
 
     onDownloadChange: function() {
         var downloading = this.model.get("downloading");
-
-        this.$el.find(".downloading-url").html(downloading.url);
-        this.$el.find(".downloading-progress").html(`${downloading.percentage} %`);
+        var url = downloading.url;
+        this.downloadsProgress[url] = downloading;
+        this.renderDownloadProgress();
     },
 
     onClickRefresh: function () {
@@ -29,6 +30,12 @@ var EnvironmentView = Backbone.View.extend({
 
     doRefresh() {
         app.talkToVscode("environment-refresh");
+    },
+
+    renderDownloadProgress: function() {
+        var template = app.underscoreTemplates["TemplateDownloadsProgress"];
+        var html = template({ downloads: this.downloadsProgress });
+        this.$el.find(".downloads-progress").html(html);
     },
 
     onClickInstallBuildTools: function () {
