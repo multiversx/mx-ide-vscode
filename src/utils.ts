@@ -220,6 +220,10 @@ export class FsFacade {
             fs.mkdirSync(folderPath);
         }
     }
+
+    public static copyFile(source: string, destination: string) {
+        fs.copyFileSync(source, destination);
+    }
 }
 
 export class RestFacade {

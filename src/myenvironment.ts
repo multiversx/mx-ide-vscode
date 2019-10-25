@@ -101,6 +101,7 @@ export class MyEnvironment {
         await FsFacade.unzip(archivePath, goWorkspace);
 
         let moduleToBuild = path.join(goWorkspace, MyEnvironment.DebugNodeModuleToBuild);
+        let builtFile = path.join(moduleToBuild, "debugWithRestApi");
         let currentPath = process.env["PATH"];
         let PATH = `${goFolderBin}:${goFolderTools}:${currentPath}`;
         let GOPATH = goWorkspace;
@@ -117,7 +118,7 @@ export class MyEnvironment {
                 //CC: "cgo"
             }
         });
-        
+
         await ProcessFacade.execute({
             program: "go",
             args: ["build", "."],
@@ -131,6 +132,14 @@ export class MyEnvironment {
         });
 
         Presenter.showInfo("node-debug built.");
+
+        let moduleConfigFolder = path.join(moduleToBuild, "config");
+        let nodeDebugFolder = RestDebugger.getFolderPath();
+        let nodeDebugConfigFolder = path.join(nodeDebugFolder, "config");
+        FsFacade.createFolderIfNotExists(nodeDebugConfigFolder);
+        FsFacade.copyFile(builtFile, RestDebugger.getToolPath());
+        FsFacade.copyFile(path.join(moduleConfigFolder, "config.toml"), path.join(nodeDebugConfigFolder, "config.toml"));
+        FsFacade.copyFile(path.join(moduleConfigFolder, "genesis.json"), path.join(nodeDebugConfigFolder, "genesis.json"));
     }
 
     static async installGo(): Promise<any> {
