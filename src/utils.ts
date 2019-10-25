@@ -308,6 +308,15 @@ export class RestFacade {
                     writeStream.close();
                     resolve();
                 }, waitBeforeCloseStream);
+
+                eventBus.emit("download", {
+                    url: url,
+                    file: destination,
+                    progress: 1.0,
+                    percentage: 100,
+                    downloaded: downloaded,
+                    length: contentLength
+                });
             })
             .pipe(writeStream);
 

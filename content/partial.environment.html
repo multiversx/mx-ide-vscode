@@ -41,6 +41,12 @@
                             <td><%= value.percentage %> %</td>
                             <td><%= value.url %></td>
                             <td><%= value.file %></td>
+                            <td>
+                                <%= Math.round(value.downloaded / (1024 * 1024)) %>
+                                /
+                                <%= Math.round(value.length / (1024 * 1024)) %>
+                                MB
+                            </td>
                         </tr>
                     <% }) %>
                 </table>
