@@ -56,6 +56,26 @@ export class SmartContract {
             options.scAddress = this.Address;
         }
 
+        // Prepare transaction data.
+        let transactionData = options.functionName;
+
+        _.each(options.functionArgs, function(item: any) {
+            if (item === "") {
+                return;
+            }
+
+            transactionData += "@";
+
+            if (isNaN(item)) {
+                var encoded = item; //Buffer.from(item.toString(), "utf8").toString("hex");
+                transactionData += encoded;
+            } else {
+                transactionData += item.toString();
+            }
+        });
+
+        options.transactionData = transactionData;
+
         try {
             const vmOutput = await RestDebugger.runSmartContract(options);
             self.LatestRun.VMOutput = vmOutput;
@@ -114,6 +134,7 @@ class SmartContractRun {
 
     constructor() {
         this.Options = {
+            senderAddress: "",
             functionName: "nothing",
             functionArgs: [],
             value: 42,

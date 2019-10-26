@@ -53,8 +53,7 @@ export class RestDebugger {
                 "PrivateKey": options.privateKey,
                 "TestnetNodeEndpoint": options.testnetNodeEndpoint,
                 "SndAddress": options.senderAddress,
-                "Code": options.code,
-                "Args": []
+                "Code": options.code
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
@@ -76,8 +75,7 @@ export class RestDebugger {
                 "Value": runOptions.value.toString(),
                 "GasLimit": runOptions.gasLimit,
                 "GasPrice": runOptions.gasPrice,
-                "FuncName": runOptions.functionName,
-                "Args": runOptions.functionArgs
+                "TxData": runOptions.transactionData
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
