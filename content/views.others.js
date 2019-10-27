@@ -1,18 +1,18 @@
-var ManageDebugServerView = Backbone.View.extend({
+var ManageNodeDebugView = Backbone.View.extend({
     events: {
-        "click .btn-start-debug-server": "onClickStartDebugServer",
-        "click .btn-stop-debug-server": "onClickStopDebugServer",
+        "click .btn-start-node-debug": "onClickStartNodeDebug",
+        "click .btn-stop-node-debug": "onClickStopNodeDebug",
     },
 
     initialize: function () {
     },
 
-    onClickStartDebugServer: function () {
-        app.talkToVscode("startDebugServer");
+    onClickStartNodeDebug: function () {
+        app.talkToVscode("startNodeDebug");
     },
 
-    onClickStopDebugServer: function () {
-        app.talkToVscode("stopDebugServer");
+    onClickStopNodeDebug: function () {
+        app.talkToVscode("stopNodeDebug");
     }
 });
 

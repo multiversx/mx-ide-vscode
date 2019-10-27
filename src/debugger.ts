@@ -7,13 +7,13 @@ import { Feedback } from "./feedback";
 
 export class RestDebugger {
 
-    public static startServer() {
-        RestDebugger.stopServer()
+    public static start() {
+        RestDebugger.stop()
             .catch(() => { })
-            .finally(() => RestDebugger.performStartDebugServer());
+            .finally(() => RestDebugger.performStart());
     }
 
-    public static stopServer(): Promise<any> {
+    public static stop(): Promise<any> {
         let port: any = MySettings.getRestDebuggerPort();
 
         return ProcessFacade.execute({
@@ -22,7 +22,7 @@ export class RestDebugger {
         });
     }
 
-    private static performStartDebugServer() {
+    private static performStart() {
         let toolPathFolder = RestDebugger.getFolderPath();
         let toolPath = RestDebugger.getToolPath();
         let port: any = MySettings.getRestDebuggerPort();
@@ -37,11 +37,11 @@ export class RestDebugger {
         })
             .catch(() => { })
             .finally(() => {
-                Feedback.info("Debug server stopped.");
+                Feedback.info("node-debug stopped.");
             });
 
         eventBus.emit("debugger:started");
-        Feedback.info("Debug server started.");
+        Feedback.info("node-debug started.");
     }
 
     public static deploySmartContract(options: any): Promise<any> {
@@ -58,7 +58,7 @@ export class RestDebugger {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
+            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped? ${e.error}`);
         });
     }
 
@@ -80,7 +80,7 @@ export class RestDebugger {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Perhaps debug server is stopped? ${e.error}`);
+            Feedback.error(`Cannot run. Perhaps node-debug is stopped? ${e.error}`);
         });
 
         let vmOutput: any = {};

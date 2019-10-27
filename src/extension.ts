@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
-	registerCustomCommand(context, 'extension.startDebugServer', startDebugServer);
+	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
 
 	Feedback.debug(`Node version: ${process.version}.`);
 }
@@ -31,6 +31,6 @@ function buildCurrentFile() {
 	Builder.buildFile(filePath);
 }
 
-function startDebugServer() {
-	RestDebugger.startServer();
+function startNodeDebug() {
+	RestDebugger.start();
 }

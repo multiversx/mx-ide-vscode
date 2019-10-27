@@ -13,7 +13,7 @@
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
-		"onCommand:extension.startDebugServer"
+		"onCommand:extension.startNodeDebug"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -27,8 +27,8 @@
 				"title": "Smart Contracts - build current file"
 			},
 			{
-				"command": "extension.startDebugServer",
-				"title": "Smart Contracts - start (restart) debug server"
+				"command": "extension.startNodeDebug",
+				"title": "Smart Contracts - start (restart) node debug"
 			}
 		],
 		"menus": {
@@ -56,7 +56,7 @@
 				"elrond.restApi.port": {
 					"type": "number",
 					"default": "8080",
-					"description": "Debug server port."
+					"description": "API port of node-debug."
 				}
 			}
 		}

@@ -20,8 +20,8 @@ function main() {
         app.events.trigger(`extension-message:${event.data.what}`, event.data.payload || {});
     });
 
-    app.manageDebugServerView = new ManageDebugServerView({
-        el: ".manage-debug-server-view"
+    app.manageNodeDebugView = new ManageNodeDebugView({
+        el: ".manage-node-debug-view"
     });
 
     app.configurationView = new ConfigurationView({

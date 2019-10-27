@@ -41,13 +41,13 @@ export class MainView {
     private listenToWebviewEvents() {
         let self = this;
 
-        eventBus.on("view-message:startDebugServer", function () {
-            RestDebugger.startServer();
+        eventBus.on("view-message:startNodeDebug", function () {
+            RestDebugger.start();
             self.doRefreshSmartContracts();
         });
 
-        eventBus.on("view-message:stopDebugServer", function () {
-            RestDebugger.stopServer().catch(() => {});
+        eventBus.on("view-message:stopNodeDebug", function () {
+            RestDebugger.stop().catch(() => {});
         });
 
         eventBus.on("view-message:refreshSmartContracts", function () {
