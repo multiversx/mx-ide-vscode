@@ -30,15 +30,15 @@ export class ProcessFacade {
             env: environment
         };
 
-        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`);
+        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`, ["default", "exec"]);
 
         if (workingDirectory) {
-            Feedback.debug(`Working directory: ${workingDirectory}`);
+            Feedback.debug(`Working directory: ${workingDirectory}`, ["default", "exec"]);
         }
 
         if (environment) {
-            Feedback.debug(`Environment variables:`);
-            Feedback.debug(JSON.stringify(environment, null, 4));
+            Feedback.debug(`Environment variables:`, ["default", "exec"]);
+            Feedback.debug(JSON.stringify(environment, null, 4), ["default", "exec"]);
         }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
@@ -51,7 +51,7 @@ export class ProcessFacade {
         }
 
         subprocess.stdout.on("data", function (data) {
-            console.log(`[${programName}] says: ${data}`);
+            Feedback.debug(`[${programName}] says: ${data}`, ["exec"]);
 
             if (options.onOutput) {
                 options.onOutput(data);
@@ -63,7 +63,7 @@ export class ProcessFacade {
         });
 
         subprocess.stderr.on("data", function (data) {
-            console.error(`[${programName}] says: ${data}`);
+            Feedback.debug(`[${programName}] says (stderr): ${data}`, ["exec"]);
 
             if (options.onError) {
                 options.onError(data);
@@ -75,8 +75,7 @@ export class ProcessFacade {
         });
 
         subprocess.on("close", function (code) {
-            console.log(`[${programName}] exits: ${code}`);
-            Feedback.debug(`[${programName}] exists, exit code = ${code}.`);
+            Feedback.debug(`[${programName}] exists, exit code = ${code}.`, ["default", "exec"]);
 
             if (options.onClose) {
                 options.onClose(code);
@@ -275,15 +274,26 @@ export class RestFacade {
             eventBus.emit(`${eventTag}:request`, { url: url, data: data });
         }
 
+        Feedback.debug(`http post, ${url}`, ["default", "http"]);
+        Feedback.debug(JSON.stringify(options, null, 4), ["http"]);
+
         request.post(url, requestOptions, function (error: any, response: any, body: any) {
             let statusCode = response ? response.statusCode : null;
             let isErrorneous = error || statusCode == 500;
 
             if (isErrorneous) {
                 eventBus.emit(`${eventTag}:error`, { url: url, data: error });
+                Feedback.error(`http error, status=${statusCode}, error=${error.toString()}`, ["default", "http"]);
                 reject({ error: error, status: statusCode });
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
+                Feedback.debug(`http post, status=${statusCode}, response:`, ["http"]);
+                Feedback.debug(JSON.stringify(body, null, 4), ["http"]);
+
+                if (statusCode != 200) {
+                    Feedback.error("Errorneous HTTP response, please check.");
+                }
+
                 resolve(body);
             }
         });
