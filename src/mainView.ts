@@ -111,7 +111,8 @@ export class MainView {
 
     private initializePanel() {
         let webViewOptions: any = {
-            enableScripts: true
+            enableScripts: true,
+            retainContextWhenHidden: true
         };
 
         this.panel = vscode.window.createWebviewPanel(
