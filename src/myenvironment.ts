@@ -13,8 +13,7 @@ export class MyEnvironment {
     static readonly DebugNodeModuleToBuild: string = "elrond-go-node-debug-master/cmd/debugWithRestApi";
 
     static async installBuildTools(): Promise<any> {
-        let toolsFolder = Builder.getToolsFolder();
-        FsFacade.createFolderIfNotExists(toolsFolder);
+        MyEnvironment.ensureFolderStructure();
 
         let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}/bin`;
         let llvmLicenseUrl = `${downloadUrl}/LLVM_LICENSE.TXT`;
@@ -23,6 +22,7 @@ export class MyEnvironment {
         let wasmLdBinUrl = `${downloadUrl}/wasm-ld`;
         let lldBinUrl = `${downloadUrl}/lld`;
 
+        let toolsFolder = Builder.getToolsFolder();
         let llvmLicensePath = path.join(toolsFolder, "LLVM_LICENSE.TXT");
         let clangBinPath = path.join(toolsFolder, "clang-9");
         let llcBinPath = path.join(toolsFolder, "llc");
@@ -86,6 +86,8 @@ export class MyEnvironment {
     }
 
     static async installDebugNode(): Promise<any> {
+        MyEnvironment.ensureFolderStructure();
+
         let idePath = MySettings.getIdeFolder();
         let archivePath = path.join(idePath, "node-debug.zip");
 
@@ -100,7 +102,6 @@ export class MyEnvironment {
         let goFolder = MyEnvironment.getGoFolder();
         let goFolderBin = path.join(goFolder, "bin");
         let goFolderTools = path.join(goFolder, "pkg", "tool", "linux_amd64");
-        FsFacade.createFolderIfNotExists(goWorkspace);
         await FsFacade.unzip(archivePath, goWorkspace);
 
         let moduleToBuild = path.join(goWorkspace, MyEnvironment.DebugNodeModuleToBuild);
@@ -109,8 +110,7 @@ export class MyEnvironment {
         let PATH = `${goFolderBin}:${goFolderTools}:${currentPath}`;
         let GOPATH = goWorkspace;
         let GOCACHE = path.join(idePath, "go-cache");
-        FsFacade.createFolderIfNotExists(GOCACHE);
-
+        
         await ProcessFacade.execute({
             program: "go",
             args: ["env"],
@@ -140,14 +140,14 @@ export class MyEnvironment {
         let nodeDebugFolder = RestDebugger.getFolderPath();
         let nodeDebugConfigFolder = path.join(nodeDebugFolder, "config");
 
-        FsFacade.createFolderIfNotExists(nodeDebugFolder);
-        FsFacade.createFolderIfNotExists(nodeDebugConfigFolder);
         FsFacade.copyFile(builtFile, RestDebugger.getToolPath());
         FsFacade.copyFile(path.join(moduleConfigFolder, "config.toml"), path.join(nodeDebugConfigFolder, "config.toml"));
         FsFacade.copyFile(path.join(moduleConfigFolder, "genesis.json"), path.join(nodeDebugConfigFolder, "genesis.json"));
     }
 
     static async installGo(): Promise<any> {
+        MyEnvironment.ensureFolderStructure();
+
         let ideFolder = MySettings.getIdeFolder();
         let goArchivePath = path.join(ideFolder, "go-environment.tar.gz");
         let url = MyEnvironment.getGoDownloadUrl();
@@ -158,6 +158,7 @@ export class MyEnvironment {
         });
 
         await FsFacade.untar(goArchivePath, ideFolder);
+        Feedback.info("go is now ready.");
     }
 
     static getGoFolder(): string {
@@ -189,6 +190,23 @@ export class MyEnvironment {
         snapshot.IdeFolder = MySettings.getIdeFolder();
         snapshot.DownloadMirror = MySettings.getDownloadMirrorUrl();
         return snapshot;
+    }
+
+    static ensureFolderStructure() {
+        let ide = MySettings.getIdeFolder();
+        let llvmTools = Builder.getToolsFolder();
+        let goWorkspace = MyEnvironment.getGoWorkspaceFolder();
+        let goCache = path.join(ide, "go-cache");
+        let nodeDebug = RestDebugger.getFolderPath();
+        let nodeDebugConfig = path.join(nodeDebug, "config");
+
+        FsFacade.mkDirByPathSync(ide);
+        
+        FsFacade.createFolderIfNotExists(llvmTools);
+        FsFacade.createFolderIfNotExists(goWorkspace);
+        FsFacade.createFolderIfNotExists(goCache);
+        FsFacade.createFolderIfNotExists(nodeDebug);
+        FsFacade.createFolderIfNotExists(nodeDebugConfig);
     }
 }
 
