@@ -3,6 +3,7 @@ import { RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Presenter } from './presenter';
 import { Root } from './root';
+import { Feedback } from './feedback';
 
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
@@ -10,6 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startDebugServer', startDebugServer);
+
+	Feedback.debug(`Node version: ${process.version}.`);
 }
 
 export function deactivate() { }
