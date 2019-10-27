@@ -27,6 +27,17 @@ This extension depends on:
 
 All these dependencies are downloaded and / or installed by the extension itself, so you do not have to worry much about setting up the development environment.
 
+In addition, the extension requires the following tools, which are not installed automatically:
+
+* `GCC` - required to build **node-debug** which depends on the Arwen Virtual Machine, whose compilation requires both a **go** and a **C** compiler.
+* `untar` and `unzip` - you most probably already have them installed on your machine.
+
+In order to install GCC (on Ubuntu):
+
+```
+sudo apt-get install build-essential
+```
+
 ## Extension Settings
 
 This extension contributes the following settings:
