@@ -3,10 +3,10 @@ import os = require('os');
 import path = require('path');
 import { MySettings } from './settings';
 import { ProcessFacade, FsFacade, RestFacade } from "./utils";
-import { Presenter } from './presenter';
 import request = require('request');
 import { RestDebugger } from './debugger';
 import { Builder } from './builder';
+import { Feedback } from './feedback';
 
 export class MyEnvironment {
     static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
@@ -34,21 +34,21 @@ export class MyEnvironment {
             destination: llvmLicensePath
         });
 
-        Presenter.showInfo("Downloaded license file.");
+        Feedback.debug("Downloaded license file.");
 
         await RestFacade.download({
             url: clangBinUrl,
             destination: clangBinPath
         });
 
-        Presenter.showInfo("Downloaded clang.");
+        Feedback.debug("Downloaded clang.");
 
         await RestFacade.download({
             url: llcBinUrl,
             destination: llcBinPath
         });
 
-        Presenter.showInfo("Downloaded llc.");
+        Feedback.debug("Downloaded llc.");
 
         await RestFacade.download({
             url: wasmLdBinUrl,
@@ -60,12 +60,15 @@ export class MyEnvironment {
             destination: lldBinPath
         });
 
-        Presenter.showInfo("Downloaded wasm-ld.");
+        Feedback.debug("Downloaded wasm-ld.");
 
+        Feedback.debug("clang, llc and wasm-ld will be marked as executable (+x).");
         FsFacade.markAsExecutable(clangBinPath);
         FsFacade.markAsExecutable(llcBinPath);
         FsFacade.markAsExecutable(wasmLdBinPath);
         FsFacade.markAsExecutable(lldBinPath);
+
+        Feedback.info("LLVM tools are ready to use.");
     }
 
     static getLlvmDownloadUrl() {
@@ -91,7 +94,7 @@ export class MyEnvironment {
             destination: archivePath
         });
 
-        Presenter.showInfo("node-debug downloaded.");
+        Feedback.debug("node-debug downloaded.");
 
         let goWorkspace = MyEnvironment.getGoWorkspaceFolder();
         let goFolder = MyEnvironment.getGoFolder();
@@ -131,11 +134,13 @@ export class MyEnvironment {
             }
         });
 
-        Presenter.showInfo("node-debug built.");
+        Feedback.info("node-debug built.");
 
         let moduleConfigFolder = path.join(moduleToBuild, "config");
         let nodeDebugFolder = RestDebugger.getFolderPath();
         let nodeDebugConfigFolder = path.join(nodeDebugFolder, "config");
+
+        FsFacade.createFolderIfNotExists(nodeDebugFolder);
         FsFacade.createFolderIfNotExists(nodeDebugConfigFolder);
         FsFacade.copyFile(builtFile, RestDebugger.getToolPath());
         FsFacade.copyFile(path.join(moduleConfigFolder, "config.toml"), path.join(nodeDebugConfigFolder, "config.toml"));

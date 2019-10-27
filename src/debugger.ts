@@ -3,6 +3,7 @@ import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
 import eventBus from "./eventBus";
 import path = require('path');
+import { Feedback } from "./feedback";
 
 export class RestDebugger {
 
@@ -36,11 +37,11 @@ export class RestDebugger {
         })
             .catch(() => { })
             .finally(() => {
-                Presenter.showInfo("Debug server stopped.");
+                Feedback.info("Debug server stopped.");
             });
 
         eventBus.emit("debugger:started");
-        Presenter.showInfo("Debug server started.");
+        Feedback.info("Debug server started.");
     }
 
     public static deploySmartContract(options: any): Promise<any> {
@@ -57,7 +58,7 @@ export class RestDebugger {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Presenter.showError(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
+            Feedback.error(`Cannot deploy. Perhaps debug server is stopped? ${e.error}`);
         });
     }
 
@@ -79,7 +80,7 @@ export class RestDebugger {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Presenter.showError(`Cannot run. Perhaps debug server is stopped? ${e.error}`);
+            Feedback.error(`Cannot run. Perhaps debug server is stopped? ${e.error}`);
         });
 
         let vmOutput: any = {};

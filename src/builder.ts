@@ -3,6 +3,7 @@ import { MySettings } from './settings';
 import { Syms } from "./syms";
 import { ProcessFacade, FsFacade } from "./utils";
 import { Presenter } from './presenter';
+import { Feedback } from './feedback';
 
 export class Builder {
 
@@ -47,7 +48,7 @@ export class Builder {
         await doLlc();
         await doWasm();
         
-        Presenter.showInfo("Build done.");
+        Feedback.info("Build done.");
     }
 
     public static getToolsFolder() {

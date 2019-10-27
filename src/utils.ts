@@ -8,27 +8,9 @@ import glob = require('glob');
 import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
+import { Feedback } from './feedback';
 
 export class ProcessFacade {
-    public static executeSync(command: string, silentOnError: boolean = false) {
-        console.log(`ProcessFacade.execute():\n${command}`);
-
-        var output;
-
-        try {
-            output = child_process.execSync(command).toString()
-        } catch (error) {
-            if (silentOnError) {
-                output = error.toString();
-            } else {
-                throw error;
-            }
-        }
-
-        console.log("ProcessFacade.execute(): done.");
-        return output;
-    }
-
     public static execute(options: any): Promise<any> {
         var resolve: any, reject: any;
         let promise = new Promise((_resolve, _reject) => {
@@ -47,6 +29,17 @@ export class ProcessFacade {
             cwd: workingDirectory,
             env: environment
         };
+
+        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`);
+
+        if (workingDirectory) {
+            Feedback.debug(`Working directory: ${workingDirectory}`);
+        }
+
+        if (environment) {
+            Feedback.debug(`Environment variables:`);
+            Feedback.debug(JSON.stringify(environment, null, 4));
+        }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
 
@@ -83,6 +76,7 @@ export class ProcessFacade {
 
         subprocess.on("close", function (code) {
             console.log(`[${programName}] exits: ${code}`);
+            Feedback.debug(`[${programName}] exists, exit code = ${code}.`);
 
             if (options.onClose) {
                 options.onClose(code);
@@ -191,10 +185,13 @@ export class FsFacade {
     }
 
     public static markAsExecutable(filePath: string) {
+        Feedback.debug(`markAsExecutable(${filePath})`)
         fs.chmodSync(filePath, "755");
     }
 
     public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
+        Feedback.debug(`unzip ${archivePath} to ${destinationFolder}.`)
+
         return ProcessFacade.execute({
             program: "unzip",
             args: ["-o", archivePath, "-d", destinationFolder]
@@ -202,7 +199,8 @@ export class FsFacade {
     }
 
     public static untar(archivePath: string, destinationFolder: string): Promise<any> {
-        console.log(`Untar ${archivePath} to ${destinationFolder}.`)
+        Feedback.debug(`untar ${archivePath} to ${destinationFolder}.`)
+
         return ProcessFacade.execute({
             program: "tar",
             args: ["-C", destinationFolder, "-xzf", archivePath]
@@ -217,11 +215,13 @@ export class FsFacade {
         }
 
         if (!fs.existsSync(folderPath)) {
+            Feedback.debug(`Creating folder: ${folderPath}`);
             fs.mkdirSync(folderPath);
         }
     }
 
     public static copyFile(source: string, destination: string) {
+        Feedback.debug(`copy: ${source} TO ${destination}`);
         fs.copyFileSync(source, destination);
     }
 }
@@ -274,8 +274,8 @@ export class RestFacade {
         let destination = options.destination;
         let writeStream: fs.WriteStream = fs.createWriteStream(destination);
 
-        console.log(`Downloading: ${url}`);
-        console.log(`Destination: ${destination}`);
+        Feedback.debug(`Downloading: ${url}`);
+        Feedback.debug(`Destination: ${destination}`);
 
         let contentLength = Number.MAX_SAFE_INTEGER;
         let downloaded = 0;
@@ -313,6 +313,7 @@ export class RestFacade {
             .on("complete", function (response) {
                 setTimeout(function () {
                     writeStream.close();
+                    Feedback.debug(`Downloaded: ${destination}.`);
                     resolve();
                 }, waitBeforeCloseStream);
 
