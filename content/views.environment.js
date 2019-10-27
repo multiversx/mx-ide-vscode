@@ -14,7 +14,8 @@ var EnvironmentView = Backbone.View.extend({
     },
 
     onModelChange: function () {
-        this.$el.find("input[name='ToolsFolder']").val(this.model.get("ToolsFolder"));
+        this.$el.find(".configuration-ide-folder").text(this.model.get("IdeFolder"));
+        this.$el.find(".configuration-download-mirror").text(this.model.get("DownloadMirror"));
     },
 
     onDownloadChange: function() {

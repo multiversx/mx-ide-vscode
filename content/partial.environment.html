@@ -1,34 +1,55 @@
 <div class="environment-view">
     <div class="row">
-        <div class="col-sm-12">
-            <button class="btn btn-success btn-lg btn-refresh">Refresh environment settings</button>
-        </div>
-        <div class="col-sm-12">
-            <div class="form-group mt-3">
-                <fieldset>
-                    <label class="control-label">Tools folder</label>
-                    <input class="form-control" name="ToolsFolder" type="text" readonly="">
-                </fieldset>
-            </div>
+        <div class="col-sm-12 mt-2">
+            <button class="btn btn-info btn-refresh">Refresh environment settings</button>
+            <p class="mt-2">
+                Tools and dependencies are downloaded to the configured folder, which is:
+                <div class="alert alert-secondary configuration-ide-folder"></div>
+            </p>
+
+            <p>
+                They are downloaded from a mirror created specifically for Elrond IDE, located at:
+                <div class="alert alert-secondary configuration-download-mirror"></div>
+            </p>
+
+            <p>
+                If you wish to change the configured folder or the download mirror, please review the extension's
+                settings.
+            </p>
         </div>
     </div>
 
-    <p>
-        In order to build the smart contract to WASM bytecode, you need to install
-        <a href="https://clang.llvm.org/">clang and llc</a>.
-    </p>
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                In order to build smart contracts to WASM bytecode, a subset of <a href="https://llvm.org/">LLVM</a>
+                is necessary. More specifically, <strong>clang</strong>, <strong>llc</strong> and
+                <strong>wasm-ld</strong>.
+            </p>
 
-    <p>
-        You also need to download the <strong>debug node</strong>.
-    </p>
+            <p>
+                Furthermore, <strong>a variant of the Elrond node</strong> is required for debugging smart contracts.
+                This variant, called <a href="https://github.com/ElrondNetwork/elrond-go-node-debug">node-debug</a>,
+                enables a HTTP endpoint which is then used by the Visual Studio Code extension
+                to deploy smart contracts and execute exported functions.
 
-    <p>
-        In order to <em>deploy</em> and <em>run</em> on a testnet, you also need to download and run an Elrond node.
-    </p>
+                The <strong>node-debug</strong> tool is built from source on your machine and this requires the
+                <strong>golang environment and tools</strong>. These are also downloaded automatically by the Elrond
+                IDE,
+                in the configured folder.
+            </p>
 
-    <button class="btn btn-lg btn-info btn-install-build-tools">Install clang and llc</button>
-    <button class="btn btn-lg btn-info btn-install-go">Install go environment</button>
-    <button class="btn btn-lg btn-info btn-install-debug-node">Install debug node</button>
+            <p>
+                Please note that in order to <em>deploy</em> and <em>run</em> on a testnet, you need to
+                <strong>separately</strong>
+                download and run an Elrond node.
+            </p>
+        </div>
+    </div>
+
+    <button class="btn btn-info btn-install-build-tools">Get clang and llc</button>
+    <button class="btn btn-info btn-install-go">Get go environment</button>
+    <button class="btn btn-info btn-install-debug-node">Install debug node</button>
 
     <div class="row mt-3">
         <div class="col-sm-12">

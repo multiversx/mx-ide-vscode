@@ -186,11 +186,13 @@ export class MyEnvironment {
 
     static getSnapshot(): EnvironmentSnapshot {
         let snapshot = new EnvironmentSnapshot();
-        snapshot.ToolsFolder = MySettings.getIdeFolder();
+        snapshot.IdeFolder = MySettings.getIdeFolder();
+        snapshot.DownloadMirror = MySettings.getDownloadMirrorUrl();
         return snapshot;
     }
 }
 
 export class EnvironmentSnapshot {
-    public ToolsFolder: string;
+    public IdeFolder: string;
+    public DownloadMirror: string;
 }
