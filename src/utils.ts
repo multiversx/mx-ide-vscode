@@ -9,7 +9,7 @@ import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
-import { MyExecError } from './errors';
+import { MyExecError, MyHttpError } from './errors';
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -350,25 +350,43 @@ export class RestFacade {
                 previousPercentage = percentage;
             })
             .on("error", function (error) {
-                console.error(error);
                 writeStream.close();
-                reject({ error: error });
+                reject(new MyHttpError({ Url: url, RequestError: error }));
             })
             .on("complete", function (response) {
-                setTimeout(function () {
-                    writeStream.close();
-                    Feedback.debug(`Downloaded: ${destination}.`);
-                    resolve();
-                }, waitBeforeCloseStream);
+                let statusCode = response.statusCode;
+                let statusMessage = response.statusMessage;
 
-                eventBus.emit("download", {
-                    url: url,
-                    file: destination,
-                    progress: 1.0,
-                    percentage: 100,
-                    downloaded: downloaded,
-                    length: contentLength
-                });
+                if (statusCode == 200) {
+                    setTimeout(function () {
+                        writeStream.close();
+                        Feedback.debug(`Downloaded: ${destination}.`);
+                        resolve();
+                    }, waitBeforeCloseStream);
+
+                    eventBus.emit("download", {
+                        url: url,
+                        file: destination,
+                        progress: 1.0,
+                        percentage: 100,
+                        downloaded: downloaded,
+                        length: contentLength
+                    });
+                } else {
+                    setTimeout(function () {
+                        writeStream.close();
+                        reject(new MyHttpError({ Url: url, Message: statusMessage, Code: statusCode.toString() }));
+                    }, waitBeforeCloseStream);
+
+                    eventBus.emit("download", {
+                        url: url,
+                        file: destination,
+                        progress: 0.0,
+                        percentage: 0,
+                        downloaded: 0,
+                        length: contentLength
+                    });
+                }
             })
             .pipe(writeStream);
 

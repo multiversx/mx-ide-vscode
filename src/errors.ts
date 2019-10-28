@@ -12,8 +12,41 @@ export class MyError {
     public getPretty(): string {
         return this.Message;
     }
+}
 
-    public static topLevelCatcher(error: any) {
+export class MyExecError extends MyError {
+    public Program: string;
+
+    public constructor(init?: Partial<MyExecError>) {
+        super();
+        Object.assign(this, init);
+    }
+
+    public getPretty(): string {
+        return `${this.Program}, code = ${this.Code}, ${this.Message}`;
+    }
+}
+
+export class MyHttpError extends MyError {
+    public Url: string;
+    public RequestError: Error;
+
+    public constructor(init?: Partial<MyHttpError>) {
+        super();
+        Object.assign(this, init);
+    }
+
+    public getPretty(): string {
+        let requestErrorPretty = this.RequestError ? this.RequestError.message : "";
+        return `${this.Url}, code = ${this.Code}, ${this.Message}, ${requestErrorPretty}`;
+    }
+}
+
+export class MySetupError extends MyError {
+}
+
+export class MyErrorCatcher {
+    public static topLevel(error: any) {
         let chain: MyError[] = [];
         chain.push(error);
 
@@ -32,25 +65,16 @@ export class MyError {
         });
 
         let message = messageBuilder.join("\n");
-        Feedback.error(message);
+        let channels = ["default"];
+
+        if (chain.some((item: any) => item instanceof MyExecError)) {
+            channels.push("exec");
+        }
+
+        if (chain.some((item: any) => item instanceof MyHttpError)) {
+            channels.push("http");
+        }
+
+        Feedback.error(message, channels);
     }
-}
-
-export class MyExecError extends MyError {
-    public Program: string;
-
-    public constructor(init?: Partial<MyExecError>) {
-        super();
-        Object.assign(this, init);
-    }
-
-    public getPretty(): string {
-        return `${this.Program}, code = ${this.Code}, ${this.Message}`;
-    }
-}
-
-export class MyHttpError extends MyError {
-}
-
-export class MySetupError extends MyError {
 }

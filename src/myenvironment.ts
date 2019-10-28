@@ -17,25 +17,16 @@ export class MyEnvironment {
         MyEnvironment.ensureFolderStructure();
 
         let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}/bin`;
-        let llvmLicenseUrl = `${downloadUrl}/LLVM_LICENSE.TXT`;
         let clangBinUrl = `${downloadUrl}/clang-9`;
         let llcBinUrl = `${downloadUrl}/llc`;
         let wasmLdBinUrl = `${downloadUrl}/wasm-ld`;
         let lldBinUrl = `${downloadUrl}/lld`;
 
         let toolsFolder = Builder.getToolsFolder();
-        let llvmLicensePath = path.join(toolsFolder, "LLVM_LICENSE.TXT");
         let clangBinPath = path.join(toolsFolder, "clang-9");
         let llcBinPath = path.join(toolsFolder, "llc");
         let wasmLdBinPath = path.join(toolsFolder, "wasm-ld");
         let lldBinPath = path.join(toolsFolder, "lld");
-
-        await RestFacade.download({
-            url: llvmLicenseUrl,
-            destination: llvmLicensePath
-        });
-
-        Feedback.debug("Downloaded license file.");
 
         await RestFacade.download({
             url: clangBinUrl,
