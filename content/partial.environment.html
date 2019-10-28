@@ -4,12 +4,12 @@
             <button class="btn btn-info btn-refresh">Refresh environment settings</button>
             <p class="mt-2">
                 Tools and dependencies are downloaded to the configured folder, which is:
-                <div class="alert alert-secondary configuration-ide-folder"></div>
+                <kbd class="configuration-ide-folder"></kbd>
             </p>
 
             <p>
                 They are downloaded from a mirror created specifically for Elrond IDE, located at:
-                <div class="alert alert-secondary configuration-download-mirror"></div>
+                <kbd class="configuration-download-mirror"></kbd>
             </p>
 
             <p>
@@ -44,6 +44,29 @@
                 <strong>separately</strong>
                 download and run an Elrond node.
             </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div>
+                Upon setting up the environment, the configured IDE folder, <kbd class="configuration-ide-folder"></kbd>,
+                should have the following content:
+
+                <pre>
+    .
+    ├── node-debug
+    │   ├── config
+    │   │   ├── config.toml
+    │   │   └── genesis.json
+    │   └── debugWithRestApi
+    └── vendor-llvm
+        ├── clang-9
+        ├── llc
+        ├── lld
+        └── wasm-ld
+                </pre>
+            </div>
         </div>
     </div>
 
