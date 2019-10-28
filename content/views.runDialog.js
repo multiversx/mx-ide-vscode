@@ -70,7 +70,7 @@ var RunDialog = Backbone.View.extend({
         var gasLimit = this.getGasLimit();
         var gasPrice = this.getGasPrice();
 
-        this.model.run({
+        var runOptions = new SmartContractRunOptions({
             testnetNodeEndpoint: testnetNodeEndpoint,
             privateKey: this.privateKey,
             senderAddress: senderAddress,
@@ -81,6 +81,22 @@ var RunDialog = Backbone.View.extend({
             gasPrice: gasPrice,
             onTestnet: this.onTestnet
         });
+
+        this.clearValidationErrors();
+
+        if (runOptions.isValid()) {
+            this.model.run(runOptions);
+        } else {
+            this.displayValidationErrors(runOptions.validationError);
+        }
+    },
+
+    clearValidationErrors: function() {
+        this.$el.find(".validation-errors-container").addClass("d-none").empty();
+    },
+
+    displayValidationErrors: function(validationError) {
+        this.$el.find(".validation-errors-container").removeClass("d-none").text(validationError);
     },
 
     getTestnetNodeEndpoint() {

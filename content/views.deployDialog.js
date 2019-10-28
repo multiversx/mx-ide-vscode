@@ -65,12 +65,28 @@ var DeployDialog = Backbone.View.extend({
         var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
 
-        this.model.deploy({
+        var deployOptions = new SmartContractDeployOptions({
             testnetNodeEndpoint: testnetNodeEndpoint,
             privateKey: this.privateKey,
             senderAddress: senderAddress,
             onTestnet: this.onTestnet
         });
+
+        this.clearValidationErrors();
+
+        if (deployOptions.isValid()) {
+            this.model.deploy(deployOptions);
+        } else {
+            this.displayValidationErrors(deployOptions.validationError);
+        }
+    },
+
+    clearValidationErrors: function () {
+        this.$el.find(".validation-errors-container").addClass("d-none").empty();
+    },
+
+    displayValidationErrors: function (validationError) {
+        this.$el.find(".validation-errors-container").removeClass("d-none").text(validationError);
     },
 
     getTestnetNodeEndpoint() {
