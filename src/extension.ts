@@ -4,6 +4,7 @@ import { Builder } from './builder';
 import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
+import { FsFacade } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
@@ -11,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
+	registerCustomCommand(context, 'extension.prepareWorkspace', prepareWorkspace);
 
 	Feedback.debug(`Node version: ${process.version}.`);
 }
@@ -33,4 +35,9 @@ function buildCurrentFile() {
 
 function startNodeDebug() {
 	RestDebugger.start();
+}
+
+function prepareWorkspace() {
+	let elrondScHeader = FsFacade.readFileInSnippets("elrond_sc.h");
+	FsFacade.writeFileToWorkspace("elrond_sc.h", elrondScHeader);
 }

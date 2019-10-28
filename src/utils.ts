@@ -132,18 +132,23 @@ export class FsFacade {
     }
 
     public static readFileInContent(filePath: string) {
-        filePath = FsFacade.getPathInContent(filePath);
+        filePath = path.join(FsFacade.getPathToContent(), filePath);
         return FsFacade.readFile(filePath);
-    }
-
-    public static getPathInContent(filePath: string) {
-        let absolutePath = path.join(FsFacade.getPathToContent(), filePath);
-        return absolutePath;
     }
 
     public static getPathToContent() {
         let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");
+    }
+
+    public static readFileInSnippets(filePath: string) {
+        filePath = path.join(FsFacade.getPathToSnippets(), filePath);
+        return FsFacade.readFile(filePath);
+    }
+
+    public static getPathToSnippets() {
+        let extensionPath = Root.ExtensionContext.extensionPath;
+        return path.join(extensionPath, "snippets");
     }
 
     public static getPathToWorkspace() {
@@ -159,6 +164,12 @@ export class FsFacade {
         let folder: string = FsFacade.getPathToWorkspace();
         let files = glob.sync(`${folder}/**/*${extension}`, {});
         return files;
+    }
+
+    public static writeFileToWorkspace(fileName: string, content: string) {
+        let filePath = path.join(FsFacade.getPathToWorkspace(), fileName);
+        fs.writeFileSync(filePath, content);
+        return filePath;
     }
 
     public static fileExists(filePath: string): boolean {
