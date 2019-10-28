@@ -1,4 +1,5 @@
 import path = require('path');
+import fs = require('fs');
 import { MySettings } from './settings';
 import { Syms } from "./syms";
 import { ProcessFacade, FsFacade } from "./utils";
@@ -12,13 +13,14 @@ export class Builder {
         let filePath_ll = `${filePathWithoutExtension}.ll`;
         let filePath_o = `${filePathWithoutExtension}.o`;
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
+        let filePath_export = `${filePathWithoutExtension}.export`;
 
         let toolsFolder = Builder.getToolsFolder();
         let clangPath: any = path.join(toolsFolder, "clang-9");
         let llcPath: any = path.join(toolsFolder, "llc");
         let wasmLdPath: any = path.join(toolsFolder, "wasm-ld");
         let symsFilePath = FsFacade.createTempFile("main.syms", Syms.getMainSymsAsText());
-
+        
         function doClang(): Promise<any> {
             return ProcessFacade.execute({
                 program: clangPath,
@@ -35,11 +37,23 @@ export class Builder {
             });
         }
 
-        // todo: ask for functions to export from UI.
+        // extract exports
+        let exportsRaw = new Array<String>();
+        if (FsFacade.fileExists(filePath_export)) {
+            exportsRaw = FsFacade.readFile(filePath_export).split(/\r?\n/);
+        }
+
         function doWasm(): Promise<any> {
+            let buildArgs = ["--verbose", "--no-entry", filePath_o, "-o", filePath_wasm, "--strip-all", `-allow-undefined-file=${symsFilePath}`];
+            for (let exportRaw of exportsRaw) {
+                let trimmed = exportRaw.trim();
+                if (trimmed) {
+                    buildArgs.push(`-export=${trimmed}`);
+                }
+            }
             return ProcessFacade.execute({
                 program: wasmLdPath,
-                args: ["--verbose", "--no-entry", filePath_o, "-o", filePath_wasm, "--strip-all", `-allow-undefined-file=${symsFilePath}`, "-export=_main", "-export=do_balance", "-export=topUp", "-export=transfer"],
+                args: buildArgs,
                 eventTag: "builder"
             });
         }
