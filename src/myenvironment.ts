@@ -16,57 +16,33 @@ export class MyEnvironment {
     static async installBuildTools(): Promise<any> {
         MyEnvironment.ensureFolderStructure();
 
-        let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}/bin`;
-        let clangBinUrl = `${downloadUrl}/clang-9`;
-        let llcBinUrl = `${downloadUrl}/llc`;
-        let wasmLdBinUrl = `${downloadUrl}/wasm-ld`;
-        let lldBinUrl = `${downloadUrl}/lld`;
-
+        let ideFolder = MySettings.getIdeFolder();
         let toolsFolder = Builder.getToolsFolder();
-        let clangBinPath = path.join(toolsFolder, "clang-9");
-        let llcBinPath = path.join(toolsFolder, "llc");
-        let wasmLdBinPath = path.join(toolsFolder, "wasm-ld");
-        let lldBinPath = path.join(toolsFolder, "lld");
+        let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}`;
+        let archivePath = path.join(ideFolder, "vendor-llvm.tar.gz");
 
         await RestFacade.download({
-            url: clangBinUrl,
-            destination: clangBinPath
+            url: downloadUrl,
+            destination: archivePath
         });
 
-        Feedback.debug("Downloaded clang.");
+        Feedback.debug("Downloaded LLVM subset archive.");
 
-        await RestFacade.download({
-            url: llcBinUrl,
-            destination: llcBinPath
-        });
-
-        Feedback.debug("Downloaded llc.");
-
-        await RestFacade.download({
-            url: wasmLdBinUrl,
-            destination: wasmLdBinPath
-        });
-
-        await RestFacade.download({
-            url: lldBinUrl,
-            destination: lldBinPath
-        });
-
-        Feedback.debug("Downloaded wasm-ld.");
+        await FsFacade.untar(archivePath, toolsFolder);
 
         Feedback.debug("clang, llc and wasm-ld will be marked as executable (+x).");
-        FsFacade.markAsExecutable(clangBinPath);
-        FsFacade.markAsExecutable(llcBinPath);
-        FsFacade.markAsExecutable(wasmLdBinPath);
-        FsFacade.markAsExecutable(lldBinPath);
+        FsFacade.markAsExecutable(path.join(toolsFolder, "clang-9"));
+        FsFacade.markAsExecutable(path.join(toolsFolder, "llc"));
+        FsFacade.markAsExecutable(path.join(toolsFolder, "lld"));
+        FsFacade.markAsExecutable(path.join(toolsFolder, "wasm-ld"));
 
         Feedback.info("LLVM tools are ready to use.");
     }
 
     static getLlvmDownloadUrl() {
         let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm`;
-        let urlLinux: string = `${urlRoot}/linux`;
-        let urlMacOS: string = `${urlRoot}/macos`;
+        let urlLinux: string = `${urlRoot}/linux.tar.gz`;
+        let urlMacOS: string = `${urlRoot}/macos.tar.gz`;
 
         let platform = os.platform();
 
