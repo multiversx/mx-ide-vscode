@@ -53,6 +53,7 @@ Build the extension (you need vsce):
 ```
 npm install -g vsce
 cd vscode-elrond-c
+npm install
 vsce package
 ```
 
