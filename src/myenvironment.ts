@@ -7,6 +7,7 @@ import request = require('request');
 import { RestDebugger } from './debugger';
 import { Builder } from './builder';
 import { Feedback } from './feedback';
+import { MySetupError } from './errors';
 
 export class MyEnvironment {
     static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
@@ -110,7 +111,7 @@ export class MyEnvironment {
         let PATH = `${goFolderBin}:${goFolderTools}:${currentPath}`;
         let GOPATH = goWorkspace;
         let GOCACHE = path.join(idePath, "go-cache");
-        
+
         await ProcessFacade.execute({
             program: "go",
             args: ["env"],
@@ -122,17 +123,21 @@ export class MyEnvironment {
             }
         });
 
-        await ProcessFacade.execute({
-            program: "go",
-            args: ["build", "."],
-            workingDirectory: moduleToBuild,
-            environment: {
-                PATH: PATH,
-                GOPATH: GOPATH,
-                GOCACHE: GOCACHE,
-                //CC: "cgo"
-            }
-        });
+        try {
+            await ProcessFacade.execute({
+                program: "go",
+                args: ["build", "."],
+                workingDirectory: moduleToBuild,
+                environment: {
+                    PATH: PATH,
+                    GOPATH: GOPATH,
+                    GOCACHE: GOCACHE,
+                    //CC: "cgo"
+                }
+            });
+        } catch (error) {
+            throw new MySetupError({ Message: "Could not build node-debug", Inner: error });
+        }
 
         Feedback.info("node-debug built.");
 
@@ -201,7 +206,7 @@ export class MyEnvironment {
         let nodeDebugConfig = path.join(nodeDebug, "config");
 
         FsFacade.mkDirByPathSync(ide);
-        
+
         FsFacade.createFolderIfNotExists(llvmTools);
         FsFacade.createFolderIfNotExists(goWorkspace);
         FsFacade.createFolderIfNotExists(goCache);

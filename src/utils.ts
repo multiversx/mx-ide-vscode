@@ -9,6 +9,7 @@ import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
+import { MyExecError } from './errors';
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -42,7 +43,8 @@ export class ProcessFacade {
         }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
-
+        let latestStdout = "";
+        let latestStderr = "";
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
 
@@ -51,6 +53,7 @@ export class ProcessFacade {
         }
 
         subprocess.stdout.on("data", function (data) {
+            latestStdout = data;
             Feedback.debug(`[${programName}] says: ${data}`, ["exec"]);
 
             if (options.onOutput) {
@@ -63,6 +66,7 @@ export class ProcessFacade {
         });
 
         subprocess.stderr.on("data", function (data) {
+            latestStderr = data;
             Feedback.debug(`[${programName}] says (stderr): ${data}`, ["exec"]);
 
             if (options.onError) {
@@ -86,9 +90,9 @@ export class ProcessFacade {
             }
 
             if (code == 0) {
-                resolve(code);
+                resolve({ code: code });
             } else {
-                reject(code);
+                reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
             }
         });
 
