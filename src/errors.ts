@@ -47,6 +47,11 @@ export class MySetupError extends MyError {
 
 export class MyErrorCatcher {
     public static topLevel(error: any) {
+        if (error instanceof Error) {
+            Feedback.error(error.message);
+            return;
+        }
+
         let chain: MyError[] = [];
         chain.push(error);
 
