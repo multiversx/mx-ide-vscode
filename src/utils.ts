@@ -273,6 +273,11 @@ export class FsFacade {
         Feedback.debug(`copy: ${source} TO ${destination}`);
         fs.copyFileSync(source, destination);
     }
+
+    public static isWorkspaceOpen(): boolean {
+        let workspaceFolder = FsFacade.getPathToWorkspace();
+        return workspaceFolder ? true : false;
+    }
 }
 
 export class RestFacade {
