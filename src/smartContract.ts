@@ -17,7 +17,7 @@ export class SmartContract {
 
     constructor(sourceFile: string) {
         this.SourceFile = sourceFile;
-        this.FriendlyId = FsFacade.removeExtension(FsFacade.getFilename(sourceFile));
+        this.FriendlyId = FsFacade.getPathRelativeToWorkspace(sourceFile);
         this.LatestRun = new SmartContractRun();
     }
 

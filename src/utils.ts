@@ -278,6 +278,12 @@ export class FsFacade {
         let workspaceFolder = FsFacade.getPathToWorkspace();
         return workspaceFolder ? true : false;
     }
+
+    public static getPathRelativeToWorkspace(filePath: string) {
+        let workspaceFolder = FsFacade.getPathToWorkspace();
+        filePath = filePath.replace(workspaceFolder, "");
+        return filePath;
+    }
 }
 
 export class RestFacade {
