@@ -3,7 +3,6 @@ import fs = require('fs');
 import { MySettings } from './settings';
 import { Syms } from "./syms";
 import { ProcessFacade, FsFacade } from "./utils";
-import { Presenter } from './presenter';
 import { Feedback } from './feedback';
 
 export class Builder {
@@ -45,12 +44,14 @@ export class Builder {
 
         function doWasm(): Promise<any> {
             let buildArgs = ["--verbose", "--no-entry", filePath_o, "-o", filePath_wasm, "--strip-all", `-allow-undefined-file=${symsFilePath}`];
+            
             for (let exportRaw of exportsRaw) {
                 let trimmed = exportRaw.trim();
                 if (trimmed) {
                     buildArgs.push(`-export=${trimmed}`);
                 }
             }
+
             return ProcessFacade.execute({
                 program: wasmLdPath,
                 args: buildArgs,
