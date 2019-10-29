@@ -9,6 +9,7 @@ import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
+import { MyExecError, MyHttpError } from './errors';
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -42,7 +43,8 @@ export class ProcessFacade {
         }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
-
+        let latestStdout = "";
+        let latestStderr = "";
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
 
@@ -51,6 +53,7 @@ export class ProcessFacade {
         }
 
         subprocess.stdout.on("data", function (data) {
+            latestStdout = data;
             Feedback.debug(`[${programName}] says: ${data}`, ["exec"]);
 
             if (options.onOutput) {
@@ -63,6 +66,7 @@ export class ProcessFacade {
         });
 
         subprocess.stderr.on("data", function (data) {
+            latestStderr = data;
             Feedback.debug(`[${programName}] says (stderr): ${data}`, ["exec"]);
 
             if (options.onError) {
@@ -86,9 +90,9 @@ export class ProcessFacade {
             }
 
             if (code == 0) {
-                resolve(code);
+                resolve({ code: code });
             } else {
-                reject(code);
+                reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
             }
         });
 
@@ -128,18 +132,23 @@ export class FsFacade {
     }
 
     public static readFileInContent(filePath: string) {
-        filePath = FsFacade.getPathInContent(filePath);
+        filePath = path.join(FsFacade.getPathToContent(), filePath);
         return FsFacade.readFile(filePath);
-    }
-
-    public static getPathInContent(filePath: string) {
-        let absolutePath = path.join(FsFacade.getPathToContent(), filePath);
-        return absolutePath;
     }
 
     public static getPathToContent() {
         let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");
+    }
+
+    public static readFileInSnippets(filePath: string) {
+        filePath = path.join(FsFacade.getPathToSnippets(), filePath);
+        return FsFacade.readFile(filePath);
+    }
+
+    public static getPathToSnippets() {
+        let extensionPath = Root.ExtensionContext.extensionPath;
+        return path.join(extensionPath, "snippets");
     }
 
     public static getPathToWorkspace() {
@@ -155,6 +164,12 @@ export class FsFacade {
         let folder: string = FsFacade.getPathToWorkspace();
         let files = glob.sync(`${folder}/**/*${extension}`, {});
         return files;
+    }
+
+    public static writeFileToWorkspace(fileName: string, content: string) {
+        let filePath = path.join(FsFacade.getPathToWorkspace(), fileName);
+        fs.writeFileSync(filePath, content);
+        return filePath;
     }
 
     public static fileExists(filePath: string): boolean {
@@ -346,25 +361,43 @@ export class RestFacade {
                 previousPercentage = percentage;
             })
             .on("error", function (error) {
-                console.error(error);
                 writeStream.close();
-                reject({ error: error });
+                reject(new MyHttpError({ Url: url, RequestError: error }));
             })
             .on("complete", function (response) {
-                setTimeout(function () {
-                    writeStream.close();
-                    Feedback.debug(`Downloaded: ${destination}.`);
-                    resolve();
-                }, waitBeforeCloseStream);
+                let statusCode = response.statusCode;
+                let statusMessage = response.statusMessage;
 
-                eventBus.emit("download", {
-                    url: url,
-                    file: destination,
-                    progress: 1.0,
-                    percentage: 100,
-                    downloaded: downloaded,
-                    length: contentLength
-                });
+                if (statusCode == 200) {
+                    setTimeout(function () {
+                        writeStream.close();
+                        Feedback.debug(`Downloaded: ${destination}.`);
+                        resolve();
+                    }, waitBeforeCloseStream);
+
+                    eventBus.emit("download", {
+                        url: url,
+                        file: destination,
+                        progress: 1.0,
+                        percentage: 100,
+                        downloaded: downloaded,
+                        length: contentLength
+                    });
+                } else {
+                    setTimeout(function () {
+                        writeStream.close();
+                        reject(new MyHttpError({ Url: url, Message: statusMessage, Code: statusCode.toString() }));
+                    }, waitBeforeCloseStream);
+
+                    eventBus.emit("download", {
+                        url: url,
+                        file: destination,
+                        progress: 0.0,
+                        percentage: 0,
+                        downloaded: 0,
+                        length: contentLength
+                    });
+                }
             })
             .pipe(writeStream);
 

@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.0.7",
+	"version": "0.0.9",
 	"publisher": "ElrondNetwork",
 	"engines": {
 		"vscode": "^1.38.0"
@@ -13,7 +13,8 @@
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
-		"onCommand:extension.startNodeDebug"
+		"onCommand:extension.startNodeDebug",
+		"onCommand:extension.prepareWorkspace"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -24,11 +25,15 @@
 			},
 			{
 				"command": "extension.buildCurrentFile",
-				"title": "Smart Contracts - build current file"
+				"title": "Elrond - build current file"
 			},
 			{
 				"command": "extension.startNodeDebug",
-				"title": "Smart Contracts - start (restart) node debug"
+				"title": "Elrond - start (restart) node debug"
+			},
+			{
+				"command": "extension.prepareWorkspace",
+				"title": "Elrond - prepare workspace"
 			}
 		],
 		"menus": {

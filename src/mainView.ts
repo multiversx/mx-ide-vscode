@@ -5,6 +5,7 @@ import { RestDebugger } from './debugger';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
 import { MyEnvironment } from './myenvironment';
+import { MyError, MyErrorCatcher } from './errors';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -74,15 +75,15 @@ export class MainView {
         });
 
         eventBus.on("view-message:environment-install-build-tools", function (payload) {
-            MyEnvironment.installBuildTools();
+            MyEnvironment.installBuildTools().catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:environment-install-go", function (payload) {
-            MyEnvironment.installGo();
+            MyEnvironment.installGo().catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
-            MyEnvironment.installDebugNode();
+            MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
         });
     }
 
