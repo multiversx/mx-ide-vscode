@@ -39,8 +39,10 @@
                         <label>Function arguments</label>
                         <textarea name="FunctionArgs" class="form-control"
                             rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
-                        <small class="form-text text-muted">Use a line break to seprate more
-                            arguments.</small>
+                    </div>
+                    <div class="form-text text-muted">
+                        Use a line break to seprate more arguments.
+                        <strong>Note that arguments that represent amounts will be interpreted as hex.</strong>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
