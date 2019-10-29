@@ -14,7 +14,7 @@
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.prepareWorkspace"
+		"onCommand:extension.createSmartContractErc20"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -32,8 +32,8 @@
 				"title": "Elrond - start (restart) node debug"
 			},
 			{
-				"command": "extension.prepareWorkspace",
-				"title": "Elrond - prepare workspace"
+				"command": "extension.createSmartContractErc20",
+				"title": "Elrond - create smart contract: erc20"
 			}
 		],
 		"menus": {

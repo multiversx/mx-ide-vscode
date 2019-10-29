@@ -166,10 +166,15 @@ export class FsFacade {
         return files;
     }
 
-    public static writeFileToWorkspace(fileName: string, content: string) {
-        let filePath = path.join(FsFacade.getPathToWorkspace(), fileName);
+    public static writeFileToWorkspace(relativeFilePath: string, content: string) {
+        let filePath = path.join(FsFacade.getPathToWorkspace(), relativeFilePath);
         fs.writeFileSync(filePath, content);
         return filePath;
+    }
+
+    public static createFolderInWorkspace(folderName: string) {
+        let folderPath = path.join(FsFacade.getPathToWorkspace(), folderName);
+        fs.mkdirSync(folderPath);
     }
 
     public static fileExists(filePath: string): boolean {

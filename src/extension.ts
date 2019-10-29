@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
-	registerCustomCommand(context, 'extension.prepareWorkspace', prepareWorkspace);
+	registerCustomCommand(context, 'extension.createSmartContractErc20', createSmartContractErc20);
 
 	Feedback.debug(`Node version: ${process.version}.`);
 }
@@ -37,7 +37,24 @@ function startNodeDebug() {
 	RestDebugger.start();
 }
 
-function prepareWorkspace() {
+async function createSmartContractErc20() {
+	let name = await Presenter.askSimpleInput({
+		title: "Name of smart contract",
+		placeholder: "myerc20"
+	});
+
+	if (!name) {
+		return;
+	}
+
+	let path = require('path');
+
+	FsFacade.createFolderInWorkspace(name);
 	let elrondScHeader = FsFacade.readFileInSnippets("elrond_sc.h");
-	FsFacade.writeFileToWorkspace("elrond_sc.h", elrondScHeader);
+	let erc20c = FsFacade.readFileInSnippets("wrc20_arwen.c");
+	let erc20export = FsFacade.readFileInSnippets("wrc20_arwen.export");
+
+	FsFacade.writeFileToWorkspace(path.join(name, "elrond_sc.h"), elrondScHeader);
+	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.c"), erc20c);
+	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.export"), erc20export);
 }
