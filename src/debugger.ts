@@ -106,10 +106,17 @@ export class RestDebugger {
         let vmOutput = JSON.parse(traceJson);
 
         let outputAccounts: any[] = vmOutput.OutputAccounts || [];
-        
-        outputAccounts.forEach(function (item: any) {
-            let asHex = Buffer.from(item.Address, "base64").toString("hex");
-            item.Address = asHex;
+
+        outputAccounts.forEach(function (account: any) {
+            account.Address = Buffer.from(account.Address, "base64").toString("hex");
+
+            let storageUpdates: any[] = account.StorageUpdates || [];
+
+            storageUpdates.forEach(function(update) {
+                update.DataHex = Buffer.from(update.Data, "base64").toString("hex");
+                update.DataDecimal = parseInt(update.DataHex, 16);
+                update.Offset = Buffer.from(update.Offset, "base64").toString("hex");
+            });
         });
 
         return vmOutput;
