@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"publisher": "ElrondNetwork",
 	"engines": {
 		"vscode": "^1.38.0"
