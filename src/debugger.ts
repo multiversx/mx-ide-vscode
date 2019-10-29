@@ -104,6 +104,14 @@ export class RestDebugger {
         let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
         let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
         let vmOutput = JSON.parse(traceJson);
+
+        let outputAccounts: any[] = vmOutput.OutputAccounts || [];
+        
+        outputAccounts.forEach(function (item: any) {
+            let asHex = Buffer.from(item.Address, "base64").toString("hex");
+            item.Address = asHex;
+        });
+
         return vmOutput;
     }
 
