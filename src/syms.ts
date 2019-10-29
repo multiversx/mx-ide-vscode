@@ -1,33 +1,27 @@
 export class Syms {
     public static getMainSymsAsText() {
         let mainSyms = [
-            "loadFunctionName",
+            "getOwner",
+            "getExternalBalance",
+            "getBlockHash",
+            "transfer",
+            "getArgument",
+            "getFunction",
             "getNumArguments",
-            "loadArgumentAsBigInt",
-            "loadArgumentAsBytes",
-            "getArgumentAsInt64",
-
-            "loadOwner",
-            "loadCaller",
-            "loadCallValue",
-            "loadBalance",
+            "storageStore",
+            "storageLoad",
+            "getCaller",
+            "getCallValue",
+            "writeLog",
+            "finish",
+            "signalError",
             "getGasLeft",
-            "loadBlockHash",
             "getBlockTimestamp",
 
-            "sendTransaction",
-
-            "storageStoreAsBytes",
-            "storageLoadAsBytes",
-            "storageStoreAsBigInt",
-            "storageLoadAsBigInt",
-            "storageStoreAsInt64",
-            "storageLoadAsInt64",
-
-            "returnBigInt",
-            "returnInt32",
-            "signalError",
-            "writeLog",
+            "int64getArgument",
+            "int64storageStore",
+            "int64storageLoad",
+            "int64finish",
 
             "bigIntNew",
             "bigIntByteLength",
@@ -40,11 +34,12 @@ export class Syms {
             "bigIntSub",
             "bigIntMul",
             "bigIntCmp",
-
-            "debugPrintBigInt",
-            "debugPrintInt32",
-            "debugPrintBytes",
-            "debugPrintString"
+            "bigIntFinish",
+            "bigIntstorageStore",
+            "bigIntstorageLoad",
+            "bigIntgetArgument",
+            "bigIntgetCallValue",
+            "bigIntgetExternalBalance"
         ];
 
         return mainSyms.join("\n");
