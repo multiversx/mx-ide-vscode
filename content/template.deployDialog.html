@@ -19,10 +19,16 @@
                 <% } else { %>
                 <div class="form-group">
                     <label class="">Sender address:</label>
-                    <input class="form-control" name="SenderAddress" type="text"
-                        value="" />
+                    <input class="form-control" name="SenderAddress" type="text" value="" />
                 </div>
                 <% } %>
+                <div class="form-group">
+                    <label>Deploy (init) arguments</label>
+                    <textarea name="InitArgs" class="form-control"
+                        rows="3"></textarea>
+                    <small class="form-text text-muted">Use a line break to seprate more
+                        arguments.</small>
+                </div>
             </form>
 
             <% if (onTestnet) { %>

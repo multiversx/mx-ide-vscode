@@ -64,11 +64,13 @@ var DeployDialog = Backbone.View.extend({
     onClickSubmit: function () {
         var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
+        var initArgs = this.getInitArgs();
 
         var deployOptions = new SmartContractDeployOptions({
             testnetNodeEndpoint: testnetNodeEndpoint,
             privateKey: this.privateKey,
             senderAddress: senderAddress,
+            initArgs: initArgs,
             onTestnet: this.onTestnet
         });
 
@@ -95,5 +97,11 @@ var DeployDialog = Backbone.View.extend({
 
     getSenderAddress() {
         return this.$el.find("[name='SenderAddress']").val();
-    }
+    },
+
+    getInitArgs: function () {
+        var argsString = this.$el.find("[name='InitArgs']").val();
+        var args = argsString.split("\n");
+        return args;
+    },
 });

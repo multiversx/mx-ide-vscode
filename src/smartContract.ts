@@ -32,7 +32,11 @@ export class SmartContract {
     public async deployToDebugger(options: any): Promise<any> {
         let self = this;
         let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
-        options.code = buffer.toString("hex");
+
+        // Prepare transaction data.
+        const ArwenTag = "0500";
+        let transactionData = buffer.toString("hex") + "@" + ArwenTag;
+        options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
 
         const response = await RestDebugger.deploySmartContract(options);
 
@@ -58,24 +62,8 @@ export class SmartContract {
 
         // Prepare transaction data.
         let transactionData = options.functionName;
-
-        _.each(options.functionArgs, function(item: any) {
-            if (item === "") {
-                return;
-            }
-
-            transactionData += "@";
-
-            if (isNaN(item)) {
-                var encoded = item; //Buffer.from(item.toString(), "utf8").toString("hex");
-                transactionData += encoded;
-            } else {
-                transactionData += item.toString();
-            }
-        });
-
-        options.transactionData = transactionData;
-
+        options.transactionData = this.appendArgsToTxData(options.functionArgs, transactionData);
+        
         try {
             const vmOutput = await RestDebugger.runSmartContract(options);
             self.LatestRun.VMOutput = vmOutput;
@@ -93,6 +81,25 @@ export class SmartContract {
             this.BytecodeFile = bytecodeFileTest;
             this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
         }
+    }
+
+    private appendArgsToTxData(args: string[], transactionData: string): string {
+        _.each(args, function (item: any) {
+            if (item === "") {
+                return;
+            }
+
+            transactionData += "@";
+
+            if (isNaN(item)) {
+                var encoded = item;
+                transactionData += encoded;
+            } else {
+                transactionData += item.toString();
+            }
+        });
+
+        return transactionData;
     }
 }
 

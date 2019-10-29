@@ -54,7 +54,7 @@ export class RestDebugger {
                 "PrivateKey": options.privateKey,
                 "TestnetNodeEndpoint": options.testnetNodeEndpoint,
                 "SndAddress": options.senderAddress,
-                "Code": options.code
+                "TxData": options.transactionData
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
