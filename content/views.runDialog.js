@@ -86,6 +86,7 @@ var RunDialog = Backbone.View.extend({
 
         if (runOptions.isValid()) {
             this.model.run(runOptions);
+            this.close();
         } else {
             this.displayValidationErrors(runOptions.validationError);
         }

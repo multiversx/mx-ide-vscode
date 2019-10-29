@@ -78,6 +78,7 @@ var DeployDialog = Backbone.View.extend({
 
         if (deployOptions.isValid()) {
             this.model.deploy(deployOptions);
+            this.close();
         } else {
             this.displayValidationErrors(deployOptions.validationError);
         }
