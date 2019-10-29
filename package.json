@@ -14,7 +14,8 @@
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.createSmartContractErc20"
+		"onCommand:extension.createSmartContractErc20",
+		"onCommand:extension.createSmartContractDummy"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -34,6 +35,10 @@
 			{
 				"command": "extension.createSmartContractErc20",
 				"title": "Elrond - create smart contract: erc20"
+			},
+			{
+				"command": "extension.createSmartContractDummy",
+				"title": "Elrond - create smart contract: dummy"
 			}
 		],
 		"menus": {

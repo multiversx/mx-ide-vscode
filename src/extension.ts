@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
 	registerCustomCommand(context, 'extension.createSmartContractErc20', createSmartContractErc20);
+	registerCustomCommand(context, 'extension.createSmartContractDummy', createSmartContractDummy);
 
 	Feedback.debug(`Node version: ${process.version}.`);
 }
@@ -51,10 +52,32 @@ async function createSmartContractErc20() {
 
 	FsFacade.createFolderInWorkspace(name);
 	let elrondScHeader = FsFacade.readFileInSnippets("elrond_sc.h");
-	let erc20c = FsFacade.readFileInSnippets("wrc20_arwen.c");
-	let erc20export = FsFacade.readFileInSnippets("wrc20_arwen.export");
+	let cContent = FsFacade.readFileInSnippets("wrc20_arwen.c");
+	let exportContent = FsFacade.readFileInSnippets("wrc20_arwen.export");
 
 	FsFacade.writeFileToWorkspace(path.join(name, "elrond_sc.h"), elrondScHeader);
-	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.c"), erc20c);
-	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.export"), erc20export);
+	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.c"), cContent);
+	FsFacade.writeFileToWorkspace(path.join(name, "wrc20_arwen.export"), exportContent);
+}
+
+async function createSmartContractDummy() {
+	let name = await Presenter.askSimpleInput({
+		title: "Name of smart contract",
+		placeholder: "myexample"
+	});
+
+	if (!name) {
+		return;
+	}
+
+	let path = require('path');
+
+	FsFacade.createFolderInWorkspace(name);
+	let elrondScHeader = FsFacade.readFileInSnippets("elrond_sc.h");
+	let cContent = FsFacade.readFileInSnippets("dummy.c");
+	let exportContent = FsFacade.readFileInSnippets("dummy.export");
+
+	FsFacade.writeFileToWorkspace(path.join(name, "elrond_sc.h"), elrondScHeader);
+	FsFacade.writeFileToWorkspace(path.join(name, "dummy.c"), cContent);
+	FsFacade.writeFileToWorkspace(path.join(name, "dummy.export"), exportContent);
 }
