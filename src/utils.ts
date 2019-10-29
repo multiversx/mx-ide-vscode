@@ -43,6 +43,11 @@ export class ProcessFacade {
         }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
+
+        subprocess.on("error", function(error) {
+            reject(new MyExecError({ Program: programName, Message: error.message }));
+        });
+
         let latestStdout = "";
         let latestStderr = "";
         subprocess.stdout.setEncoding('utf8');
