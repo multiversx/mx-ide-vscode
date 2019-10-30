@@ -40,9 +40,12 @@
                         <textarea name="FunctionArgs" class="form-control"
                             rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
                     </div>
-                    <div class="form-text text-muted">
+                    <div class="form-text">
                         Use a line break to seprate more arguments.
-                        <strong>Note that arguments that represent amounts will be interpreted as hex.</strong>
+                        <strong>
+                            Arguments that start with <kbd>0x</kbd> will be sent as they are, with the prefix removed.
+                            Other arguments will be interpreted as numbers and converted to hex before sending.
+                        </strong>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
