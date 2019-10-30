@@ -84,9 +84,9 @@ export class MainView {
             MyEnvironment.installBuildTools().catch(MyErrorCatcher.topLevel);
         });
 
-        eventBus.on("view-message:environment-install-go", function (payload) {
-            MyEnvironment.installGo().catch(MyErrorCatcher.topLevel);
-        });
+        // eventBus.on("view-message:environment-install-go", function (payload) {
+        //     MyEnvironment.installGo().catch(MyErrorCatcher.topLevel);
+        // });
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
             MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
