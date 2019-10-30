@@ -151,10 +151,10 @@ class SmartContractRun {
     constructor() {
         this.Options = {
             senderAddress: "",
-            functionName: "nothing",
+            functionName: "your_function",
             functionArgs: [],
-            value: 42,
-            gasLimit: 5432,
+            value: 0,
+            gasLimit: 2000,
             gasPrice: 1
         };
 
