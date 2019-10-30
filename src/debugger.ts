@@ -68,6 +68,7 @@ export class RestDebugger {
             eventTag: "debugger-dialogue"
         }).catch(e => {
             Feedback.error(`Cannot deploy. Perhaps node-debug is stopped? ${e.error}`);
+            throw e;
         });
     }
 
@@ -121,7 +122,7 @@ export class RestDebugger {
 
             let storageUpdates: any[] = account.StorageUpdates || [];
 
-            storageUpdates.forEach(function(update) {
+            storageUpdates.forEach(function (update) {
                 update.DataHex = Buffer.from(update.Data, "base64").toString("hex");
                 update.DataDecimal = parseInt(update.DataHex, 16);
                 update.Offset = Buffer.from(update.Offset, "base64").toString("hex");

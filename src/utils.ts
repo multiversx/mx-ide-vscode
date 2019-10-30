@@ -9,7 +9,7 @@ import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
-import { MyExecError, MyHttpError } from './errors';
+import { MyExecError, MyHttpError, MyError } from './errors';
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -44,7 +44,7 @@ export class ProcessFacade {
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
 
-        subprocess.on("error", function(error) {
+        subprocess.on("error", function (error) {
             reject(new MyExecError({ Program: programName, Message: error.message }));
         });
 
@@ -127,6 +127,10 @@ export class FsFacade {
     }
 
     public static readFile(filePath: string) {
+        if (!this.fileExists(filePath)) {
+            throw new MyError({ Message: `Missing file: ${filePath}` });
+        }
+
         let text: string = fs.readFileSync(filePath, { encoding: "utf8" });
         return text;
     }
@@ -175,6 +179,10 @@ export class FsFacade {
         let filePath = path.join(FsFacade.getPathToWorkspace(), relativeFilePath);
         fs.writeFileSync(filePath, content);
         return filePath;
+    }
+
+    public static writeFile(filePath: string, content: string) {
+        fs.writeFileSync(filePath, content);
     }
 
     public static createFolderInWorkspace(folderName: string) {
@@ -319,8 +327,7 @@ export class RestFacade {
 
             if (isErrorneous) {
                 eventBus.emit(`${eventTag}:error`, { url: url, data: error });
-                Feedback.error(`http error, status=${statusCode}, error=${error.toString()}`, ["default", "http"]);
-                reject({ error: error, status: statusCode });
+                reject(new MyHttpError({ Url: url, RequestError: error }));
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
                 Feedback.debug(`http post, status=${statusCode}, response:`, ["http"]);

@@ -48,7 +48,7 @@ export class MainView {
         });
 
         eventBus.on("view-message:stopNodeDebug", function () {
-            RestDebugger.stop().catch(() => {});
+            RestDebugger.stop().catch(() => { });
         });
 
         eventBus.on("view-message:refreshSmartContracts", function () {
@@ -57,17 +57,23 @@ export class MainView {
 
         eventBus.on("view-message:buildSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.build().then(() => { self.doRefreshSmartContracts() }).catch(MyErrorCatcher.topLevel);
+            contract.build()
+                .then(() => { self.doRefreshSmartContracts() })
+                .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.deployToDebugger(payload).then(() => { self.doRefreshSmartContracts() });
+            contract.deployToDebugger(payload)
+                .then(() => { self.doRefreshSmartContracts() })
+                .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:runSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.runFunction(payload).then(() => { self.doRefreshSmartContracts() });
+            contract.runFunction(payload)
+                .then(() => { self.doRefreshSmartContracts() })
+                .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:environment-refresh", function () {
