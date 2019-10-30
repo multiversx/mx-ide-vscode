@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.createSmartContractErc20', Projects.createErc20);
 	registerCustomCommand(context, 'extension.createSmartContractDummy', Projects.createDummy);
 
-	Feedback.debug(`Node version: ${process.version}.`);
+	Feedback.debug(`NodeJS version: ${process.version}.`);
 }
 
 export function deactivate() { }
