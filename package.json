@@ -67,6 +67,11 @@
 					"type": "number",
 					"default": "8080",
 					"description": "API port of node-debug."
+				},
+				"elrond.testnetUrl": {
+					"type": "string",
+					"default": "https://wallet-workshop.elrond.com",
+					"description": "Testnet proxy URL."
 				}
 			}
 		}

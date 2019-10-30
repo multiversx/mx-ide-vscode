@@ -45,6 +45,7 @@ This extension contributes the following settings:
 * `elrond.ideFolder`: base folder for tools.
 * `elrond.downloadMirror`: download mirror for tools and dependencies.
 * `elrond.restApi.port`: port of REST API (node-debug).
+* `elrond.testnetUrl`: URL of testnet proxy.
 
 ## How to build and / or install
 

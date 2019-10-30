@@ -14,6 +14,10 @@ export class MySettings {
         return MySettings.getConfigurationValue("downloadMirror").toString();
     }
 
+    public static getTestnetUrl() : string {
+        return MySettings.getConfigurationValue("testnetUrl").toString();
+    }
+
     private static getConfigurationValue(key: string) {
         let configuration = vscode.workspace.getConfiguration("elrond");
         let value = configuration.get(key);
