@@ -31,6 +31,27 @@
                     Arguments that start with <kbd>0x</kbd> will be sent as they are, with the prefix removed.
                     Other arguments will be interpreted as numbers and converted to hex before sending.
                 </strong>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Value</label>
+                            <input name="Value" type="text" class="form-control" required placeholder="0" value="0">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Gas limit</label>
+                            <input name="GasLimit" type="number" class="form-control" required value="2000">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Gas price</label>
+                            <input name="GasPrice" type="number" class="form-control" required value="10">
+                        </div>
+                    </div>
+                </div>
             </form>
 
             <% if (onTestnet) { %>

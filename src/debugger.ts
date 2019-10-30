@@ -63,6 +63,9 @@ export class RestDebugger {
                 "PrivateKey": options.privateKey,
                 "TestnetNodeEndpoint": options.testnetNodeEndpoint,
                 "SndAddress": options.senderAddress,
+                "Value": options.value.toString(),
+                "GasLimit": options.gasLimit,
+                "GasPrice": options.gasPrice,
                 "TxData": options.transactionData
             },
             eventTag: "debugger-dialogue"

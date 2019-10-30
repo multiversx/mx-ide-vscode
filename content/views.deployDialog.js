@@ -65,12 +65,18 @@ var DeployDialog = Backbone.View.extend({
         var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
         var initArgs = this.getInitArgs();
+        var value = this.getDeployValue();
+        var gasLimit = this.getGasLimit();
+        var gasPrice = this.getGasPrice();
 
         var deployOptions = new SmartContractDeployOptions({
             testnetNodeEndpoint: testnetNodeEndpoint,
             privateKey: this.privateKey,
             senderAddress: senderAddress,
             initArgs: initArgs,
+            value: value,
+            gasLimit: gasLimit,
+            gasPrice: gasPrice,
             onTestnet: this.onTestnet
         });
 
@@ -105,4 +111,16 @@ var DeployDialog = Backbone.View.extend({
         var args = argsString.split("\n");
         return args;
     },
+
+    getDeployValue: function () {
+        return this.$el.find("[name='Value']").val();
+    },
+
+    getGasLimit: function () {
+        return Number(this.$el.find("[name='GasLimit']").val());
+    },
+
+    getGasPrice: function () {
+        return Number(this.$el.find("[name='GasPrice']").val());
+    }
 });
