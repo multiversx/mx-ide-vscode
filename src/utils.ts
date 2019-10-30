@@ -87,7 +87,7 @@ export class ProcessFacade {
             Feedback.debug(`[${programName}] exists, exit code = ${code}.`, ["default", "exec"]);
 
             if (options.onClose) {
-                options.onClose(code);
+                options.onClose(code, latestStdout.trim());
             }
 
             if (eventTag) {
@@ -95,7 +95,7 @@ export class ProcessFacade {
             }
 
             if (code == 0) {
-                resolve({ code: code });
+                resolve({ code: code, stdOut: latestStdout.trim() });
             } else {
                 reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
             }
