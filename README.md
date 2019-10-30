@@ -29,7 +29,7 @@ All these dependencies are downloaded and / or installed by the extension itself
 
 In addition, the extension requires the following tools, which are not installed automatically:
 
-* `GCC` - required to build **node-debug** which depends on the Arwen Virtual Machine, whose compilation requires both a **go** and a **C** compiler.
+* `gcc` - required to build **node-debug** which depends on the Arwen Virtual Machine, whose compilation requires both a **go** and a **C** compiler.
 * `untar` and `unzip` - you most probably already have them installed on your machine.
 
 In order to install GCC (on Ubuntu):
@@ -38,13 +38,6 @@ In order to install GCC (on Ubuntu):
 sudo apt-get install build-essential
 ```
 
-## Extension Settings
-
-This extension contributes the following settings:
-
-* `elrond.ideFolder`: base folder for tools.
-* `elrond.downloadMirror`: download mirror for tools and dependencies.
-* `elrond.restApi.port`: port of REST API (node-debug).
 
 ## How to build and / or install
 
@@ -64,3 +57,12 @@ code --install-extension vscode-elrond-ide-{version}.vsix
 ```
 
 The installation can also be performed from Visual Studio Code's user interface, by running the command `Install from VSIX`.
+
+
+## Extension Settings
+
+This extension contributes the following settings:
+
+* `elrond.ideFolder`: base folder for tools.
+* `elrond.downloadMirror`: download mirror for tools and dependencies.
+* `elrond.restApi.port`: port of REST API (node-debug).
