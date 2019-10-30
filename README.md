@@ -16,6 +16,7 @@ The IDE also assists with the build process of a smart contract, from a high-lev
 
 
 ## Requirements
+The extension will download all its dependencies and install them itself, so you do not have to worry much about setting up the development environment.
 
 This extension depends on:
 
@@ -25,7 +26,6 @@ This extension depends on:
 * `golang` - to build **node-debug**
 * [node-debug](https://github.com/ElrondNetwork/elrond-go-node-debug)
 
-All these dependencies are downloaded and / or installed by the extension itself, so you do not have to worry much about setting up the development environment.
 
 In addition, the extension requires the following tools, which are not installed automatically:
 
