@@ -30,10 +30,8 @@ export class RestDebugger {
         let configPath: any = path.join(toolPathFolder, "config", "config.toml");
         let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
 
-        let goWorkspace = MyEnvironment.getGoWorkspaceFolder();
-        let wasmerFolder = path.join(goWorkspace, "pkg/mod/github.com/!elrond!network/go-ext-wasm@v0.0.5/wasmer");
         let LD_LIBRARY_PATH = process.env["LD_LIBRARY_PATH"] || "/usr/lib";
-        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${wasmerFolder}`;
+        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${toolPathFolder}`;
 
         ProcessFacade.execute({
             program: toolPath,
