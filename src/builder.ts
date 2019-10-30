@@ -59,10 +59,24 @@ export class Builder {
             });
         }
 
+        function createArwenFiles() {
+            let wasmHexPath = `${filePath_wasm}.hex`;
+            let wasmHexArwenPath = `${wasmHexPath}.arwen`;
+            const ArwenTag = "0500";
+
+            let buffer = FsFacade.readBinaryFile(filePath_wasm);
+            let wasmHex = buffer.toString("hex");
+            let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
+
+            FsFacade.writeFile(wasmHexPath, wasmHex);
+            FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
+        }
+
         await doClang();
         await doLlc();
         await doWasm();
-        
+        createArwenFiles();
+
         Feedback.info("Build done.");
     }
 

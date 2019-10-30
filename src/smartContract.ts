@@ -31,11 +31,9 @@ export class SmartContract {
 
     public async deployToDebugger(options: any): Promise<any> {
         let self = this;
-        let buffer = FsFacade.readBinaryFile(this.BytecodeFile);
 
         // Prepare transaction data.
-        const ArwenTag = "0500";
-        let transactionData = buffer.toString("hex") + "@" + ArwenTag;
+        let transactionData = FsFacade.readFile(`${this.BytecodeFile}.hex.arwen`);
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
 
         const response = await RestDebugger.deploySmartContract(options);
