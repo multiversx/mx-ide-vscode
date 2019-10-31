@@ -2,14 +2,19 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.1.9",
+	"version": "0.2.0",
 	"publisher": "ElrondNetwork",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ElrondNetwork/vscode-elrond-c.git"
+	},
 	"engines": {
 		"vscode": "^1.38.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"icon": "content/logo.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
