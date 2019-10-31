@@ -87,7 +87,7 @@ export class ProcessFacade {
             Feedback.debug(`[${programName}] exists, exit code = ${code}.`, ["default", "exec"]);
 
             if (options.onClose) {
-                options.onClose(code);
+                options.onClose(code, latestStdout.trim());
             }
 
             if (eventTag) {
@@ -95,7 +95,7 @@ export class ProcessFacade {
             }
 
             if (code == 0) {
-                resolve({ code: code });
+                resolve({ code: code, stdOut: latestStdout.trim() });
             } else {
                 reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
             }
@@ -285,6 +285,10 @@ export class FsFacade {
     public static copyFile(source: string, destination: string) {
         Feedback.debug(`copy: ${source} TO ${destination}`);
         fs.copyFileSync(source, destination);
+    }
+
+    public static copyFolder(sourceFolder: string, destinationFolder: string) {
+        child_process.execSync(`cp -r ${sourceFolder}/* ${destinationFolder}`);
     }
 
     public static isWorkspaceOpen(): boolean {

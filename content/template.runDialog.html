@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <label class="">Endpoint of node in Testnet:</label>
                         <input class="form-control" name="TestnetNodeEndpoint" type="text"
-                            value="http://localhost:9090" />
+                            value="https://wallet-workshop.elrond.com" />
                     </div>
                     <div class="form-group">
                         <label class="">Private key:</label>
@@ -40,9 +40,12 @@
                         <textarea name="FunctionArgs" class="form-control"
                             rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
                     </div>
-                    <div class="form-text text-muted">
+                    <div class="form-text">
                         Use a line break to seprate more arguments.
-                        <strong>Note that arguments that represent amounts will be interpreted as hex.</strong>
+                        <strong>
+                            Arguments that start with <kbd>0x</kbd> will be sent as they are, with the prefix removed.
+                            Other arguments will be interpreted as numbers and converted to hex before sending.
+                        </strong>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
@@ -55,14 +58,14 @@
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label>Gas limit</label>
-                                <input name="GasLimit" type="number" class="form-control" required placeholder="42"
+                                <input name="GasLimit" type="number" class="form-control" required placeholder="2000"
                                     value="<%= contract.LatestRun.Options.gasLimit %>">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label>Gas price</label>
-                                <input name="GasPrice" type="number" class="form-control" required placeholder="1"
+                                <input name="GasPrice" type="number" class="form-control" required placeholder="10"
                                     value="<%= contract.LatestRun.Options.gasPrice %>">
                             </div>
                         </div>

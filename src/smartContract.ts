@@ -2,6 +2,7 @@ import { FsFacade } from "./utils";
 import { RestDebugger } from "./debugger";
 import { Builder } from "./builder";
 import _ = require("underscore");
+import { MyError } from "./errors";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -82,18 +83,28 @@ export class SmartContract {
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
-        _.each(args, function (item: any) {
+        const hexPrefix = "0X";
+
+        _.each(args, function (item: string) {
+            var itemAsAny: any = item;
+
             if (item === "") {
                 return;
             }
 
             transactionData += "@";
 
-            if (isNaN(item)) {
-                var encoded = item;
-                transactionData += encoded;
+            if (item.toUpperCase().startsWith(hexPrefix)) {
+                item = item.substring(hexPrefix.length);
+                transactionData += item;
             } else {
-                transactionData += item.toString();
+                if (isNaN(itemAsAny)) {
+                    throw new MyError({Message: `Can't handle non-hex, non-number arguments yet: ${item}.`});    
+                } else {
+                    let number = Number(item);
+                    let hexString = number.toString(16);
+                    transactionData += hexString;
+                }
             }
         });
 
@@ -140,11 +151,11 @@ class SmartContractRun {
     constructor() {
         this.Options = {
             senderAddress: "",
-            functionName: "nothing",
+            functionName: "your_function",
             functionArgs: [],
-            value: 42,
-            gasLimit: 5432,
-            gasPrice: 1
+            value: 0,
+            gasLimit: 2000,
+            gasPrice: 10
         };
 
         this.VMOutput = {};

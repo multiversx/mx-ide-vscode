@@ -1,4 +1,4 @@
-#include "elrond_sc.h"
+#include "eei.h"
 
 // global data used in next function, will be allocated to WebAssembly memory
 bytes32 sender[1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

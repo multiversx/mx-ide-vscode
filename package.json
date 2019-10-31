@@ -2,20 +2,24 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"publisher": "ElrondNetwork",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ElrondNetwork/vscode-elrond-c.git"
+	},
 	"engines": {
 		"vscode": "^1.38.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"icon": "content/logo-background.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.createSmartContractErc20",
-		"onCommand:extension.createSmartContractDummy"
+		"onCommand:extension.createSmartContract"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -33,12 +37,8 @@
 				"title": "Elrond - start (restart) node debug"
 			},
 			{
-				"command": "extension.createSmartContractErc20",
-				"title": "Elrond - create smart contract: erc20"
-			},
-			{
-				"command": "extension.createSmartContractDummy",
-				"title": "Elrond - create smart contract: dummy"
+				"command": "extension.createSmartContract",
+				"title": "Elrond - create smart contract from prototype (template)"
 			}
 		],
 		"menus": {
@@ -67,6 +67,11 @@
 					"type": "number",
 					"default": "8080",
 					"description": "API port of node-debug."
+				},
+				"elrond.testnetUrl": {
+					"type": "string",
+					"default": "https://wallet-workshop.elrond.com",
+					"description": "Testnet proxy URL."
 				}
 			}
 		}

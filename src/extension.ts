@@ -12,10 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
-	registerCustomCommand(context, 'extension.createSmartContractErc20', Projects.createErc20);
-	registerCustomCommand(context, 'extension.createSmartContractDummy', Projects.createDummy);
+	registerCustomCommand(context, 'extension.createSmartContract', Projects.createSmartContract);
 
-	Feedback.debug(`Node version: ${process.version}.`);
+	Feedback.debug(`NodeJS version: ${process.version}.`);
 }
 
 export function deactivate() { }

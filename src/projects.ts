@@ -1,54 +1,54 @@
-import { Presenter } from "./presenter";
+import * as vscode from 'vscode';
 import { FsFacade } from "./utils";
 import path = require('path');
 import { Feedback } from "./feedback";
 
 export class Projects {
-    static async createErc20() {
-        let name = await Projects.askName("myerc20");
-
-        if (name) {
-            Projects.createSubproject(name, "wrc20_arwen");
-        }
-    }
-
-    static async createDummy() {
-        let name = await Projects.askName("myexample");
-
-        if (name) {
-            Projects.createSubproject(name, "dummy");
-        }
-    }
-
-    static async askName(placeholder: string) {
-        let name = await Presenter.askSimpleInput({
-            title: "Name of smart contract (subproject)",
-            placeholder: placeholder
-        });
-
-        if (!name) {
-            Feedback.error("Smart contract name should not be empty.");
-        }
-
-        return name;
-    }
-
-    static async createSubproject(name: string, prototypeName: string) {
+    static async createSmartContract() {
         if (!FsFacade.isWorkspaceOpen()) {
             Feedback.info("No folder open in your workspace. Please open a folder.");
             return;
         }
 
+        let prototype = await Projects.askPrototype();
+
+        if (!prototype) {
+            return;
+        }
+
+        let name = await Projects.askName();
+
+        if (!name) {
+            Feedback.error("Smart contract name should not be empty. Please try again.");
+            return;
+        }
+
+        Projects.createSubproject(name, prototype);
+    }
+
+    static async askPrototype() {
+        let options = ["erc20-c", "erc20-c-old"];
+        let prototype = await vscode.window.showQuickPick(options, { placeHolder: "Select prototype (template):" });
+        return prototype;
+    }
+
+    static async askName(): Promise<string> {
+        let name = await vscode.window.showInputBox({
+            value: "Name of smart contract (subproject)",
+            prompt: "Name of smart contract (subproject)"
+        });
+
+        return name;
+    }
+
+    static async createSubproject(name: string, prototypeName: string) {
         try {
             FsFacade.createFolderInWorkspace(name);
-            let elrondScHeader = FsFacade.readFileInSnippets("elrond_sc.h");
-            let cContent = FsFacade.readFileInSnippets(`${prototypeName}.c`);
-            let exportContent = FsFacade.readFileInSnippets(`${prototypeName}.export`);
 
-            FsFacade.writeFileToWorkspace(path.join(name, "elrond_sc.h"), elrondScHeader);
-            FsFacade.writeFileToWorkspace(path.join(name, `${prototypeName}.c`), cContent);
-            FsFacade.writeFileToWorkspace(path.join(name, `${prototypeName}.export`), exportContent);
+            let prototypePath = path.join(FsFacade.getPathToSnippets(), prototypeName);
+            let subprojectPath = path.join(FsFacade.getPathToWorkspace(), name);
 
+            FsFacade.copyFolder(prototypePath, subprojectPath)
             Feedback.info(`Please refresh workspace. Subproject ${name} (${prototypeName}) created.`);
         } catch (error) {
             Feedback.error(`Could not create subproject. Reason: ${error}`);

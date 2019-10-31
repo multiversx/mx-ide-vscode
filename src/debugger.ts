@@ -1,3 +1,4 @@
+import os = require('os');
 import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
 import { Presenter } from "./presenter";
@@ -17,9 +18,32 @@ export class RestDebugger {
     public static stop(): Promise<any> {
         let port: any = MySettings.getRestDebuggerPort();
 
+        let platform = os.platform();
+
+        if (platform == "darwin") {
+            return RestDebugger.stopMacOs(port);
+        }
+
         return ProcessFacade.execute({
             program: "fuser",
             args: ["-k", `${port}/tcp`]
+        });
+    }
+
+    public static async stopMacOs(port :any): Promise<any> {
+        let lsof: any;
+        try {
+            lsof = await ProcessFacade.execute({
+                program: "lsof",
+                args: ["-nti", `:${port}`]
+            });
+        } catch (e) {
+            throw e;
+        }
+
+        return ProcessFacade.execute({
+            program: "kill",
+            args: [lsof.stdOut, "-9"]
         });
     }
 
@@ -30,10 +54,8 @@ export class RestDebugger {
         let configPath: any = path.join(toolPathFolder, "config", "config.toml");
         let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
 
-        let goWorkspace = MyEnvironment.getGoWorkspaceFolder();
-        let wasmerFolder = path.join(goWorkspace, "pkg/mod/github.com/!elrond!network/go-ext-wasm@v0.0.5/wasmer");
         let LD_LIBRARY_PATH = process.env["LD_LIBRARY_PATH"] || "/usr/lib";
-        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${wasmerFolder}`;
+        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${toolPathFolder}`;
 
         ProcessFacade.execute({
             program: toolPath,
@@ -63,6 +85,9 @@ export class RestDebugger {
                 "PrivateKey": options.privateKey,
                 "TestnetNodeEndpoint": options.testnetNodeEndpoint,
                 "SndAddress": options.senderAddress,
+                "Value": options.value.toString(),
+                "GasLimit": options.gasLimit,
+                "GasPrice": options.gasPrice,
                 "TxData": options.transactionData
             },
             eventTag: "debugger-dialogue"

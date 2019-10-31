@@ -36,7 +36,6 @@ In order to install `gcc` (on Ubuntu), run the following command in a termina;:
 sudo apt-get install build-essential
 ```
 
-
 ## How to install, uninstall and update the extension
 
 ### Installation
@@ -73,4 +72,4 @@ This extension contributes the following settings:
 * `elrond.ideFolder`: base folder for tools.
 * `elrond.downloadMirror`: download mirror for tools and dependencies.
 * `elrond.restApi.port`: port of the REST API (**debug-node**).
-* `elrond.testnetUrl`: URL of the testnet proxy.
+* `elrond.testnetUrl`: URL of the testnet.
