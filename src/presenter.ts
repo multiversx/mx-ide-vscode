@@ -18,14 +18,4 @@ export class Presenter {
     public static showMainView() {
         Presenter.mainView.show();
     }
-
-    public static async askSimpleInput(options: any) {
-        let inputBoxOptions: vscode.InputBoxOptions = {
-            value: options.placeholder,
-            prompt: options.title
-        };
-
-        let what = await vscode.window.showInputBox(inputBoxOptions);
-        return what;
-    }
 }

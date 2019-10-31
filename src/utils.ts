@@ -287,6 +287,10 @@ export class FsFacade {
         fs.copyFileSync(source, destination);
     }
 
+    public static copyFolder(sourceFolder: string, destinationFolder: string) {
+        child_process.execSync(`cp -r ${sourceFolder}/* ${destinationFolder}`);
+    }
+
     public static isWorkspaceOpen(): boolean {
         let workspaceFolder = FsFacade.getPathToWorkspace();
         return workspaceFolder ? true : false;
