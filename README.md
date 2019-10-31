@@ -12,7 +12,8 @@ The IDE also assists with the build process of a smart contract, from a high-lev
  - Build smart contracts to WASM
  - Deploy smart contracts on the **node-debug** or another node of your choice
  - Execute exported functions of the smart contract on the **debug-node** or another node of your choice
- - Gather and install tools and dependencies (a subset of LLVM, golang, node-debug and so on)
+ - Gather and install tools and dependencies (a subset of LLVM, node-debug and so on)
+ - Execute queries against smart contracts deployed on a testnet.
 
 
 ## Requirements
@@ -29,14 +30,7 @@ This extension depends on:
 
 In addition, the extension requires the following tools, which are not installed automatically:
 
-* `gcc` - required to build **node-debug** which depends on the Arwen Virtual Machine, whose compilation requires both a **go** and a **C** compiler.
 * `untar` and `unzip` - you most probably already have them installed on your machine.
-
-In order to install GCC (on Ubuntu):
-
-```
-sudo apt-get install build-essential
-```
 
 
 ## How to build and / or install
@@ -66,3 +60,4 @@ This extension contributes the following settings:
 * `elrond.ideFolder`: base folder for tools.
 * `elrond.downloadMirror`: download mirror for tools and dependencies.
 * `elrond.restApi.port`: port of REST API (node-debug).
+* `elrond.testnetUrl`: URL of testnet.
