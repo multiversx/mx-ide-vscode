@@ -69,6 +69,7 @@ export class MyEnvironment {
         Feedback.debug("node-debug downloaded.");
 
         await FsFacade.untar(archivePath, nodeDebugPath);
+        FsFacade.markAsExecutable(path.join(nodeDebugPath, "debugWithRestApi"));
 
         Feedback.info("node-debug ready.");
     }
