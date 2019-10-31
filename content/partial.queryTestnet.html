@@ -1,0 +1,61 @@
+<div class="query-testnet-view">
+    <div class="row mt-2">
+        <div class="col-sm-6">
+            <form>
+                <div class="form-group">
+                    <label class="">Testnet Proxy:</label>
+                    <input class="form-control" name="ProxyUrl" type="text"
+                        value="https://wallet-workshop.elrond.com" />
+                </div>
+
+                <div class="form-group">
+                    <label class="">Smart contract address:</label>
+                    <input class="form-control" name="ScAddress" type="text" value="" />
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Function name</label>
+                            <input name="FunctionName" type="text" class="form-control" required value="do_balance">
+                            <small class="form-text text-muted">An exported function of your smart
+                                contract.</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Result type</label>
+                            <select name="ResultType" class="form-control">
+                                <option value="int">Decimal</option>
+                                <option value="string">String</option>
+                                <option value="hex">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Query aguments</label>
+                    <textarea name="Args" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 text-right">
+                        <button type="button" class="btn btn-lg btn-block btn-success btn-submit">Run Query</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="alert alert-info value-response d-none mt-2 text-center"></div>
+            <div class="alert alert-danger validation-errors-container d-none mt-2"></div>
+        </div>
+
+        <div class="col-sm-6">
+            <h4>Request</h4>
+            <pre class="raw-request"></pre>
+
+            <h4>Response</h4>
+            <pre class="raw-response"></pre>
+        </div>
+    </div>
+</div>

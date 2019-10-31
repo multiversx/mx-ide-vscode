@@ -28,7 +28,10 @@
                     <a class="nav-link" data-toggle="tab" href="#RestDialogue">REST dialogue</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Environment">Environment</a>
+                    <a class="nav-link" data-toggle="tab" href="#QueryTestnet">Query Testnet</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#Environment"Environment></a>
                 </li>
                 <li class="nav-item d-none">
                     <a class="nav-link" data-toggle="tab" href="#ExtensionConsole">Extension console</a>
@@ -73,6 +76,11 @@
                     <div class="payload mt-3">
                     </div>
                 </div>
+                <div class="tab-pane" id="QueryTestnet">
+                    <div class="mt-3">
+                        {{partial.queryTestnet.html}}
+                    </div>
+                </div>
                 <div class="tab-pane" id="Environment">
                     <div class="mt-3">
                         {{partial.environment.html}}
@@ -93,8 +101,10 @@
 
     <script type="text/javascript" src="models.js"></script>
     <script type="text/javascript" src="models.environment.js"></script>
+    <script type="text/javascript" src="models.queryTestnet.js"></script>
     <script type="text/javascript" src="models.restDialogue.js"></script>
     <script type="text/javascript" src="views.environment.js"></script>
+    <script type="text/javascript" src="views.queryTestnet.js"></script>
     <script type="text/javascript" src="views.smartContractsList.js"></script>
     <script type="text/javascript" src="views.smartContractPanel.js"></script>
     <script type="text/javascript" src="views.deployDialog.js"></script>

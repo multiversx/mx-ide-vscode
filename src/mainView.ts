@@ -6,6 +6,7 @@ import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
 import { MyEnvironment } from './myenvironment';
 import { MyError, MyErrorCatcher } from './errors';
+import { TestnetFacade } from './testnetFacade';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -27,6 +28,10 @@ export class MainView {
         });
 
         eventBus.on("debugger-dialogue:*", function (data, what) {
+            self.talkToWebView(what, data);
+        });
+
+        eventBus.on("testnet-query:*", function (data, what) {
             self.talkToWebView(what, data);
         });
 
@@ -90,6 +95,12 @@ export class MainView {
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
             MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
+        });
+
+        eventBus.on("view-message:testnetQuerySendRequest", function (payload) {
+            TestnetFacade.query(payload)
+                .then(payload => self.talkToWebView("testnetQueryResponse", payload))
+                .catch(MyErrorCatcher.topLevel);
         });
     }
 
@@ -155,6 +166,7 @@ export class MainView {
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
         html = html.replace("{{partial.environment.html}}", FsFacade.readFileInContent("partial.environment.html"));
+        html = html.replace("{{partial.queryTestnet.html}}", FsFacade.readFileInContent("partial.queryTestnet.html"));
         html = html.replace("{{template.smartContractPanel.html}}", FsFacade.readFileInContent("template.smartContractPanel.html"));
         html = html.replace("{{template.deployDialog.html}}", FsFacade.readFileInContent("template.deployDialog.html"));
         html = html.replace("{{template.runDialog.html}}", FsFacade.readFileInContent("template.runDialog.html"));
