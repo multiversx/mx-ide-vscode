@@ -14,7 +14,7 @@
 	"categories": [
 		"Other"
 	],
-	"icon": "content/logo.png",
+	"icon": "content/logo-background.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
