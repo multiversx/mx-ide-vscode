@@ -7,9 +7,12 @@
 
         <div class="modal-body">
             <form>
-                <fieldset>
-                    <legend>...</legend>
-                </fieldset>
+                <% if (contract.IsSourceC) { %>
+                <div class="form-group">
+                    <label>Exported functions</label>
+                    <textarea name="ExportedFunctions" class="form-control" rows="3"><%= contract.ExportFile.Text %></textarea>
+                </div>
+                <% } %>
             </form>
 
             <div class="alert alert-danger validation-errors-container d-none"></div>

@@ -9,9 +9,9 @@ import { SmartContract } from './smartContract';
 
 export class Builder {
     static async buildModule(smartContract: SmartContract): Promise<any> {
-        if (smartContract.isSourceC()) {
+        if (smartContract.IsSourceC) {
             return Builder.buildCModule(smartContract);
-        } else if (smartContract.isSourceRust()) {
+        } else if (smartContract.IsSourceRust) {
             return Builder.buildRustModule(smartContract);
         } else {
             throw new MyError({ Message: "Can't build file, unknown type." });

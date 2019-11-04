@@ -20,6 +20,10 @@ export class MyFile {
     public readonly WorkspaceProject: string;
     public readonly WorkspaceProjectName: string;
 
+    // Properties with lazy initialization.
+    public Text: string;
+    public Binary: Buffer;
+
     constructor(filePath: string) {
         this.Path = filePath;
         this.assertExists();
@@ -80,15 +84,15 @@ export class MyFile {
     public readText(): string {
         this.assertExists();
 
-        let text: string = fs.readFileSync(this.Path, { encoding: "utf8" });
-        return text;
+        this.Text = fs.readFileSync(this.Path, { encoding: "utf8" });
+        return this.Text;
     }
 
     public readBinary(): Buffer {
         this.assertExists();
 
-        let buffer: Buffer = fs.readFileSync(this.Path);
-        return buffer;
+        this.Binary = fs.readFileSync(this.Path);
+        return this.Binary;
     }
 
     public readBinaryHex(): string {

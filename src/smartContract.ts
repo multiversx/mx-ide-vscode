@@ -11,6 +11,9 @@ export class SmartContract {
     public readonly FriendlyId: string;
     public readonly SourceFile: MyFile;
     public BytecodeFile: MyFile;
+    public ExportFile: MyFile;
+    public readonly IsSourceC: boolean;
+    public readonly IsSourceRust: boolean;
 
     public Address: string;
     public AddressTimestamp: Date;
@@ -22,14 +25,9 @@ export class SmartContract {
         this.SourceFile = sourceFile;
         this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
         this.LatestRun = new SmartContractRun();
-    }
 
-    public isSourceC(): boolean {
-        return this.SourceFile.Extension == ".c";
-    }
-
-    public isSourceRust(): boolean {
-        return this.SourceFile.Extension == ".rs";
+        this.IsSourceC = this.SourceFile.Extension == ".c";
+        this.IsSourceRust = this.SourceFile.Extension == ".rs";
     }
 
     public isBuilt(): boolean {
@@ -111,6 +109,16 @@ export class SmartContract {
             Extensions: ["wasm"],
             Recursive: true
         });
+
+        this.ExportFile = MyFile.findFirst({
+            Folder: this.SourceFile.WorkspaceProject,
+            Extensions: ["export"],
+            Recursive: true
+        });
+        
+        if (this.ExportFile) {
+            this.ExportFile.readText();
+        }
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
