@@ -14,7 +14,7 @@ export class Builder {
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
         let filePath_export = `${filePathWithoutExtension}.export`;
 
-        let toolsFolder = Builder.getToolsFolder();
+        let toolsFolder = Builder.getLlvmToolsFolder();
         let clangPath: any = path.join(toolsFolder, "clang-9");
         let llcPath: any = path.join(toolsFolder, "llc");
         let wasmLdPath: any = path.join(toolsFolder, "wasm-ld");
@@ -80,9 +80,15 @@ export class Builder {
         Feedback.info("Build done.");
     }
 
-    public static getToolsFolder() {
+    public static getLlvmToolsFolder() {
         let ideFolder = MySettings.getIdeFolder();
         let llvmFolder = path.join(ideFolder, "vendor-llvm");
+        return llvmFolder;
+    }
+
+    public static getRustToolsFolder() {
+        let ideFolder = MySettings.getIdeFolder();
+        let llvmFolder = path.join(ideFolder, "rust");
         return llvmFolder;
     }
 }

@@ -13,11 +13,11 @@ export class MyEnvironment {
     static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
     static readonly DebugNodeModuleToBuild: string = "elrond-go-node-debug-master/cmd/debugWithRestApi";
 
-    static async installBuildTools(): Promise<any> {
+    static async installBuildToolsForC(): Promise<any> {
         MyEnvironment.ensureFolderStructure();
 
         let ideFolder = MySettings.getIdeFolder();
-        let toolsFolder = Builder.getToolsFolder();
+        let toolsFolder = Builder.getLlvmToolsFolder();
         let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}`;
         let archivePath = path.join(ideFolder, "vendor-llvm.tar.gz");
 
@@ -51,6 +51,40 @@ export class MyEnvironment {
         }
 
         return urlLinux;
+    }
+
+    static async installBuildToolsForRust(): Promise<any> {
+        MyEnvironment.ensureFolderStructure();
+
+        let ideFolder = MySettings.getIdeFolder();
+        let toolsFolder = Builder.getRustToolsFolder();
+        let downloadUrl = "https://sh.rustup.rs";
+        let scriptPath = path.join(ideFolder, "rustup.sh");
+
+        await RestFacade.download({
+            url: downloadUrl,
+            destination: scriptPath
+        });
+
+        FsFacade.markAsExecutable(scriptPath);
+
+        let RUSTUP_HOME = toolsFolder;
+        let CARGO_HOME = toolsFolder;
+
+        try {
+            await ProcessFacade.execute({
+                program: scriptPath,
+                args: ["--verbose", "--default-toolchain", "nightly", "--profile", "minimal", "--no-modify-path", "-y"],
+                environment: {
+                    RUSTUP_HOME: RUSTUP_HOME,
+                    CARGO_HOME: CARGO_HOME
+                }
+            });
+        } catch (error) {
+            throw new MySetupError({ Message: "Could not instal rust.", Inner: error });
+        }
+
+        Feedback.info("Rust tools are ready to use.");
     }
 
     static async installDebugNode(): Promise<any> {
@@ -97,7 +131,7 @@ export class MyEnvironment {
 
     static ensureFolderStructure() {
         let ide = MySettings.getIdeFolder();
-        let llvmTools = Builder.getToolsFolder();
+        let llvmTools = Builder.getLlvmToolsFolder();
         let goCache = path.join(ide, "go-cache");
         let nodeDebug = RestDebugger.getFolderPath();
         let nodeDebugConfig = path.join(nodeDebug, "config");

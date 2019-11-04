@@ -1,7 +1,8 @@
 var EnvironmentView = Backbone.View.extend({
     events: {
         "click .btn-refresh": "onClickRefresh",
-        "click .btn-install-build-tools": "onClickInstallBuildTools",
+        "click .btn-install-build-tools-c": "onClickInstallBuildToolsForC",
+        "click .btn-install-build-tools-rust": "onClickInstallBuildToolsForRust",
         "click .btn-install-go": "onClickInstallGo",
         "click .btn-install-debug-node": "onClickInstallDebugNode"
     },
@@ -39,8 +40,12 @@ var EnvironmentView = Backbone.View.extend({
         this.$el.find(".downloads-progress").html(html);
     },
 
-    onClickInstallBuildTools: function () {
-        app.talkToVscode("environment-install-build-tools");
+    onClickInstallBuildToolsForC: function () {
+        app.talkToVscode("environment-install-build-tools-c");
+    },
+
+    onClickInstallBuildToolsForRust: function () {
+        app.talkToVscode("environment-install-build-tools-rust");
     },
 
     onClickInstallGo: function() {
