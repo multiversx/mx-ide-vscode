@@ -59,19 +59,37 @@
     │   ├── config
     │   │   ├── config.toml
     │   │   └── genesis.json
-    │   └── debugWithRestApi
+    │   ├── debugWithRestApi
+    │   └── libwasmer_runtime_c_api.so
+    ├── vendor-rust
+    │   ├── bin
+    │   │   ├── cargo
+    │   │   ├── cargo-clippy
+    │   │   ├── cargo-fmt
+    │   │   ├── cargo-miri
+    │   │   ├── clippy-driver
+    │   │   ├── rls
+    │   │   ├── rustc
+    │   │   ├── rustdoc
+    │   │   ├── rustfmt
+    │   │   ├── rust-gdb
+    │   │   ├── rust-lldb
+    │   │   └── rustup
+    │   └── toolchains
+    │       └── nightly-x86_64-unknown-linux-gnu
     └── vendor-llvm
         ├── clang-9
         ├── llc
         ├── lld
-        └── wasm-ld
+        └── wasm-ld -> lld
                 </pre>
             </div>
         </div>
     </div>
 
     <button class="btn btn-info btn-install-build-tools-c">Get clang and llc</button>
-    <button class="btn btn-info btn-install-build-tools-rust">Get rust tools</button>
+    <button class="btn btn-info btn-install-build-tools-rust">Get Rust tools</button>
+    <button class="btn btn-danger btn-uninstall-build-tools-rust">Uninstall Rust tools</button>
     <!-- <button class="btn btn-info btn-install-go">Get go environment</button> -->
     <button class="btn btn-info btn-install-debug-node">Install (reinstall) debug node</button>
 

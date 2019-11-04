@@ -93,6 +93,10 @@ export class MainView {
             MyEnvironment.installBuildToolsForRust().catch(MyErrorCatcher.topLevel);
         });
 
+        eventBus.on("view-message:environment-uninstall-build-tools-rust", function (payload) {
+            MyEnvironment.uninstallBuildToolsForRust().catch(MyErrorCatcher.topLevel);
+        });
+
         // eventBus.on("view-message:environment-install-go", function (payload) {
         //     MyEnvironment.installGo().catch(MyErrorCatcher.topLevel);
         // });

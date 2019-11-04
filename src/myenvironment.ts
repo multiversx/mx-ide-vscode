@@ -74,17 +74,41 @@ export class MyEnvironment {
         try {
             await ProcessFacade.execute({
                 program: scriptPath,
-                args: ["--verbose", "--default-toolchain", "nightly", "--profile", "minimal", "--no-modify-path", "-y"],
+                args: ["--verbose", "--default-toolchain", "nightly", "--profile", "minimal", "--target", "wasm32-unknown-unknown", "--no-modify-path", "-y"],
                 environment: {
                     RUSTUP_HOME: RUSTUP_HOME,
                     CARGO_HOME: CARGO_HOME
                 }
             });
         } catch (error) {
-            throw new MySetupError({ Message: "Could not instal rust.", Inner: error });
+            throw new MySetupError({ Message: "Could not install rust.", Inner: error });
         }
 
         Feedback.info("Rust tools are ready to use.");
+    }
+
+    static async uninstallBuildToolsForRust(): Promise<any> {
+        let toolsFolder = Builder.getRustToolsFolder();
+
+        let RUSTUP_HOME = toolsFolder;
+        let CARGO_HOME = toolsFolder;
+        let PATH = `${path.join(toolsFolder, "bin")}:${process.env["PATH"]}`;
+
+        try {
+            await ProcessFacade.execute({
+                program: "rustup",
+                args: ["self", "uninstall", "-y"],
+                environment: {
+                    PATH: PATH,
+                    RUSTUP_HOME: RUSTUP_HOME,
+                    CARGO_HOME: CARGO_HOME
+                }
+            });
+        } catch (error) {
+            throw new MySetupError({ Message: "Could not uninstall rust.", Inner: error });
+        }
+
+        Feedback.info("Rust tools are not uninstalled.");
     }
 
     static async installDebugNode(): Promise<any> {
