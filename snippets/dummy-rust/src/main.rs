@@ -2,9 +2,9 @@
 
 extern {
     fn getNumArguments() -> i32;
-    fn bigInsert(value: i32) -> i32;
-    fn bigAdd(dest: i32, x: i32, y: i32);
-    fn debugPrintBig(bih: i32);
+    fn bigIntNew(value: i32) -> i32;
+    fn bigIntAdd(dest: i32, x: i32, y: i32);
+    fn bigIntFinish(bih: i32);
 }
 
 // rustc dummy.rs --target=wasm32-unknown-unknown
@@ -32,11 +32,10 @@ pub extern fn dummy6() -> i32 {
 #[no_mangle]
 pub extern fn dummy7() {
     unsafe {
-        let x = bigInsert(123);
-        let y = bigInsert(2);
-        let z = bigInsert(0);
-        bigAdd(z, x, y);
-        debugPrintBig(z);
-        
+        let x = bigIntNew(123);
+        let y = bigIntNew(2);
+        let z = bigIntNew(0);
+        bigIntAdd(z, x, y);
+        bigIntFinish(z);
     }
 }
