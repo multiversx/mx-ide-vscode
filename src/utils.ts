@@ -122,8 +122,18 @@ export class FsFacade {
         return path.extname(filePath);
     }
 
+    public static getTopmostFolder(filePath: string) {
+        let parts = filePath.split(path.sep).filter(item => item.length > 0);
+        return parts[0];
+    }
+
     public static getFilename(filePath: string) {
         return path.basename(filePath);
+    }
+
+    public static getFilenameWithoutExtension(filePath: string) {
+        let fileName = path.basename(filePath);
+        return FsFacade.removeExtension(fileName);
     }
 
     public static getFolder(filePath: string) {
@@ -176,6 +186,22 @@ export class FsFacade {
     public static getFilesInWorkspaceByExtension(extension: string) {
         let folder: string = FsFacade.getPathToWorkspace();
         let files = glob.sync(`${folder}/**/*${extension}`, {});
+        return files;
+    }
+
+    public static getFirstFileInFolderByExtension(folder: string, extension: string, recursive: boolean = false) {
+        let files = FsFacade.getFilesInFolderByExtension(folder, extension, recursive);
+        return files[0];
+    }
+
+    public static getFilesInFolderByExtension(folder: string, extension: string, recursive: boolean = false) {
+        let pattern = `${folder}/*${extension}`;
+
+        if (recursive) {
+            pattern = `${folder}/**/*${extension}`;
+        }
+
+        let files = glob.sync(pattern, {});
         return files;
     }
 

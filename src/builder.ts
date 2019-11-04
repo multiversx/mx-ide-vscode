@@ -5,21 +5,21 @@ import { Syms } from "./syms";
 import { ProcessFacade, FsFacade } from "./utils";
 import { Feedback } from './feedback';
 import { MyError } from './errors';
+import { SmartContract } from './smartContract';
 
 export class Builder {
-    static async buildModule(filePath: string): Promise<any> {
-        let extension = FsFacade.getExtension(filePath).toLowerCase();
-
-        if (extension == ".c") {
-            return Builder.buildCModule(filePath);
-        } else if (extension == ".rs") {
-            return Builder.buildRustModule(filePath);
+    static async buildModule(smartContract: SmartContract): Promise<any> {
+        if (smartContract.isSourceC()) {
+            return Builder.buildCModule(smartContract);
+        } else if (smartContract.isSourceRust()) {
+            return Builder.buildRustModule(smartContract);
         } else {
             throw new MyError({ Message: "Can't build file, unknown type." });
         }
     }
 
-    private static async buildCModule(filePath: string): Promise<any> {
+    private static async buildCModule(smartContract: SmartContract): Promise<any> {
+        let filePath = smartContract.SourceFile;
         let filePathWithoutExtension = FsFacade.removeExtension(filePath);
         let filePath_ll = `${filePathWithoutExtension}.ll`;
         let filePath_o = `${filePathWithoutExtension}.o`;
@@ -31,7 +31,7 @@ export class Builder {
         let llcPath: any = path.join(toolsFolder, "llc");
         let wasmLdPath: any = path.join(toolsFolder, "wasm-ld");
         let symsFilePath = FsFacade.createTempFile("main.syms", Syms.getMainSymsAsText());
-        
+
         function doClang(): Promise<any> {
             return ProcessFacade.execute({
                 program: clangPath,
@@ -56,7 +56,7 @@ export class Builder {
 
         function doWasm(): Promise<any> {
             let buildArgs = ["--verbose", "--no-entry", filePath_o, "-o", filePath_wasm, "--strip-all", `-allow-undefined-file=${symsFilePath}`];
-            
+
             for (let exportRaw of exportsRaw) {
                 let trimmed = exportRaw.trim();
                 if (trimmed) {
@@ -71,28 +71,14 @@ export class Builder {
             });
         }
 
-        function createArwenFiles() {
-            let wasmHexPath = `${filePath_wasm}.hex`;
-            let wasmHexArwenPath = `${wasmHexPath}.arwen`;
-            const ArwenTag = "0500";
-
-            let buffer = FsFacade.readBinaryFile(filePath_wasm);
-            let wasmHex = buffer.toString("hex");
-            let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
-
-            FsFacade.writeFile(wasmHexPath, wasmHex);
-            FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
-        }
-
         await doClang();
         await doLlc();
         await doWasm();
-        createArwenFiles();
 
         Feedback.info("Build done.");
     }
 
-    private static async buildRustModule(filePath: string): Promise<any> {
+    private static async buildRustModule(smartContract: SmartContract): Promise<any> {
         let toolsFolder = Builder.getRustToolsFolder();
         let RUSTUP_HOME = toolsFolder;
         let CARGO_HOME = toolsFolder;
@@ -101,15 +87,14 @@ export class Builder {
         await ProcessFacade.execute({
             program: "cargo",
             args: ["build", "--target=wasm32-unknown-unknown"],
+            workingDirectory: smartContract.ProjectFolder,
             environment: {
                 PATH: PATH,
                 RUSTUP_HOME: RUSTUP_HOME,
                 CARGO_HOME: CARGO_HOME
-            }
+            },
             eventTag: "builder"
         });
-
-
     }
 
     public static getLlvmToolsFolder() {

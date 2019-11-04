@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { RestDebugger } from './debugger';
-import { Builder } from './builder';
 import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
 import { Projects } from './projects';
+import { SmartContractsCollection } from './smartContract';
 
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
@@ -30,7 +30,8 @@ function openIDE() {
 
 function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
-	Builder.buildModule(filePath);
+	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
+	smartContract.build();
 }
 
 function startNodeDebug() {

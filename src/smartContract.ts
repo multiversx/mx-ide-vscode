@@ -3,10 +3,13 @@ import { RestDebugger } from "./debugger";
 import { Builder } from "./builder";
 import _ = require("underscore");
 import { MyError } from "./errors";
+import path = require('path');
 
 export class SmartContract {
     public readonly FriendlyId: string;
     public readonly SourceFile: string;
+    public readonly FilenameWithoutExtension: string;
+    public readonly ProjectFolder: string;
     public SourceFileTimestamp: Date;
     public BytecodeFile: string;
     public BytecodeFileTimestamp: Date;
@@ -18,23 +21,69 @@ export class SmartContract {
 
     constructor(sourceFile: string) {
         this.SourceFile = sourceFile;
+        this.FilenameWithoutExtension = FsFacade.getFilenameWithoutExtension(this.SourceFile);
         this.FriendlyId = FsFacade.getPathRelativeToWorkspace(sourceFile);
+        this.ProjectFolder = path.join(FsFacade.getPathToWorkspace(), FsFacade.getTopmostFolder(this.FriendlyId));
         this.LatestRun = new SmartContractRun();
+    }
+
+    public isSourceC(): boolean {
+        return this.getSourceExtension() == ".c";
+    }
+
+    public isSourceRust(): boolean {
+        return this.getSourceExtension() == ".rs";
+    }
+
+    public getSourceExtension(): string {
+        let extension = FsFacade.getExtension(this.SourceFile).toLowerCase();
+        return extension;
     }
 
     public isBuilt(): boolean {
         return this.BytecodeFile ? true : false;
     }
 
-    public build(): Promise<any> {
-        return Builder.buildModule(this.SourceFile);
+    public async build(): Promise<any> {
+        await Builder.buildModule(this);
+        this.createArwenFiles();
+    }
+
+    public createArwenFiles() {
+        let wasmPath = this.findWasmFile();
+        let wasmHexPath = `${wasmPath}.hex`;
+        let wasmHexArwenPath = `${wasmHexPath}.arwen`;
+        const ArwenTag = "0500";
+
+        let buffer = FsFacade.readBinaryFile(wasmPath);
+        let wasmHex = buffer.toString("hex");
+        let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
+
+        FsFacade.writeFile(wasmHexPath, wasmHex);
+        FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
+    }
+
+    public findWasmFile(): string {
+        let file = FsFacade.getFirstFileInFolderByExtension(this.ProjectFolder, ".wasm", true);
+        return file;
+    }
+
+    public readHexArwenFile(): string {
+        let filePath = this.findHexArwenFile();
+        let content = FsFacade.readFile(filePath);
+        return content;
+    }
+
+    public findHexArwenFile(): string {
+        let file = FsFacade.getFirstFileInFolderByExtension(this.ProjectFolder, ".hex.arwen", true);
+        return file;
     }
 
     public async deployToDebugger(options: any): Promise<any> {
         let self = this;
 
         // Prepare transaction data.
-        let transactionData = FsFacade.readFile(`${this.BytecodeFile}.hex.arwen`);
+        let transactionData = this.readHexArwenFile();
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
 
         const response = await RestDebugger.deploySmartContract(options);
@@ -62,7 +111,7 @@ export class SmartContract {
         // Prepare transaction data.
         let transactionData = options.functionName;
         options.transactionData = this.appendArgsToTxData(options.functionArgs, transactionData);
-        
+
         try {
             const vmOutput = await RestDebugger.runSmartContract(options);
             self.LatestRun.VMOutput = vmOutput;
@@ -73,12 +122,8 @@ export class SmartContract {
 
     public syncWithWorkspace() {
         this.SourceFileTimestamp = FsFacade.getModifiedOn(this.SourceFile);
-        let bytecodeFileTest = `${FsFacade.removeExtension(this.SourceFile)}.wasm`;
-
-        if (FsFacade.fileExists(bytecodeFileTest)) {
-            this.BytecodeFile = bytecodeFileTest;
-            this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
-        }
+        this.BytecodeFile = this.findWasmFile();
+        this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
@@ -98,7 +143,7 @@ export class SmartContract {
                 transactionData += item;
             } else {
                 if (isNaN(itemAsAny)) {
-                    throw new MyError({Message: `Can't handle non-hex, non-number arguments yet: ${item}.`});    
+                    throw new MyError({ Message: `Can't handle non-hex, non-number arguments yet: ${item}.` });
                 } else {
                     let number = Number(item);
                     let hexString = number.toString(16);
@@ -124,15 +169,7 @@ export class SmartContractsCollection {
         // Keep data after sync.
         smartContractsNow.forEach(contractNow => {
             let contractBefore = smartContractsBefore.find(e => e.FriendlyId == contractNow.FriendlyId);
-
-            if (contractBefore) {
-                contractNow.Address = contractBefore.Address;
-                contractNow.AddressTimestamp = contractBefore.AddressTimestamp;
-                contractNow.AddressOnTestnet = contractBefore.AddressOnTestnet;
-                contractNow.AddressOnTestnetTimestamp = contractBefore.AddressOnTestnetTimestamp;
-                contractNow.LatestRun = contractBefore.LatestRun;
-            }
-
+            _.extendOwn(contractNow, contractBefore);
             contractNow.syncWithWorkspace();
         });
 
@@ -141,6 +178,11 @@ export class SmartContractsCollection {
 
     public static getById(id: string): SmartContract {
         let item = this.Items.find(e => e.FriendlyId == id);
+        return item;
+    }
+
+    public static getBySourceFile(filePath: string): SmartContract {
+        let item = this.Items.find(e => e.SourceFile == filePath);
         return item;
     }
 }
