@@ -30,7 +30,7 @@ function openIDE() {
 
 function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
-	Builder.buildFile(filePath);
+	Builder.buildModule(filePath);
 }
 
 function startNodeDebug() {

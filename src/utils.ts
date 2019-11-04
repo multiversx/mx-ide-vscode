@@ -118,6 +118,10 @@ export class FsFacade {
         return withoutExtension;
     }
 
+    public static getExtension(filePath: string) {
+        return path.extname(filePath);
+    }
+
     public static getFilename(filePath: string) {
         return path.basename(filePath);
     }

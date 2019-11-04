@@ -4,10 +4,22 @@ import { MySettings } from './settings';
 import { Syms } from "./syms";
 import { ProcessFacade, FsFacade } from "./utils";
 import { Feedback } from './feedback';
+import { MyError } from './errors';
 
 export class Builder {
+    static async buildModule(filePath: string): Promise<any> {
+        let extension = FsFacade.getExtension(filePath).toLowerCase();
 
-    static async buildFile(filePath: string): Promise<any> {
+        if (extension == ".c") {
+            return Builder.buildCModule(filePath);
+        } else if (extension == ".rs") {
+            return Builder.buildRustModule(filePath);
+        } else {
+            throw new MyError({ Message: "Can't build file, unknown type." });
+        }
+    }
+
+    private static async buildCModule(filePath: string): Promise<any> {
         let filePathWithoutExtension = FsFacade.removeExtension(filePath);
         let filePath_ll = `${filePathWithoutExtension}.ll`;
         let filePath_o = `${filePathWithoutExtension}.o`;
@@ -78,6 +90,26 @@ export class Builder {
         createArwenFiles();
 
         Feedback.info("Build done.");
+    }
+
+    private static async buildRustModule(filePath: string): Promise<any> {
+        let toolsFolder = Builder.getRustToolsFolder();
+        let RUSTUP_HOME = toolsFolder;
+        let CARGO_HOME = toolsFolder;
+        let PATH = `${path.join(toolsFolder, "bin")}:${process.env["PATH"]}`;
+
+        await ProcessFacade.execute({
+            program: "cargo",
+            args: ["build", "--target=wasm32-unknown-unknown"],
+            environment: {
+                PATH: PATH,
+                RUSTUP_HOME: RUSTUP_HOME,
+                CARGO_HOME: CARGO_HOME
+            }
+            eventTag: "builder"
+        });
+
+
     }
 
     public static getLlvmToolsFolder() {

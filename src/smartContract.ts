@@ -27,7 +27,7 @@ export class SmartContract {
     }
 
     public build(): Promise<any> {
-        return Builder.buildFile(this.SourceFile);
+        return Builder.buildModule(this.SourceFile);
     }
 
     public async deployToDebugger(options: any): Promise<any> {
@@ -73,7 +73,6 @@ export class SmartContract {
 
     public syncWithWorkspace() {
         this.SourceFileTimestamp = FsFacade.getModifiedOn(this.SourceFile);
-
         let bytecodeFileTest = `${FsFacade.removeExtension(this.SourceFile)}.wasm`;
 
         if (FsFacade.fileExists(bytecodeFileTest)) {
@@ -116,7 +115,9 @@ export class SmartContractsCollection {
     public static Items: SmartContract[] = [];
 
     public static syncWithWorkspace() {
-        let sourceFilesNow = FsFacade.getFilesInWorkspaceByExtension(".c");
+        let cFiles = FsFacade.getFilesInWorkspaceByExtension(".c");
+        let rsFiles = FsFacade.getFilesInWorkspaceByExtension(".rs");
+        let sourceFilesNow = cFiles.concat(rsFiles);
         let smartContractsNow = sourceFilesNow.map(e => new SmartContract(e));
         let smartContractsBefore = this.Items;
 
