@@ -173,13 +173,19 @@ export class MainView {
         let html: string = FsFacade.readFileInContent("mainView.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
-        html = html.replace("{{partial.environment.html}}", FsFacade.readFileInContent("partial.environment.html"));
-        html = html.replace("{{partial.queryTestnet.html}}", FsFacade.readFileInContent("partial.queryTestnet.html"));
-        html = html.replace("{{template.smartContractPanel.html}}", FsFacade.readFileInContent("template.smartContractPanel.html"));
-        html = html.replace("{{template.deployDialog.html}}", FsFacade.readFileInContent("template.deployDialog.html"));
-        html = html.replace("{{template.runDialog.html}}", FsFacade.readFileInContent("template.runDialog.html"));
-        html = html.replace("{{template.vmOutput.html}}", FsFacade.readFileInContent("template.vmOutput.html"));
-        html = html.replace("{{template.restDialogueItem.html}}", FsFacade.readFileInContent("template.restDialogueItem.html"));
+        
+        // Add partial views.
+        let partialFiles = FsFacade.getFileNamesInContentByExtension(".html").filter(name => name.startsWith("partial"));
+        partialFiles.forEach(name => {
+            html = html.replace(`{{${name}}}`, FsFacade.readFileInContent(name));
+        });
+
+        // Add view templates.
+        let templateFiles = FsFacade.getFileNamesInContentByExtension(".html").filter(name => name.startsWith("template"));
+        templateFiles.forEach(name => {
+            html = html.replace(`{{${name}}}`, FsFacade.readFileInContent(name));
+        });
+
         return html;
     }
 
