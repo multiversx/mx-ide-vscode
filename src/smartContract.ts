@@ -34,6 +34,13 @@ export class SmartContract {
         return this.BytecodeFile ? true : false;
     }
 
+    public async setBuildOptions(options: any): Promise<any> {
+        if (this.IsSourceC) {
+            let exportFilePath = `${this.SourceFile.PathWithoutExtension}.export`;
+            FsFacade.writeFile(exportFilePath, options.exportedFunctions);
+        }
+    }
+
     public async build(): Promise<any> {
         await Builder.buildModule(this);
         this.syncWithWorkspace();
@@ -115,7 +122,7 @@ export class SmartContract {
             Extensions: ["export"],
             Recursive: true
         });
-        
+
         if (this.ExportFile) {
             this.ExportFile.readText();
         }

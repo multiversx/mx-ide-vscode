@@ -12,6 +12,8 @@
                     <label>Exported functions</label>
                     <textarea name="ExportedFunctions" class="form-control" rows="3"><%= contract.ExportFile.Text %></textarea>
                 </div>
+                <% } else if (contract.IsSourceRust) { %>
+                    <p>No build options for Rust (yet).</p>
                 <% } %>
             </form>
 

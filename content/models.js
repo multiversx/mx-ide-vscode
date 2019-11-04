@@ -8,14 +8,20 @@ var SmartContract = Backbone.Model.extend({
         app.talkToVscode("buildSmartContract", { id: this.id });
     },
 
-    deploy: function (deployOptions) {
-        payload = deployOptions.toJSON();
+    setBuildOptions: function(options) {
+        payload = options;
+        payload.id = this.id;
+        app.talkToVscode("setSmartContractBuildOptions", payload);
+    },
+
+    deploy: function (options) {
+        payload = options.toJSON();
         payload.id = this.id;
         app.talkToVscode("deploySmartContract", payload);
     },
 
-    run: function (runOptions) {
-        payload = runOptions.toJSON();
+    run: function (options) {
+        payload = options.toJSON();
         payload.id = this.id;
         app.talkToVscode("runSmartContract", payload);
     }

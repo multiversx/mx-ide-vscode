@@ -9,7 +9,6 @@ var BuildOptionsDialog = Backbone.View.extend({
     },
 
     initialize: function (options) {
-        //this.listenTo(this.model, "change", this.onModelChange);
         this.render();
     },
 
@@ -48,6 +47,16 @@ var BuildOptionsDialog = Backbone.View.extend({
     },
 
     onClickSubmit: function () {
-        
-    }
+        var options = {
+            exportedFunctions: this.getExported()
+        };
+
+        this.model.setBuildOptions(options);
+        this.close();
+    },
+
+    getExported: function () {
+        var text = this.$el.find("[name='ExportedFunctions']").val();
+        return text;
+    },
 });
