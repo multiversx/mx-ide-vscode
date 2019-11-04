@@ -159,6 +159,13 @@ export class FsFacade {
         return FsFacade.readFile(filePath);
     }
 
+    public static getFileNamesInContentByExtension(extension: string) {
+        let folder: string = FsFacade.getPathToContent();
+        let files = glob.sync(`${folder}/*${extension}`, {});
+        files = files.map(file => FsFacade.getFilename(file));
+        return files;
+    }
+
     public static getPathToContent() {
         let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");

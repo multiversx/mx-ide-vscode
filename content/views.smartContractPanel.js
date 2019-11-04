@@ -3,6 +3,7 @@ var SmartContractPanelView = Backbone.View.extend({
 
     events: {
         "click .btn-build-contract": "onClickBuild",
+        "click .btn-build-options": "onClickBuildOptions",
         "click .btn-deploy-contract": "onClickDeploy",
         "click .btn-deploy-contract-testnet": "onClickDeployOnTestnet",
         "click .btn-run-contract": "onClickRun",
@@ -44,38 +45,46 @@ var SmartContractPanelView = Backbone.View.extend({
         this.model.build();
     },
 
-    onClickDeploy: function () {
-        var deployDialog = new DeployDialog({
+    onClickBuildOptions: function() {
+        var dialog = new BuildOptionsDialog({
             model: this.model
         });
 
-        deployDialog.show();
+        dialog.show();
+    },
+
+    onClickDeploy: function () {
+        var dialog = new DeployDialog({
+            model: this.model
+        });
+
+        dialog.show();
     },
 
     onClickDeployOnTestnet: function () {
-        var deployDialog = new DeployDialog({
+        var dialog = new DeployDialog({
             model: this.model,
             onTestnet: true
         });
 
-        deployDialog.show();
+        dialog.show();
     },
 
     onClickRun: function () {
-        var runDialog = new RunDialog({
+        var dialog = new RunDialog({
             model: this.model
         });
 
-        runDialog.show();
+        dialog.show();
     },
 
     onClickRunTestnet: function () {
-        var runDialog = new RunDialog({
+        var dialog = new RunDialog({
             model: this.model,
             onTestnet: true
         });
 
-        runDialog.show();
+        dialog.show();
     }
 });
 
