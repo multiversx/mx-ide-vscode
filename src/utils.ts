@@ -4,7 +4,6 @@ import os = require('os');
 import path = require('path');
 import { Root } from './root';
 import * as vscode from 'vscode';
-import glob = require('glob');
 import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
@@ -141,7 +140,7 @@ export class FsFacade {
     }
 
     public static readFile(filePath: string) {
-        if (!this.fileExists(filePath)) {
+        if (!FsFacade.fileExists(filePath)) {
             throw new MyError({ Message: `Missing file: ${filePath}` });
         }
 
@@ -159,21 +158,9 @@ export class FsFacade {
         return FsFacade.readFile(filePath);
     }
 
-    public static getFileNamesInContentByExtension(extension: string) {
-        let folder: string = FsFacade.getPathToContent();
-        let files = glob.sync(`${folder}/*${extension}`, {});
-        files = files.map(file => FsFacade.getFilename(file));
-        return files;
-    }
-
     public static getPathToContent() {
         let extensionPath = Root.ExtensionContext.extensionPath;
         return path.join(extensionPath, "content");
-    }
-
-    public static readFileInSnippets(filePath: string) {
-        filePath = path.join(FsFacade.getPathToSnippets(), filePath);
-        return FsFacade.readFile(filePath);
     }
 
     public static getPathToSnippets() {
@@ -188,34 +175,6 @@ export class FsFacade {
         if (workspaceFolder) {
             return workspaceFolder.uri.fsPath;
         }
-    }
-
-    public static getFilesInWorkspaceByExtension(extension: string) {
-        let folder: string = FsFacade.getPathToWorkspace();
-        let files = glob.sync(`${folder}/**/*${extension}`, {});
-        return files;
-    }
-
-    public static getFirstFileInFolderByExtension(folder: string, extension: string, recursive: boolean = false) {
-        let files = FsFacade.getFilesInFolderByExtension(folder, extension, recursive);
-        return files[0];
-    }
-
-    public static getFilesInFolderByExtension(folder: string, extension: string, recursive: boolean = false) {
-        let pattern = `${folder}/*${extension}`;
-
-        if (recursive) {
-            pattern = `${folder}/**/*${extension}`;
-        }
-
-        let files = glob.sync(pattern, {});
-        return files;
-    }
-
-    public static writeFileToWorkspace(relativeFilePath: string, content: string) {
-        let filePath = path.join(FsFacade.getPathToWorkspace(), relativeFilePath);
-        fs.writeFileSync(filePath, content);
-        return filePath;
     }
 
     public static writeFile(filePath: string, content: string) {
@@ -247,10 +206,6 @@ export class FsFacade {
 
         let fullpath = path.join(folder, latest);
         return fullpath;
-    }
-
-    public static getModifiedOn(filePath: string): Date {
-        return fs.statSync(filePath).mtime;
     }
 
     public static markAsExecutable(filePath: string) {
@@ -331,12 +286,6 @@ export class FsFacade {
     public static isWorkspaceOpen(): boolean {
         let workspaceFolder = FsFacade.getPathToWorkspace();
         return workspaceFolder ? true : false;
-    }
-
-    public static getPathRelativeToWorkspace(filePath: string) {
-        let workspaceFolder = FsFacade.getPathToWorkspace();
-        filePath = filePath.replace(workspaceFolder, "");
-        return filePath;
     }
 }
 

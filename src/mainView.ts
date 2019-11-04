@@ -7,6 +7,7 @@ import eventBus from './eventBus';
 import { MyEnvironment } from './myenvironment';
 import { MyError, MyErrorCatcher } from './errors';
 import { TestnetFacade } from './testnetFacade';
+import { MyFile } from './myfile';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -173,18 +174,17 @@ export class MainView {
         let html: string = FsFacade.readFileInContent("mainView.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
-        
-        // Add partial views.
-        let partialFiles = FsFacade.getFileNamesInContentByExtension(".html").filter(name => name.startsWith("partial"));
-        partialFiles.forEach(name => {
-            html = html.replace(`{{${name}}}`, FsFacade.readFileInContent(name));
-        });
 
-        // Add view templates.
-        let templateFiles = FsFacade.getFileNamesInContentByExtension(".html").filter(name => name.startsWith("template"));
-        templateFiles.forEach(name => {
-            html = html.replace(`{{${name}}}`, FsFacade.readFileInContent(name));
-        });
+        // Include partial views and templates.
+        MyFile
+            .find({
+                Folder: FsFacade.getPathToContent(),
+                Extensions: ["html"]
+            })
+            .filter(file => file.Name.startsWith("template") || file.Name.startsWith("partial"))
+            .forEach(file => {
+                html = html.replace("{{" + file.Name + "}}", file.readText());
+            });
 
         return html;
     }

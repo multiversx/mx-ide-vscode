@@ -4,40 +4,32 @@ import { Builder } from "./builder";
 import _ = require("underscore");
 import { MyError } from "./errors";
 import path = require('path');
+import { MyFile } from "./myfile";
+import { CommentThreadCollapsibleState } from "vscode";
 
 export class SmartContract {
     public readonly FriendlyId: string;
-    public readonly SourceFile: string;
-    public readonly FilenameWithoutExtension: string;
-    public readonly ProjectFolder: string;
-    public SourceFileTimestamp: Date;
-    public BytecodeFile: string;
-    public BytecodeFileTimestamp: Date;
+    public readonly SourceFile: MyFile;
+    public BytecodeFile: MyFile;
+
     public Address: string;
     public AddressTimestamp: Date;
     public AddressOnTestnet: string;
     public AddressOnTestnetTimestamp: Date;
     public LatestRun: SmartContractRun;
 
-    constructor(sourceFile: string) {
+    constructor(sourceFile: MyFile) {
         this.SourceFile = sourceFile;
-        this.FilenameWithoutExtension = FsFacade.getFilenameWithoutExtension(this.SourceFile);
-        this.FriendlyId = FsFacade.getPathRelativeToWorkspace(sourceFile);
-        this.ProjectFolder = path.join(FsFacade.getPathToWorkspace(), FsFacade.getTopmostFolder(this.FriendlyId));
+        this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
         this.LatestRun = new SmartContractRun();
     }
 
     public isSourceC(): boolean {
-        return this.getSourceExtension() == ".c";
+        return this.SourceFile.Extension == ".c";
     }
 
     public isSourceRust(): boolean {
-        return this.getSourceExtension() == ".rs";
-    }
-
-    public getSourceExtension(): string {
-        let extension = FsFacade.getExtension(this.SourceFile).toLowerCase();
-        return extension;
+        return this.SourceFile.Extension == ".rs";
     }
 
     public isBuilt(): boolean {
@@ -46,36 +38,29 @@ export class SmartContract {
 
     public async build(): Promise<any> {
         await Builder.buildModule(this);
+        this.syncWithWorkspace();
         this.createArwenFiles();
     }
 
     public createArwenFiles() {
-        let wasmPath = this.findWasmFile();
-        let wasmHexPath = `${wasmPath}.hex`;
+        let wasmHexPath = `${this.BytecodeFile.PathWithoutExtension}.hex`;
         let wasmHexArwenPath = `${wasmHexPath}.arwen`;
         const ArwenTag = "0500";
 
-        let buffer = FsFacade.readBinaryFile(wasmPath);
-        let wasmHex = buffer.toString("hex");
+        let wasmHex = this.BytecodeFile.readBinaryHex();
         let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
 
         FsFacade.writeFile(wasmHexPath, wasmHex);
         FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
     }
 
-    public findWasmFile(): string {
-        let file = FsFacade.getFirstFileInFolderByExtension(this.ProjectFolder, ".wasm", true);
-        return file;
-    }
+    public findHexArwenFile(): MyFile {
+        let file = MyFile.findFirst({
+            Folder: this.SourceFile.WorkspaceProject,
+            Extensions: ["hex.arwen"],
+            Recursive: true
+        }, true)
 
-    public readHexArwenFile(): string {
-        let filePath = this.findHexArwenFile();
-        let content = FsFacade.readFile(filePath);
-        return content;
-    }
-
-    public findHexArwenFile(): string {
-        let file = FsFacade.getFirstFileInFolderByExtension(this.ProjectFolder, ".hex.arwen", true);
         return file;
     }
 
@@ -83,7 +68,7 @@ export class SmartContract {
         let self = this;
 
         // Prepare transaction data.
-        let transactionData = this.readHexArwenFile();
+        let transactionData = this.findHexArwenFile().readText();
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
 
         const response = await RestDebugger.deploySmartContract(options);
@@ -121,12 +106,11 @@ export class SmartContract {
     }
 
     public syncWithWorkspace() {
-        this.SourceFileTimestamp = FsFacade.getModifiedOn(this.SourceFile);
-        this.BytecodeFile = this.findWasmFile();
-
-        if (this.BytecodeFile) {
-            this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
-        }
+        this.BytecodeFile = MyFile.findFirst({
+            Folder: this.SourceFile.WorkspaceProject,
+            Extensions: ["wasm"],
+            Recursive: true
+        });
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
@@ -163,9 +147,12 @@ export class SmartContractsCollection {
     public static Items: SmartContract[] = [];
 
     public static syncWithWorkspace() {
-        let cFiles = FsFacade.getFilesInWorkspaceByExtension(".c");
-        let rsFiles = FsFacade.getFilesInWorkspaceByExtension(".rs");
-        let sourceFilesNow = cFiles.concat(rsFiles);
+        let sourceFilesNow = MyFile.find({
+            Folder: FsFacade.getPathToWorkspace(),
+            Extensions: ["c", "rs"],
+            Recursive: true
+        });
+
         let smartContractsNow = sourceFilesNow.map(e => new SmartContract(e));
         let smartContractsBefore = this.Items;
 
@@ -185,7 +172,7 @@ export class SmartContractsCollection {
     }
 
     public static getBySourceFile(filePath: string): SmartContract {
-        let item = this.Items.find(e => e.SourceFile == filePath);
+        let item = this.Items.find(e => e.SourceFile.Path == filePath);
         return item;
     }
 }

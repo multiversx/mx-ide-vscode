@@ -19,8 +19,8 @@ export class Builder {
     }
 
     private static async buildCModule(smartContract: SmartContract): Promise<any> {
-        let filePath = smartContract.SourceFile;
-        let filePathWithoutExtension = FsFacade.removeExtension(filePath);
+        let filePath = smartContract.SourceFile.Path;
+        let filePathWithoutExtension = smartContract.SourceFile.PathWithoutExtension;
         let filePath_ll = `${filePathWithoutExtension}.ll`;
         let filePath_o = `${filePathWithoutExtension}.o`;
         let filePath_wasm = `${filePathWithoutExtension}.wasm`;
@@ -87,7 +87,7 @@ export class Builder {
         await ProcessFacade.execute({
             program: "cargo",
             args: ["build", "--target=wasm32-unknown-unknown"],
-            workingDirectory: smartContract.ProjectFolder,
+            workingDirectory: smartContract.SourceFile.WorkspaceProject,
             environment: {
                 PATH: PATH,
                 RUSTUP_HOME: RUSTUP_HOME,

@@ -4,13 +4,13 @@
         <div class="card-body">
             <div>
                 Source:
-                <strong><%= contract.SourceFile %></strong>
-                <span class="text-muted"><%= contract.SourceFileTimestamp %></span>
+                <strong><%= contract.SourceFile.PathRelativeToWorkspace %></strong>
+                <span class="text-muted"><%= contract.SourceFile.ModifiedOn %></span>
             </div>
             <div>
                 Bytecode:
-                <strong><%= contract.BytecodeFile || "none yet" %></strong>
-                <span class="text-muted"><%= contract.BytecodeFileTimestamp %></span>
+                <strong><%= (contract.BytecodeFile || {}).PathRelativeToWorkspace || "none yet" %></strong>
+                <span class="text-muted"><%= (contract.BytecodeFile || {}).ModifiedOn %></span>
             </div>
             <div>
                 Address:
