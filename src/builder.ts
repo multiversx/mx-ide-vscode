@@ -88,7 +88,7 @@ export class Builder {
 
     public static getRustToolsFolder() {
         let ideFolder = MySettings.getIdeFolder();
-        let llvmFolder = path.join(ideFolder, "rust");
+        let llvmFolder = path.join(ideFolder, "vendor-rust");
         return llvmFolder;
     }
 }
