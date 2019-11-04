@@ -123,7 +123,10 @@ export class SmartContract {
     public syncWithWorkspace() {
         this.SourceFileTimestamp = FsFacade.getModifiedOn(this.SourceFile);
         this.BytecodeFile = this.findWasmFile();
-        this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
+
+        if (this.BytecodeFile) {
+            this.BytecodeFileTimestamp = FsFacade.getModifiedOn(this.BytecodeFile);
+        }
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
