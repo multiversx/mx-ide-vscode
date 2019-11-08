@@ -108,6 +108,13 @@ export class SmartContract {
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
         properties.WatchedVariables.length = 0;
         properties.WatchedVariables.push(...variables);
+
+        FsFacade.writeFile(this.getWatchedVariablesFilePath(), JSON.stringify(variables));
+    }
+
+    private getWatchedVariablesFilePath(): string {
+        let filePath = path.join(this.SourceFile.FolderPath, "watched.json");
+        return filePath;
     }
 
     public async queryWatchedVariables(options: any): Promise<any> {
@@ -142,6 +149,11 @@ export class SmartContract {
 
         if (this.ExportFile) {
             this.ExportFile.readText();
+        }
+
+        if (FsFacade.fileExists(this.getWatchedVariablesFilePath())) {
+            let watchedJson = FsFacade.readFile(this.getWatchedVariablesFilePath());
+            this.PropertiesOnNodeDebug.WatchedVariables = JSON.parse(watchedJson);
         }
     }
 
