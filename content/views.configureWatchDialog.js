@@ -5,11 +5,17 @@ var ConfigureWatchDialog = Backbone.View.extend({
     events: {
         "shown.bs.modal": "onBootstrapModalShown",
         "hidden.bs.modal": "onBootstrapModalHidden",
+        "click .btn-add-variable": "onClickAddVariable",
         "click .btn-submit": "onClickSubmit"
     },
 
     initialize: function (options) {
         this.onTestnet = options.onTestnet;
+        this.listenTo(this.model, "change", this.onModelChange);
+        this.render();
+    },
+
+    onModelChange: function () {
         this.render();
     },
 
@@ -43,7 +49,13 @@ var ConfigureWatchDialog = Backbone.View.extend({
         this.remove();
     },
 
+    onClickAddVariable: function () {
+        this.model.addWatchedVariable({
+            onTestnet: this.onTestnet
+        });
+    },
+
     onClickSubmit: function () {
-       
+
     }
 });

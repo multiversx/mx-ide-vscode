@@ -5,7 +5,6 @@ import _ = require("underscore");
 import { MyError } from "./errors";
 import path = require('path');
 import { MyFile } from "./myfile";
-import { CommentThreadCollapsibleState } from "vscode";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -20,11 +19,15 @@ export class SmartContract {
     public AddressOnTestnet: string;
     public AddressOnTestnetTimestamp: Date;
     public LatestRun: SmartContractRun;
+    public WatchedVariables: WatchedVariable[];
+    public WatchedVariablesOnTestnet: WatchedVariable[];
 
     constructor(sourceFile: MyFile) {
         this.SourceFile = sourceFile;
         this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
         this.LatestRun = new SmartContractRun();
+        this.WatchedVariables = [];
+        this.WatchedVariablesOnTestnet = [];
 
         this.IsSourceC = this.SourceFile.Extension == ".c";
         this.IsSourceRust = this.SourceFile.Extension == ".rs";
@@ -107,6 +110,18 @@ export class SmartContract {
             self.LatestRun.VMOutput = vmOutput;
         } catch (e) {
             self.LatestRun.VMOutput = {};
+        }
+    }
+
+    public setWatchedVariables(options: any) {
+        var variables: WatchedVariable[] = options.variables;
+
+        if (options.onTestnet) {
+            this.WatchedVariablesOnTestnet.length = 0;
+            this.WatchedVariablesOnTestnet.push(...variables);
+        } else {
+            this.WatchedVariables.length = 0;
+            this.WatchedVariables.push(...variables);
         }
     }
 
@@ -208,4 +223,9 @@ class SmartContractRun {
 
         this.VMOutput = {};
     }
+}
+
+class WatchedVariable {
+    public FunctionName: string;
+    public Arguments: any[];
 }

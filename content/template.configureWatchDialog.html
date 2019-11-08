@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-lg">
+<div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title">Configure watch SC variables</h4>
@@ -7,10 +7,43 @@
 
         <div class="modal-body">
             <form>
-                <button type="button" class="btn btn-block btn-info">Add SC variable</button>
+                <button type="button" class="btn btn-block btn-info btn-add-variable mb-2">Add SC variable</button>
 
-                <div class="variables-container">
+                <div class="watched-variables-container">
+                    <% _.each(contract.WatchedVariables, function(variable) { %>
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Variable name</label>
+                                    <input name="VariableName" type="text" class="form-control" required
+                                        value="<%= variable.Name %>">
+                                    <small class="form-text text-muted">Example: "alice's balance", "bob's
+                                        balance".</small>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Function name</label>
+                                    <input name="FunctionName" type="text" class="form-control" required
+                                        value="<%= variable.FunctionName %>">
+                                    <small class="form-text text-muted">An exported getter function of your smart
+                                        contract.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aguments for the getter function</label>
+                            <textarea name="Args" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <hr /><hr /><hr />
+                    </div>
+                    <% }) %>
                 </div>
+
+                <button type="button" class="btn btn-block btn-info btn-add-variable mt-2">Add SC variable</button>
             </form>
 
             <div class="alert alert-danger validation-errors-container d-none"></div>
