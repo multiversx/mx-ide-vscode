@@ -54,7 +54,8 @@ var SmartContract = Backbone.Model.extend({
     },
 
     getWatchedVariables: function(onTestnet) {
-        var variables = onTestnet ? this.get("WatchedVariablesOnTestnet") : this.get("WatchedVariables");
+        var properties = onTestnet ? this.get("PropertiesOnTestnet") : this.get("PropertiesOnNodeDebug");
+        var variables = properties.WatchedVariables;
         return variables;
     },
 

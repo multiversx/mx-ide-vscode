@@ -9,7 +9,7 @@
             <form>
                 <fieldset>
                     <legend>Run function</legend>
-
+                    <% var properties = onTestnet ? contract.PropertiesOnTestnet : contract.PropertiesOnNodeDebug; %>
                     <% if (onTestnet) { %>
                     <div class="form-group">
                         <label class="">Endpoint of node in Testnet:</label>
@@ -24,21 +24,21 @@
                     <div class="form-group">
                         <label class="">Sender address:</label>
                         <input class="form-control" name="SenderAddress" type="text"
-                            value="<%= contract.LatestRun.Options.senderAddress %>" />
+                            value="<%= properties.LatestRun.Options.senderAddress %>" />
                     </div>
                     <% } %>
 
                     <div class="form-group">
                         <label>Function name</label>
                         <input name="FunctionName" type="text" class="form-control" required
-                            placeholder="myExportedFunction" value="<%= contract.LatestRun.Options.functionName %>">
+                            placeholder="myExportedFunction" value="<%= properties.LatestRun.Options.functionName %>">
                         <small class="form-text text-muted">An exported function of your smart
                             contract.</small>
                     </div>
                     <div class="form-group">
                         <label>Function arguments</label>
                         <textarea name="FunctionArgs" class="form-control"
-                            rows="3"><%= contract.LatestRun.Options.functionArgs.join("\n") %></textarea>
+                            rows="3"><%= properties.LatestRun.Options.functionArgs.join("\n") %></textarea>
                     </div>
                     <div class="form-text">
                         Use a line break to seprate more arguments.
@@ -52,21 +52,21 @@
                             <div class="form-group">
                                 <label>Value</label>
                                 <input name="Value" type="text" class="form-control" required placeholder="0"
-                                    value="<%= contract.LatestRun.Options.value %>">
+                                    value="<%= properties.LatestRun.Options.value %>">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label>Gas limit</label>
                                 <input name="GasLimit" type="number" class="form-control" required placeholder="2000"
-                                    value="<%= contract.LatestRun.Options.gasLimit %>">
+                                    value="<%= properties.LatestRun.Options.gasLimit %>">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label>Gas price</label>
                                 <input name="GasPrice" type="number" class="form-control" required placeholder="10"
-                                    value="<%= contract.LatestRun.Options.gasPrice %>">
+                                    value="<%= properties.LatestRun.Options.gasPrice %>">
                             </div>
                         </div>
                     </div>

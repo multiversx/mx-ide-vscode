@@ -40,7 +40,7 @@ var ConfigureWatchDialog = Backbone.View.extend({
     renderWatchedVariables: function () {
         var template = app.underscoreTemplates["TemplateWatchedVariables"];
         var contract = this.model.toJSON();
-        var html = template({ contract: contract });
+        var html = template({ contract: contract, onTestnet: this.onTestnet });
         this.$el.find(".watched-variables-container").html(html);
     },
 

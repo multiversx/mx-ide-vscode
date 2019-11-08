@@ -1,5 +1,5 @@
 <div>
-    <div class="card mt-2 mb-2">
+    <div class="card mt-4 mb-2">
         <h4 class="card-header"><%= contract.FriendlyId %></h4>
         <div class="card-body">
             <div class="mt-2">
@@ -33,8 +33,8 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     Address:
-                                    <strong><%= contract.Address || "none yet" %></strong>
-                                    <span class="text-muted"><%= contract.AddressTimestamp %></span>
+                                    <strong><%= contract.PropertiesOnNodeDebug.Address || "none yet" %></strong>
+                                    <span class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
                                 </div>
 
                                 <button class="btn btn-info btn-configure-watch">Watch variables</button>
@@ -43,7 +43,7 @@
                                 <button class="btn btn-info btn-deploy-contract">Deploy</button>
                                 <% } %>
 
-                                <% if (contract.Address) { %>
+                                <% if (contract.PropertiesOnNodeDebug.Address) { %>
                                 <button class="btn btn-info btn-run-contract" type="button">Run function</button>
                                 <% } %>
                             </div>
@@ -56,8 +56,8 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     Address:
-                                    <strong><%= contract.AddressOnTestnet || "none yet" %></strong>
-                                    <span class="text-muted"><%= contract.AddressOnTestnetTimestamp %></span>
+                                    <strong><%= contract.PropertiesOnTestnet.Address || "none yet" %></strong>
+                                    <span class="text-muted"><%= contract.PropertiesOnTestnet.AddressTimestamp %></span>
                                 </div>
 
                                 <button class="btn btn-info btn-configure-watch-testnet">Watch variables</button>
@@ -66,7 +66,7 @@
                                 <button class="btn btn-warning btn-deploy-contract-testnet">Deploy</button>
                                 <% } %>
 
-                                <% if (contract.AddressOnTestnet) { %>
+                                <% if (contract.PropertiesOnTestnet.Address) { %>
                                 <button class="btn btn-warning btn-run-contract-testnet" type="button">Run
                                     function</button>
                                 <% } %>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
 
-                <% if (contract.Address) { %>
+                <% if (contract.PropertiesOnNodeDebug.Address) { %>
                 <div class="row mt-3">
                     <div class="col-sm-12">
                         <h5>VM output (on debug node)</h5>

@@ -52,7 +52,7 @@ export class MyFile {
             throw new MyError({ Message: `No file matching: ${JSON.stringify(query, null, 4)}` });
         }
 
-        return myfile;
+        return myfile || null;
     }
 
     public static find(query: MyFilesQuery): MyFile[] {

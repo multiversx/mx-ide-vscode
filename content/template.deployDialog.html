@@ -55,14 +55,14 @@
             </form>
 
             <% if (onTestnet) { %>
-            <% if (contract.AddressOnTestnet) { %>
+            <% if (contract.PropertiesOnTestnet.Address) { %>
             <div class="form-group">
                 <label class="">Deployed at address:</label>
-                <input class="form-control" name="" type="text" value="<%= contract.AddressOnTestnet %>" readonly />
+                <input class="form-control" name="" type="text" value="<%= contract.PropertiesOnTestnet.Address %>" readonly />
             </div>
             <% } %>
             <% } else { %>
-            <% if (contract.Address) { %>
+            <% if (contract.PropertiesOnNodeDebug.Address) { %>
             <div class="form-group">
                 <label class="">Deployed at address:</label>
                 <input class="form-control" name="" type="text" value="<%= contract.Address %>" readonly />
@@ -77,9 +77,9 @@
             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-info btn-submit">
                 <% if (onTestnet) { %>
-                <%= contract.AddressOnTestnet ? "Deploy again" : "Deploy" %>
+                <%= contract.PropertiesOnTestnet.Address ? "Deploy again" : "Deploy" %>
                 <% } else { %>
-                <%= contract.Address ? "Deploy again" : "Deploy" %>
+                <%= contract.PropertiesOnNodeDebug.Address ? "Deploy again" : "Deploy" %>
                 <% } %>
             </button>
         </div>

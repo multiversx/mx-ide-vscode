@@ -14,23 +14,17 @@ export class SmartContract {
     public readonly IsSourceC: boolean;
     public readonly IsSourceRust: boolean;
 
-    public Address: string;
-    public AddressTimestamp: Date;
-    public AddressOnTestnet: string;
-    public AddressOnTestnetTimestamp: Date;
-    public LatestRun: SmartContractRun;
-    public WatchedVariables: WatchedVariable[];
-    public WatchedVariablesOnTestnet: WatchedVariable[];
+    public readonly PropertiesOnNodeDebug: PropertiesOnNetwork;
+    public readonly PropertiesOnTestnet: PropertiesOnNetwork;
 
     constructor(sourceFile: MyFile) {
         this.SourceFile = sourceFile;
-        this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
-        this.LatestRun = new SmartContractRun();
-        this.WatchedVariables = [];
-        this.WatchedVariablesOnTestnet = [];
-
         this.IsSourceC = this.SourceFile.Extension == ".c";
         this.IsSourceRust = this.SourceFile.Extension == ".rs";
+        this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
+
+        this.PropertiesOnNodeDebug = new PropertiesOnNetwork();
+        this.PropertiesOnTestnet = new PropertiesOnNetwork();
     }
 
     public isBuilt(): boolean {
@@ -73,56 +67,49 @@ export class SmartContract {
     }
 
     public async deployToDebugger(options: any): Promise<any> {
-        let self = this;
-
-        // Prepare transaction data.
+        // Prepare transaction data, then deploy.
         let transactionData = this.findHexArwenFile().readText();
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
-
         const response = await RestDebugger.deploySmartContract(options);
 
-        if (options.onTestnet) {
-            self.AddressOnTestnet = response.data;
-            self.AddressOnTestnetTimestamp = new Date();
-        } else {
-            self.Address = response.data;
-            self.AddressTimestamp = new Date();
-        }
+        // Use response of deploy (scAddress).
+        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+        properties.Address = response.data;
+        properties.AddressTimestamp = new Date();
+
+        await this.queryWatchedVariables({ onTestnet: options.onTestnet });
     }
 
     public async runFunction(options: any): Promise<any> {
-        let self = this;
-        this.LatestRun = new SmartContractRun();
-        this.LatestRun.Options = options;
+        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+        properties.LatestRun = new SmartContractRun();
+        properties.LatestRun.Options = options;
 
-        if (options.onTestnet) {
-            options.scAddress = this.AddressOnTestnet;
-        } else {
-            options.scAddress = this.Address;
-        }
+        options.scAddress = properties.Address;
 
-        // Prepare transaction data.
+        // Prepare transaction data, then run and use response (vmOutput).
         let transactionData = options.functionName;
         options.transactionData = this.appendArgsToTxData(options.functionArgs, transactionData);
 
         try {
             const vmOutput = await RestDebugger.runSmartContract(options);
-            self.LatestRun.VMOutput = vmOutput;
+            properties.LatestRun.VMOutput = vmOutput;
         } catch (e) {
-            self.LatestRun.VMOutput = {};
+            properties.LatestRun.VMOutput = {};
         }
+
+        await this.queryWatchedVariables({ onTestnet: options.onTestnet });
     }
 
     public setWatchedVariables(options: any) {
         var variables: WatchedVariable[] = options.variables;
+        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+        properties.WatchedVariables.length = 0;
+        properties.WatchedVariables.push(...variables);
+    }
 
-        if (options.onTestnet) {
-            this.WatchedVariablesOnTestnet.length = 0;
-            this.WatchedVariablesOnTestnet.push(...variables);
-        } else {
-            this.WatchedVariables.length = 0;
-            this.WatchedVariables.push(...variables);
-        }
+    public async queryWatchedVariables(options: any): Promise<any> {
+
     }
 
     public syncWithWorkspace() {
@@ -170,6 +157,18 @@ export class SmartContract {
         });
 
         return transactionData;
+    }
+}
+
+class PropertiesOnNetwork {
+    public Address: string;
+    public AddressTimestamp: Date;
+    public LatestRun: SmartContractRun;
+    public WatchedVariables: WatchedVariable[];
+
+    constructor() {
+        this.LatestRun = new SmartContractRun();
+        this.WatchedVariables = [];
     }
 }
 

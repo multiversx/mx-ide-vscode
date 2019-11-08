@@ -1,4 +1,5 @@
-<% _.each(contract.WatchedVariables, function(variable, index) { %>
+<% var properties = onTestnet ? contract.PropertiesOnTestnet : contract.PropertiesOnNodeDebug; %>
+<% _.each(properties.WatchedVariables, function(variable, index) { %>
 <div class="watched-variable" data-index="<%= index %>">
     <div class="card border-info mb-3">
         <div class="card-header">Watched variable: <kbd><%= variable.Name %></kbd></div>

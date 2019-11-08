@@ -36,7 +36,7 @@ var SmartContractPanelView = Backbone.View.extend({
 
         this.vmOutputView = new VMOutputView({
             el: this.$el.find(".vm-output-view"),
-            model: this.model.get("LatestRun")
+            model: this.model.get("PropertiesOnNodeDebug").LatestRun
         });
 
         this.vmOutputView.render();
