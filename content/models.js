@@ -27,15 +27,38 @@ var SmartContract = Backbone.Model.extend({
     },
 
     addWatchedVariable(options) {
-        var variables = options.onTestnet ? this.get("WatchedVariablesOnTestnet") : this.get("WatchedVariables");
-
-        variables.push({
+        this.getWatchedVariables(options.onTestnet).push({
             Name: "alice's balance",
             FunctionName: "do_balance",
             Arguments: ["public_key_of_alice"]
         });
 
         this.trigger("change", this);
+        // todo call sync
+    },
+
+    updateWatchedVariable(options) {
+        var index = options.index;
+        var variable = this.getWatchedVariables(options.onTestnet)[index];
+        variable.Name = options.name;
+        variable.FunctionName = options.functionName;
+        variable.Arguments = options.arguments;
+
+        this.trigger("change", this);
+        // todo call sync
+    },
+
+    deleteWatchedVariable(options) {
+        var variables = this.getWatchedVariables(options.onTestnet);
+        variables.splice(options.index, 1);
+
+        this.trigger("change", this);
+        // todo call sync
+    },
+
+    getWatchedVariables(onTestnet) {
+        var variables = onTestnet ? this.get("WatchedVariablesOnTestnet") : this.get("WatchedVariables");
+        return variables;
     }
 });
 

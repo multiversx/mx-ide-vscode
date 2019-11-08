@@ -5,7 +5,9 @@ var ConfigureWatchDialog = Backbone.View.extend({
     events: {
         "shown.bs.modal": "onBootstrapModalShown",
         "hidden.bs.modal": "onBootstrapModalHidden",
-        "click .btn-add-variable": "onClickAddVariable",
+        "click .btn-add-watch": "onClickAddWatch",
+        "click .btn-update-watch": "onClickUpdateWatch",
+        "click .btn-delete-watch": "onClickDeleteWatch",
         "click .btn-submit": "onClickSubmit"
     },
 
@@ -49,9 +51,36 @@ var ConfigureWatchDialog = Backbone.View.extend({
         this.remove();
     },
 
-    onClickAddVariable: function () {
+    onClickAddWatch: function () {
         this.model.addWatchedVariable({
             onTestnet: this.onTestnet
+        });
+    },
+
+    onClickUpdateWatch: function(event) {
+        var variableElement = $(event.currentTarget).closest(".watched-variable");
+        var index = variableElement.attr("data-index");
+        
+        var name = variableElement.find("[name='VariableName']").val();
+        var functionName = variableElement.find("[name='FunctionName']").val();
+        var functionArguments = variableElement.find("[name='Args']").val().split("\n");
+
+        this.model.updateWatchedVariable({
+            onTestnet: this.onTestnet,
+            index: index,
+            name: name,
+            functionName: functionName,
+            arguments: functionArguments
+        });
+    },
+
+    onClickDeleteWatch: function(event) {
+        var variableElement = $(event.currentTarget).closest(".watched-variable");
+        var index = variableElement.attr("data-index");
+
+        this.model.deleteWatchedVariable({
+            onTestnet: this.onTestnet,
+            index: index
         });
     },
 
