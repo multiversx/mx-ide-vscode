@@ -1,11 +1,9 @@
 import os = require('os');
 import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
-import { Presenter } from "./presenter";
 import eventBus from "./eventBus";
 import path = require('path');
 import { Feedback } from "./feedback";
-import { MyEnvironment } from "./myenvironment";
 
 export class RestDebugger {
 
@@ -126,6 +124,24 @@ export class RestDebugger {
         }
 
         return vmOutput;
+    }
+
+    public static async querySmartContract(options: any): Promise<any> {
+        let url = RestDebugger.buildUrl("vm-values/query");
+
+        return await RequestsFacade.post({
+            url: url,
+            data: {
+                "OnTestnet": options.onTestnet,
+                "TestnetNodeEndpoint": options.testnetNodeEndpoint,
+                "ScAddress": options.scAddress,
+                "FuncName": options.functionName,
+                "Args": options.arguments
+            },
+            eventTag: "debugger-dialogue"
+        }).catch(e => {
+            Feedback.error(`Cannot run. Perhaps node-debug is stopped? ${e.error}`);
+        });
     }
 
     private static buildUrl(relative: string) {

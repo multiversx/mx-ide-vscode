@@ -5,6 +5,8 @@ import _ = require("underscore");
 import { MyError } from "./errors";
 import path = require('path');
 import { MyFile } from "./myfile";
+import { Presenter } from "./presenter";
+import { Feedback } from "./feedback";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -102,14 +104,27 @@ export class SmartContract {
     }
 
     public setWatchedVariables(options: any) {
-        var variables: WatchedVariable[] = options.variables;
+        let variables: WatchedVariable[] = options.variables;
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
         properties.WatchedVariables.length = 0;
         properties.WatchedVariables.push(...variables);
     }
 
     public async queryWatchedVariables(options: any): Promise<any> {
+        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+        let variables = properties.WatchedVariables;
 
+        for (var i = 0; i < variables.length; i++) {
+            let variable = variables[i];
+
+            options.scAddress = properties.Address;
+            options.functionName = variable.FunctionName;
+            options.arguments = variable.Arguments;
+
+            let response = await RestDebugger.querySmartContract(options);
+            let returnData = response.data.ReturnData[0];
+            Feedback.info(`Watched variable [${variable.Name}]: ${returnData}`);
+        }
     }
 
     public syncWithWorkspace() {
@@ -225,6 +240,7 @@ class SmartContractRun {
 }
 
 class WatchedVariable {
+    public Name: string;
     public FunctionName: string;
     public Arguments: any[];
 }
