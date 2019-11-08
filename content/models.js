@@ -9,56 +9,62 @@ var SmartContract = Backbone.Model.extend({
     },
 
     setBuildOptions: function (options) {
-        payload = options;
+        var payload = options;
         payload.id = this.id;
         app.talkToVscode("setSmartContractBuildOptions", payload);
     },
 
     deploy: function (options) {
-        payload = options.toJSON();
+        var payload = options.toJSON();
         payload.id = this.id;
         app.talkToVscode("deploySmartContract", payload);
     },
 
     run: function (options) {
-        payload = options.toJSON();
+        var payload = options.toJSON();
         payload.id = this.id;
         app.talkToVscode("runSmartContract", payload);
     },
 
-    addWatchedVariable(options) {
+    addWatchedVariable: function(options) {
         this.getWatchedVariables(options.onTestnet).push({
             Name: "alice's balance",
             FunctionName: "do_balance",
             Arguments: ["public_key_of_alice"]
         });
 
-        this.trigger("change", this);
-        // todo call sync
+        this.setWatchedVariables(options);
     },
 
-    updateWatchedVariable(options) {
+    updateWatchedVariable: function(options) {
         var index = options.index;
         var variable = this.getWatchedVariables(options.onTestnet)[index];
         variable.Name = options.name;
         variable.FunctionName = options.functionName;
         variable.Arguments = options.arguments;
 
-        this.trigger("change", this);
-        // todo call sync
+        this.setWatchedVariables(options);
     },
 
-    deleteWatchedVariable(options) {
+    deleteWatchedVariable: function(options) {
         var variables = this.getWatchedVariables(options.onTestnet);
         variables.splice(options.index, 1);
 
-        this.trigger("change", this);
-        // todo call sync
+        this.setWatchedVariables(options);
     },
 
-    getWatchedVariables(onTestnet) {
+    getWatchedVariables: function(onTestnet) {
         var variables = onTestnet ? this.get("WatchedVariablesOnTestnet") : this.get("WatchedVariables");
         return variables;
+    },
+
+    setWatchedVariables: function(options) {
+        var payload = options;
+        payload.id = this.id;
+        payload.variables = this.getWatchedVariables(options.onTestnet);
+
+        this.trigger("change", this);
+        app.talkToVscode("setWatchedVariables", payload);
     }
 });
 

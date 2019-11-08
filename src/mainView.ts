@@ -89,6 +89,11 @@ export class MainView {
                 .catch(MyErrorCatcher.topLevel);
         });
 
+        eventBus.on("view-message:setWatchedVariables", function (payload) {
+            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
+            contract.setWatchedVariables(payload);
+        });
+
         eventBus.on("view-message:environment-refresh", function () {
             self.doRefreshEnvironment();
         });
@@ -104,10 +109,6 @@ export class MainView {
         eventBus.on("view-message:environment-uninstall-build-tools-rust", function (payload) {
             MyEnvironment.uninstallBuildToolsForRust().catch(MyErrorCatcher.topLevel);
         });
-
-        // eventBus.on("view-message:environment-install-go", function (payload) {
-        //     MyEnvironment.installGo().catch(MyErrorCatcher.topLevel);
-        // });
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
             MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
