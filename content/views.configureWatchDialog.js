@@ -18,7 +18,7 @@ var ConfigureWatchDialog = Backbone.View.extend({
     },
 
     onModelChange: function () {
-        this.render();
+        this.renderWatchedVariables();
     },
 
     render: function () {
@@ -32,7 +32,16 @@ var ConfigureWatchDialog = Backbone.View.extend({
             this.$el.modal({ show: false });
         }
 
+        this.renderWatchedVariables();
+
         return this;
+    },
+
+    renderWatchedVariables: function () {
+        var template = app.underscoreTemplates["TemplateWatchedVariables"];
+        var contract = this.model.toJSON();
+        var html = template({ contract: contract });
+        this.$el.find(".watched-variables-container").html(html);
     },
 
     show: function () {
@@ -57,10 +66,10 @@ var ConfigureWatchDialog = Backbone.View.extend({
         });
     },
 
-    onClickUpdateWatch: function(event) {
+    onClickUpdateWatch: function (event) {
         var variableElement = $(event.currentTarget).closest(".watched-variable");
         var index = variableElement.attr("data-index");
-        
+
         var name = variableElement.find("[name='VariableName']").val();
         var functionName = variableElement.find("[name='FunctionName']").val();
         var functionArguments = variableElement.find("[name='Args']").val().split("\n");
@@ -74,7 +83,7 @@ var ConfigureWatchDialog = Backbone.View.extend({
         });
     },
 
-    onClickDeleteWatch: function(event) {
+    onClickDeleteWatch: function (event) {
         var variableElement = $(event.currentTarget).closest(".watched-variable");
         var index = variableElement.attr("data-index");
 
