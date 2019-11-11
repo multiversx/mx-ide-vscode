@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { RestDebugger } from './debugger';
+import { NodeDebug } from './nodeDebug';
 import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
@@ -35,5 +35,5 @@ function buildCurrentFile() {
 }
 
 function startNodeDebug() {
-	RestDebugger.start();
+	NodeDebug.start();
 }

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { Root } from './root';
-import { RestDebugger } from './debugger';
+import { NodeDebug } from './nodeDebug';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
 import { MyEnvironment } from './myenvironment';
@@ -49,12 +49,12 @@ export class MainView {
         let self = this;
 
         eventBus.on("view-message:startNodeDebug", function () {
-            RestDebugger.start();
+            NodeDebug.start();
             self.doRefreshSmartContracts();
         });
 
         eventBus.on("view-message:stopNodeDebug", function () {
-            RestDebugger.stop().catch(() => { });
+            NodeDebug.stop().catch(() => { });
         });
 
         eventBus.on("view-message:refreshSmartContracts", function () {

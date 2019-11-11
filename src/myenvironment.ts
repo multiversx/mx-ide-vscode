@@ -4,7 +4,7 @@ import path = require('path');
 import { MySettings } from './settings';
 import { ProcessFacade, FsFacade, RestFacade } from "./utils";
 import request = require('request');
-import { RestDebugger } from './debugger';
+import { NodeDebug } from './nodeDebug';
 import { Builder } from './builder';
 import { Feedback } from './feedback';
 import { MySetupError } from './errors';
@@ -115,7 +115,7 @@ export class MyEnvironment {
 
         let downloadUrl = MyEnvironment.getNodeDebugDownloadUrl();
         let idePath = MySettings.getIdeFolder();
-        let nodeDebugPath = RestDebugger.getFolderPath();
+        let nodeDebugPath = NodeDebug.getFolderPath();
         let archivePath = path.join(idePath, "node-debug.tar.gz");
 
         await RestFacade.download({
@@ -156,7 +156,7 @@ export class MyEnvironment {
         let ide = MySettings.getIdeFolder();
         let llvmTools = Builder.getLlvmToolsFolder();
         let goCache = path.join(ide, "go-cache");
-        let nodeDebug = RestDebugger.getFolderPath();
+        let nodeDebug = NodeDebug.getFolderPath();
         let nodeDebugConfig = path.join(nodeDebug, "config");
 
         FsFacade.mkDirByPathSync(ide);

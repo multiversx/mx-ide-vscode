@@ -5,12 +5,12 @@ import eventBus from "./eventBus";
 import path = require('path');
 import { Feedback } from "./feedback";
 
-export class RestDebugger {
+export class NodeDebug {
 
     public static start() {
-        RestDebugger.stop()
+        NodeDebug.stop()
             .catch(() => { })
-            .finally(() => RestDebugger.performStart());
+            .finally(() => NodeDebug.performStart());
     }
 
     public static stop(): Promise<any> {
@@ -19,7 +19,7 @@ export class RestDebugger {
         let platform = os.platform();
 
         if (platform == "darwin") {
-            return RestDebugger.stopMacOs(port);
+            return NodeDebug.stopMacOs(port);
         }
 
         return ProcessFacade.execute({
@@ -46,8 +46,8 @@ export class RestDebugger {
     }
 
     private static performStart() {
-        let toolPathFolder = RestDebugger.getFolderPath();
-        let toolPath = RestDebugger.getToolPath();
+        let toolPathFolder = NodeDebug.getFolderPath();
+        let toolPath = NodeDebug.getToolPath();
         let port: any = MySettings.getRestDebuggerPort();
         let configPath: any = path.join(toolPathFolder, "config", "config.toml");
         let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
@@ -74,7 +74,7 @@ export class RestDebugger {
     }
 
     public static deploySmartContract(options: any): Promise<any> {
-        let url = RestDebugger.buildUrl("vm-values/deploy");
+        let url = NodeDebug.buildUrl("vm-values/deploy");
 
         return RequestsFacade.post({
             url: url,
@@ -96,7 +96,7 @@ export class RestDebugger {
     }
 
     public static async runSmartContract(runOptions: any): Promise<any> {
-        let url = RestDebugger.buildUrl("vm-values/run");
+        let url = NodeDebug.buildUrl("vm-values/run");
 
         await RequestsFacade.post({
             url: url,
@@ -120,14 +120,14 @@ export class RestDebugger {
 
         if (runOptions.onTestnet) {
         } else {
-            vmOutput = RestDebugger.readTracedVMOutput(runOptions.scAddress);
+            vmOutput = NodeDebug.readTracedVMOutput(runOptions.scAddress);
         }
 
         return vmOutput;
     }
 
     public static async querySmartContract(options: any): Promise<any> {
-        let url = RestDebugger.buildUrl("vm-values/query");
+        let url = NodeDebug.buildUrl("vm-values/query");
 
         return await RequestsFacade.post({
             url: url,
@@ -180,7 +180,7 @@ export class RestDebugger {
     }
 
     public static getToolPath(): string {
-        let toolPath = path.join(RestDebugger.getFolderPath(), "nodedebug");
+        let toolPath = path.join(NodeDebug.getFolderPath(), "nodedebug");
         return toolPath;
     }
 }

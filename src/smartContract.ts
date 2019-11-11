@@ -1,5 +1,5 @@
 import { FsFacade } from "./utils";
-import { RestDebugger } from "./debugger";
+import { NodeDebug } from "./nodeDebug";
 import { Builder } from "./builder";
 import _ = require("underscore");
 import { MyError } from "./errors";
@@ -72,7 +72,7 @@ export class SmartContract {
         // Prepare transaction data, then deploy.
         let transactionData = this.findHexArwenFile().readText();
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
-        const response = await RestDebugger.deploySmartContract(options);
+        const response = await NodeDebug.deploySmartContract(options);
 
         // Use response of deploy (scAddress).
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
@@ -94,7 +94,7 @@ export class SmartContract {
         options.transactionData = this.appendArgsToTxData(options.functionArgs, transactionData);
 
         try {
-            const vmOutput = await RestDebugger.runSmartContract(options);
+            const vmOutput = await NodeDebug.runSmartContract(options);
             properties.LatestRun.VMOutput = vmOutput;
         } catch (e) {
             properties.LatestRun.VMOutput = {};
@@ -128,7 +128,7 @@ export class SmartContract {
             options.functionName = variable.FunctionName;
             options.arguments = variable.Arguments;
 
-            let response = await RestDebugger.querySmartContract(options);
+            let response = await NodeDebug.querySmartContract(options);
             let returnData = response.data.ReturnData[0];
             Feedback.info(`Watched variable [${variable.Name}]: ${returnData}`);
         }
