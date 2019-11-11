@@ -61,7 +61,14 @@
                                         <div class="card mt-2">
                                             <div class="card-header">Watched variables</div>
                                             <div class="card-body">
-                                                <div class="watched-variables-view"></div>
+                                                <div class="watched-variables-view">
+                                                    <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
+                                                    <div>
+                                                        <strong><%= key %>:</strong>
+                                                        <kbd><%= value %></kbd>
+                                                    </div>
+                                                    <% }); %>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

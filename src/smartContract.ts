@@ -5,7 +5,6 @@ import _ = require("underscore");
 import { MyError } from "./errors";
 import path = require('path');
 import { MyFile } from "./myfile";
-import { Presenter } from "./presenter";
 import { Feedback } from "./feedback";
 
 export class SmartContract {
@@ -130,7 +129,8 @@ export class SmartContract {
 
             let response = await NodeDebug.querySmartContract(options);
             let returnData = response.data.ReturnData[0];
-            Feedback.info(`Watched variable [${variable.Name}]: ${returnData}`);
+
+            properties.LatestRun.Variables[variable.Name] = returnData;
         }
     }
 
@@ -236,6 +236,7 @@ export class SmartContractsCollection {
 class SmartContractRun {
     public Options: any;
     public VMOutput: any;
+    public Variables: any;
 
     constructor() {
         this.Options = {
@@ -248,6 +249,7 @@ class SmartContractRun {
         };
 
         this.VMOutput = {};
+        this.Variables = {};
     }
 }
 
