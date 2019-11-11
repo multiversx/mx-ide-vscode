@@ -108,12 +108,27 @@ export class SmartContract {
         properties.WatchedVariables.length = 0;
         properties.WatchedVariables.push(...variables);
 
-        FsFacade.writeFile(this.getWatchedVariablesFilePath(), JSON.stringify(variables));
+        this.storeWatchedVariables();
     }
 
-    private getWatchedVariablesFilePath(): string {
-        let filePath = path.join(this.SourceFile.FolderPath, "watched.json");
-        return filePath;
+    private storeWatchedVariables() {
+        let folder = this.SourceFile.FolderPath;
+        FsFacade.writeFile(path.join(folder, "watched.json"), JSON.stringify(this.PropertiesOnNodeDebug.WatchedVariables, null, 4));
+        FsFacade.writeFile(path.join(folder, "watched.testnet.json"), JSON.stringify(this.PropertiesOnTestnet.WatchedVariables, null, 4));
+    }
+
+    private loadWatchedVariables() {
+        let filePath = (path.join(this.SourceFile.FolderPath, "watched.json"));
+
+        if (FsFacade.fileExists(filePath)) {
+            this.PropertiesOnNodeDebug.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
+        }
+
+        filePath = (path.join(this.SourceFile.FolderPath, "watched.testnet.json"));
+
+        if (FsFacade.fileExists(filePath)) {
+            this.PropertiesOnTestnet.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
+        }
     }
 
     public async queryWatchedVariables(options: any): Promise<any> {
@@ -151,10 +166,7 @@ export class SmartContract {
             this.ExportFile.readText();
         }
 
-        if (FsFacade.fileExists(this.getWatchedVariablesFilePath())) {
-            let watchedJson = FsFacade.readFile(this.getWatchedVariablesFilePath());
-            this.PropertiesOnNodeDebug.WatchedVariables = JSON.parse(watchedJson);
-        }
+        this.loadWatchedVariables();
     }
 
     private appendArgsToTxData(args: string[], transactionData: string): string {
