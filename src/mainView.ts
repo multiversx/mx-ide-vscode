@@ -8,6 +8,7 @@ import { MyEnvironment } from './myenvironment';
 import { MyError, MyErrorCatcher } from './errors';
 import { TestnetFacade } from './testnetFacade';
 import { MyFile } from './myfile';
+import { Variables } from './variables';
 
 export class MainView {
     panel: vscode.WebviewPanel;
@@ -118,6 +119,15 @@ export class MainView {
             TestnetFacade.query(payload)
                 .then(payload => self.talkToWebView("testnetQueryResponse", payload))
                 .catch(MyErrorCatcher.topLevel);
+        });
+
+        eventBus.on("view-message:variables-refresh", function () {
+            self.talkToWebView("variables-refresh", Variables.getSnapshot());
+        });
+
+        eventBus.on("view-message:variables-save", function (payload) {
+            Variables.save(payload.json);
+            self.talkToWebView("variables-refresh", Variables.getSnapshot());
         });
     }
 

@@ -35,6 +35,9 @@
                 <li class="nav-item d-none">
                     <a class="nav-link" href="#ExtensionConsole">Extension console</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#Variables">Variables</a>
+                </li>
             </ul>
             <div class="views-container">
                 <div class="view" id="Home">
@@ -89,6 +92,9 @@
                     <pre class="payload mt-3">
                     </pre>
                 </div>
+                <div class="view d-none" id="Variables">
+                    {{partial.variables.html}}
+                </div>
             </div>
         </div>
     </div>
@@ -101,8 +107,10 @@
     <script type="text/javascript" src="models.environment.js"></script>
     <script type="text/javascript" src="models.queryTestnet.js"></script>
     <script type="text/javascript" src="models.restDialogue.js"></script>
+    <script type="text/javascript" src="models.variables.js"></script>
     <script type="text/javascript" src="views.environment.js"></script>
     <script type="text/javascript" src="views.queryTestnet.js"></script>
+    <script type="text/javascript" src="views.variables.js"></script>
     <script type="text/javascript" src="views.smartContractsList.js"></script>
     <script type="text/javascript" src="views.smartContractPanel.js"></script>
     <script type="text/javascript" src="views.buildOptionsDialog.js"></script>

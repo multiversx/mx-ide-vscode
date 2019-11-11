@@ -6,6 +6,7 @@ import { MyError } from "./errors";
 import path = require('path');
 import { MyFile } from "./myfile";
 import { Feedback } from "./feedback";
+import { Variables } from "./variables";
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -68,6 +69,8 @@ export class SmartContract {
     }
 
     public async deployToDebugger(options: any): Promise<any> {
+        options.senderAddress = Variables.apply(options.senderAddress);
+
         // Prepare transaction data, then deploy.
         let transactionData = this.findHexArwenFile().readText();
         options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
@@ -84,8 +87,9 @@ export class SmartContract {
     public async runFunction(options: any): Promise<any> {
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
         properties.LatestRun = new SmartContractRun();
-        properties.LatestRun.Options = options;
+        properties.LatestRun.Options = _.clone(options);
 
+        options.senderAddress = Variables.apply(options.senderAddress);
         options.scAddress = properties.Address;
 
         // Prepare transaction data, then run and use response (vmOutput).
@@ -173,7 +177,7 @@ export class SmartContract {
         const hexPrefix = "0X";
 
         _.each(args, function (item: string) {
-            var itemAsAny: any = item;
+            item = Variables.apply(item);
 
             if (item === "") {
                 return;
@@ -185,6 +189,7 @@ export class SmartContract {
                 item = item.substring(hexPrefix.length);
                 transactionData += item;
             } else {
+                let itemAsAny: any = item;
                 if (isNaN(itemAsAny)) {
                     throw new MyError({ Message: `Can't handle non-hex, non-number arguments yet: ${item}.` });
                 } else {
