@@ -35,11 +35,11 @@ export class Syms {
             "bigIntMul",
             "bigIntCmp",
             "bigIntFinish",
-            "bigIntstorageStore",
-            "bigIntstorageLoad",
-            "bigIntgetArgument",
-            "bigIntgetCallValue",
-            "bigIntgetExternalBalance"
+            "bigIntStorageStore",
+            "bigIntStorageLoad",
+            "bigIntGetArgument",
+            "bigIntGetCallValue",
+            "bigIntGetExternalBalance"
         ];
 
         return mainSyms.join("\n");
