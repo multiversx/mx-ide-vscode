@@ -27,7 +27,7 @@ export class Projects {
     }
 
     static async askPrototype() {
-        let options = ["erc20-c", "erc20-c-old", "dummy-rust"];
+        let options = ["erc20-c", "erc20-c-old", "dummy-rust", "erc20-rust"];
         let prototype = await vscode.window.showQuickPick(options, { placeHolder: "Select prototype (template):" });
         return prototype;
     }
