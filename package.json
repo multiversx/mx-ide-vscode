@@ -87,12 +87,13 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.38.0",
 		"@types/request": "^2.48.3",
 		"@types/underscore": "^1.9.3",
+		"@types/vscode": "^1.38.0",
+		"bootstrap": "^4.3.1",
 		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
 		"vscode-test": "^1.2.0"
 	},
 	"dependencies": {
