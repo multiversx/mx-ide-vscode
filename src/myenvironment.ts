@@ -11,7 +11,6 @@ import { MySetupError } from './errors';
 
 export class MyEnvironment {
     static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
-    static readonly DebugNodeModuleToBuild: string = "elrond-go-node-debug-master/cmd/debugWithRestApi";
 
     static async installBuildToolsForC(): Promise<any> {
         MyEnvironment.ensureFolderStructure();
@@ -127,7 +126,7 @@ export class MyEnvironment {
         Feedback.debug("node-debug downloaded.");
 
         await FsFacade.untar(archivePath, nodeDebugPath);
-        FsFacade.markAsExecutable(path.join(nodeDebugPath, "debugWithRestApi"));
+        FsFacade.markAsExecutable(path.join(nodeDebugPath, "nodedebug"));
 
         Feedback.info("node-debug ready.");
     }

@@ -180,7 +180,7 @@ export class RestDebugger {
     }
 
     public static getToolPath(): string {
-        let toolPath = path.join(RestDebugger.getFolderPath(), "debugWithRestApi");
+        let toolPath = path.join(RestDebugger.getFolderPath(), "nodedebug");
         return toolPath;
     }
 }
