@@ -34,7 +34,8 @@
                                 <div class="mb-2">
                                     Address:
                                     <strong><%= contract.PropertiesOnNodeDebug.Address || "none yet" %></strong>
-                                    <span class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
+                                    <span
+                                        class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
                                 </div>
 
                                 <button class="btn btn-info btn-configure-watch">Watch variables</button>
@@ -46,6 +47,25 @@
                                 <% if (contract.PropertiesOnNodeDebug.Address) { %>
                                 <button class="btn btn-info btn-run-contract" type="button">Run function</button>
                                 <% } %>
+
+                                <div class="row mt-2">
+                                    <div class="col-sm-6">
+                                        <div class="card mt-2">
+                                            <div class="card-header">VM output of latest run</div>
+                                            <div class="card-body">
+                                                <div class="vm-output-view"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="card mt-2">
+                                            <div class="card-header">Watched variables</div>
+                                            <div class="card-body">
+                                                <div class="watched-variables-view"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -74,15 +94,6 @@
                         </div>
                     </div>
                 </div>
-
-                <% if (contract.PropertiesOnNodeDebug.Address) { %>
-                <div class="row mt-3">
-                    <div class="col-sm-12">
-                        <h5>VM output (on debug node)</h5>
-                        <div class="vm-output-view"></div>
-                    </div>
-                </div>
-                <% } %>
             </div>
         </div>
     </div>
