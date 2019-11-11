@@ -90,7 +90,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped? ${e.error}`);
+            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
             throw e;
         });
     }
@@ -113,7 +113,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Perhaps node-debug is stopped? ${e.error}`);
+            Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
         });
 
         let vmOutput: any = {};
@@ -140,7 +140,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Perhaps node-debug is stopped? ${e.error}`);
+            Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
         });
     }
 
