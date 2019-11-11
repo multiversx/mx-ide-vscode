@@ -11,6 +11,8 @@ function main() {
     app.restDialogue = new RestDialogueCollection();
     app.environment = new EnvironmentModel();
     app.queryTestnetFacade = new QueryTestnetFacade();
+
+    initializeNavigation();
     initializeUnderscoreTemplates();
     listenToExtensionMessages();
 
@@ -47,6 +49,24 @@ function main() {
     app.restDialogueListView = new RestDialogueListView({
         el: "#RestDialogue .payload",
         collection: app.restDialogue
+    });
+}
+
+function initializeNavigation() {
+    $(".nav-item .nav-link").click(function (event) {
+        event.stopPropagation();
+
+        var parentNav = $(this).closest(".nav");
+        var navLinks = parentNav.find(".nav-link");
+        var navLinkToActivate = $(this);
+        var viewSelector = $(this).attr("href");
+        var views = $(document).find(".views-container .view");
+        var viewToShow = $(document).find(viewSelector);
+
+        navLinks.removeClass("active");
+        navLinkToActivate.addClass("active");
+        views.addClass("d-none");
+        viewToShow.removeClass("d-none");
     });
 }
 

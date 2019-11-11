@@ -14,31 +14,31 @@
 <body>
     <div class="container-fluid">
         <div class="main">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#Home">Home</a>
+                    <a class="nav-link active" href="#Home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#BuilderStdout">Build output</a>
+                    <a class="nav-link" href="#BuilderStdout">Build output</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#DebuggerStdout">Debugger output</a>
+                    <a class="nav-link" href="#DebuggerStdout">Debugger output</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#RestDialogue">REST dialogue</a>
+                    <a class="nav-link" href="#RestDialogue">REST dialogue</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#QueryTestnet">Query Testnet</a>
+                    <a class="nav-link" href="#QueryTestnet">Query Testnet</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#Environment">Environment</a>
+                    <a class="nav-link" href="#Environment">Environment</a>
                 </li>
                 <li class="nav-item d-none">
-                    <a class="nav-link" data-toggle="tab" href="#ExtensionConsole">Extension console</a>
+                    <a class="nav-link" href="#ExtensionConsole">Extension console</a>
                 </li>
             </ul>
-            <div class="tab-content">
-                <div class="tab-pane active show" id="Home">
+            <div class="views-container">
+                <div class="view" id="Home">
                     <div class="manage-node-debug-view">
                         <div class="card mt-3 mb-3">
                             <div class="card-header">Manage node-debug</div>
@@ -64,29 +64,29 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="BuilderStdout">
+                <div class="view d-none" id="BuilderStdout">
                     <pre class="payload mt-3">
                     </pre>
                 </div>
-                <div class="tab-pane" id="DebuggerStdout">
+                <div class="view d-none" id="DebuggerStdout">
                     <pre class="payload mt-3">
                     </pre>
                 </div>
-                <div class="tab-pane" id="RestDialogue">
+                <div class="view d-none" id="RestDialogue">
                     <div class="payload mt-3">
                     </div>
                 </div>
-                <div class="tab-pane" id="QueryTestnet">
+                <div class="view d-none" id="QueryTestnet">
                     <div class="mt-3">
                         {{partial.queryTestnet.html}}
                     </div>
                 </div>
-                <div class="tab-pane" id="Environment">
+                <div class="view d-none" id="Environment">
                     <div class="mt-3">
                         {{partial.environment.html}}
                     </div>
                 </div>
-                <div class="tab-pane" id="ExtensionConsole">
+                <div class="view d-none" id="ExtensionConsole">
                     <pre class="payload mt-3">
                     </pre>
                 </div>
