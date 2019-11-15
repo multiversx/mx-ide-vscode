@@ -15,6 +15,7 @@ export class SmartContract {
     public ExportFile: MyFile;
     public readonly IsSourceC: boolean;
     public readonly IsSourceRust: boolean;
+    public readonly IsSourceSol: boolean;
 
     public readonly PropertiesOnNodeDebug: PropertiesOnNetwork;
     public readonly PropertiesOnTestnet: PropertiesOnNetwork;
@@ -23,6 +24,7 @@ export class SmartContract {
         this.SourceFile = sourceFile;
         this.IsSourceC = this.SourceFile.Extension == ".c";
         this.IsSourceRust = this.SourceFile.Extension == ".rs";
+        this.IsSourceSol = this.SourceFile.Extension == ".sol";
         this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
 
         this.PropertiesOnNodeDebug = new PropertiesOnNetwork();
@@ -222,7 +224,7 @@ export class SmartContractsCollection {
     public static syncWithWorkspace() {
         let sourceFilesNow = MyFile.find({
             Folder: FsFacade.getPathToWorkspace(),
-            Extensions: ["c", "rs"],
+            Extensions: ["c", "rs", "sol"],
             Recursive: true
         });
 

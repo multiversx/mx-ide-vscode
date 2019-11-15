@@ -13,6 +13,8 @@ export class Builder {
             return Builder.buildCModule(smartContract);
         } else if (smartContract.IsSourceRust) {
             return Builder.buildRustModule(smartContract);
+        } else if (smartContract.IsSourceSol) {
+            Feedback.info("fake build sol file.");
         } else {
             throw new MyError({ Message: "Can't build file, unknown type." });
         }
