@@ -16,7 +16,7 @@ export class MyEnvironment {
         MyEnvironment.ensureFolderStructure();
 
         let ideFolder = MySettings.getIdeFolder();
-        let toolsFolder = Builder.getLlvmToolsFolder();
+        let toolsFolder = Builder.getLlvmToolsFolder("v9");
         let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}`;
         let archivePath = path.join(ideFolder, "vendor-llvm.tar.gz");
 
@@ -154,14 +154,16 @@ export class MyEnvironment {
 
     static ensureFolderStructure() {
         let ide = MySettings.getIdeFolder();
-        let llvmTools = Builder.getLlvmToolsFolder();
+        let llvmTools9 = Builder.getLlvmToolsFolder("v9");
+        let llvmTools8 = Builder.getLlvmToolsFolder("v8");
         let goCache = path.join(ide, "go-cache");
         let nodeDebug = NodeDebug.getFolderPath();
         let nodeDebugConfig = path.join(nodeDebug, "config");
 
         FsFacade.mkDirByPathSync(ide);
 
-        FsFacade.createFolderIfNotExists(llvmTools);
+        FsFacade.createFolderIfNotExists(llvmTools9);
+        FsFacade.createFolderIfNotExists(llvmTools8);
         FsFacade.createFolderIfNotExists(goCache);
         FsFacade.createFolderIfNotExists(nodeDebug);
         FsFacade.createFolderIfNotExists(nodeDebugConfig);

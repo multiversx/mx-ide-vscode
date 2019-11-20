@@ -24,6 +24,7 @@ export class ProcessFacade {
         let args = options.args;
         let environment = options.environment;
         let eventTag = options.eventTag;
+        let stdoutToFile = options.stdoutToFile;
 
         let spawnOptions: child_process.SpawnOptions = {
             cwd: workingDirectory,
@@ -51,6 +52,11 @@ export class ProcessFacade {
         let latestStderr = "";
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
+
+        if (stdoutToFile) {
+            let writeStream: fs.WriteStream = fs.createWriteStream(stdoutToFile);
+            subprocess.stdout.pipe(writeStream);
+        }
 
         if (eventTag) {
             eventBus.emit(`${eventTag}:started`, { program: program, args: args });

@@ -7,6 +7,7 @@ import path = require('path');
 import { MyFile } from "./myfile";
 import { Feedback } from "./feedback";
 import { Variables } from "./variables";
+const assert = require('assert').strict;
 
 export class SmartContract {
     public readonly FriendlyId: string;
@@ -49,6 +50,8 @@ export class SmartContract {
     }
 
     public createArwenFiles() {
+        assert.ok(this.BytecodeFile, "BytecodeFile nok.");
+
         let wasmHexPath = `${this.BytecodeFile.PathWithoutExtension}.hex`;
         let wasmHexArwenPath = `${wasmHexPath}.arwen`;
         const ArwenTag = "0500";
