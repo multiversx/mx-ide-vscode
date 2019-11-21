@@ -1,3 +1,7 @@
 init
-do_balance
-transfer_token
+totalSupply
+balanceOf
+allowance
+transferToken
+approve
+transferFrom

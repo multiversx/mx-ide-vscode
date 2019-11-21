@@ -2,12 +2,13 @@
 
 typedef unsigned int bigInt;
 
-bigInt    bigIntNew(int value);
+bigInt    bigIntNew(long long value);
 
-void      bigIntgetArgument(int argumentIndex, bigInt argument);
+void      bigIntGetUnsignedArgument(int argumentIndex, bigInt argument);
+void      bigIntGetSignedArgument(int argumentIndex, bigInt argument);
 
-int       bigIntstorageLoad(byte *key, bigInt value);
-int       bigIntstorageStore(byte *key, bigInt value);
+int       bigIntStorageLoad(byte *key, bigInt value);
+int       bigIntStorageStore(byte *key, bigInt value);
 
 void      bigIntAdd(bigInt destination, bigInt op1, bigInt op2);
 void      bigIntSub(bigInt destination, bigInt op1, bigInt op2);
