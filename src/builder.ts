@@ -173,7 +173,7 @@ define void @main() {
         function doWasmLd(): Promise<any> {
             return ProcessFacade.execute({
                 program: wasmLdPath,
-                args: ["--entry", "main", "--gc-sections", "--allow-undefined", filePath_o, "-o", filePath_wasm],
+                args: ["--entry", "main", /* "--gc-sections", */ "--demangle", "--no-gc-sections", "--export-all", "--allow-undefined", "--verbose", filePath_o, "-o", filePath_wasm],
                 eventTag: "builder"
             });
         }
