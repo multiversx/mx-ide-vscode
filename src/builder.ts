@@ -103,6 +103,7 @@ export class Builder {
         let filePath = smartContract.SourceFile.Path;
         let filePathWithoutExtension = smartContract.SourceFile.PathWithoutExtension;
         let filePath_ll = `${filePathWithoutExtension}.ll`;
+        let filePath_functions = `${filePathWithoutExtension}.functions`;
         let filePath_main_ll = `${filePathWithoutExtension}.main.ll`;
         let filePath_bc = `${filePathWithoutExtension}.bc`;
         let filePath_o = `${filePathWithoutExtension}.o`;
@@ -132,6 +133,15 @@ define void @main() {
                 program: sollPath,
                 args: ["-action", "EmitLLVM", filePath],
                 stdoutToFile: filePath_ll,
+                eventTag: "builder"
+            });
+        }
+
+        function emitFuncSig(): Promise<any> {
+            return ProcessFacade.execute({
+                program: sollPath,
+                args: ["-action", "EmitFuncSig", filePath],
+                stdoutToFile: filePath_functions,
                 eventTag: "builder"
             });
         }
@@ -170,6 +180,7 @@ define void @main() {
 
         FsFacade.writeFile(filePath_main_ll, mainLlContent)
         await emitLLVM();
+        await emitFuncSig();
         await llvmLink();
         await llvmOpt();
         await doLlc();
