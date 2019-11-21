@@ -37,7 +37,8 @@ export class Syms {
             "bigIntFinish",
             "bigIntStorageStore",
             "bigIntStorageLoad",
-            "bigIntGetArgument",
+            "bigIntGetUnsignedArgument",
+            "bigIntGetSignedArgument",
             "bigIntGetCallValue",
             "bigIntGetExternalBalance"
         ];
