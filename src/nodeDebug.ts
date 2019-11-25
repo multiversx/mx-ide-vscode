@@ -28,7 +28,7 @@ export class NodeDebug {
         });
     }
 
-    public static async stopMacOs(port :any): Promise<any> {
+    public static async stopMacOs(port: any): Promise<any> {
         let lsof: any;
         try {
             lsof = await ProcessFacade.execute({
@@ -114,6 +114,7 @@ export class NodeDebug {
             eventTag: "debugger-dialogue"
         }).catch(e => {
             Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
+            throw e;
         });
 
         let vmOutput: any = {};
@@ -141,6 +142,7 @@ export class NodeDebug {
             eventTag: "debugger-dialogue"
         }).catch(e => {
             Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
+            throw e;
         });
     }
 
