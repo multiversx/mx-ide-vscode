@@ -40,7 +40,13 @@ export class Syms {
             "bigIntGetUnsignedArgument",
             "bigIntGetSignedArgument",
             "bigIntGetCallValue",
-            "bigIntGetExternalBalance"
+            "bigIntGetExternalBalance",
+
+            "debugPrintBigInt",
+            "debugPrintInt64",
+            "debugPrintInt32",
+            "debugPrintBytes",
+            "debugPrintString"
         ];
 
         return mainSyms.join("\n");
