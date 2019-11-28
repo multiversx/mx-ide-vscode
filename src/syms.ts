@@ -4,7 +4,7 @@ export class Syms {
             "getOwner",
             "getExternalBalance",
             "getBlockHash",
-            "transfer",
+            "transferValue",
             "getArgument",
             "getFunction",
             "getNumArguments",
