@@ -156,7 +156,6 @@ export class MyEnvironment {
         let ide = MySettings.getIdeFolder();
         let llvmTools9 = Builder.getLlvmToolsFolder("v9");
         let llvmTools8 = Builder.getLlvmToolsFolder("v8");
-        let goCache = path.join(ide, "go-cache");
         let nodeDebug = NodeDebug.getFolderPath();
         let nodeDebugConfig = path.join(nodeDebug, "config");
 
@@ -164,7 +163,6 @@ export class MyEnvironment {
 
         FsFacade.createFolderIfNotExists(llvmTools9);
         FsFacade.createFolderIfNotExists(llvmTools8);
-        FsFacade.createFolderIfNotExists(goCache);
         FsFacade.createFolderIfNotExists(nodeDebug);
         FsFacade.createFolderIfNotExists(nodeDebugConfig);
     }
