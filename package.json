@@ -55,7 +55,7 @@
 			"properties": {
 				"elrond.downloadMirror": {
 					"type": "string",
-					"default": "https://workshop.elrond.com/ElrondIDE",
+					"default": "https://ide.elrond.com",
 					"description": "Download mirror for Elrond IDE tools."
 				},
 				"elrond.ideFolder": {
@@ -70,7 +70,7 @@
 				},
 				"elrond.testnetUrl": {
 					"type": "string",
-					"default": "https://wallet-workshop.elrond.com",
+					"default": "https://testnet.elrond.com/#/wallet",
 					"description": "Testnet proxy URL."
 				}
 			}

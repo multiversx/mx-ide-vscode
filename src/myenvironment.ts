@@ -17,7 +17,7 @@ export class MyEnvironment {
 
         let ideFolder = MySettings.getIdeFolder();
         let toolsFolder = Builder.getLlvmToolsFolder("v9");
-        let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl()}`;
+        let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl("v9")}`;
         let archivePath = path.join(ideFolder, "vendor-llvm.tar.gz");
 
         await RestFacade.download({
@@ -38,8 +38,8 @@ export class MyEnvironment {
         Feedback.info("LLVM tools are ready to use.");
     }
 
-    static getLlvmDownloadUrl() {
-        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm`;
+    static getLlvmDownloadUrl(version: string) {
+        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm/${version}`;
         let urlLinux: string = `${urlRoot}/linux.tar.gz`;
         let urlMacOS: string = `${urlRoot}/macos.tar.gz`;
 
@@ -116,7 +116,7 @@ export class MyEnvironment {
         let downloadUrl = MyEnvironment.getNodeDebugDownloadUrl();
         let idePath = MySettings.getIdeFolder();
         let nodeDebugPath = NodeDebug.getFolderPath();
-        let archivePath = path.join(idePath, "node-debug.tar.gz");
+        let archivePath = path.join(idePath, "nodedebug.tar.gz");
 
         await RestFacade.download({
             url: downloadUrl,
@@ -132,7 +132,7 @@ export class MyEnvironment {
     }
 
     static getNodeDebugDownloadUrl() {
-        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/node-debug`;
+        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/nodedebug`;
         let urlLinux: string = `${urlRoot}/linux-amd64.tar.gz`;
         let urlMacOS: string = `${urlRoot}/darwin-amd64.tar.gz`;
 
