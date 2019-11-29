@@ -266,7 +266,7 @@ class SmartContractRun {
             functionName: "your_function",
             functionArgs: [],
             value: 0,
-            gasLimit: 2000,
+            gasLimit: 50000,
             gasPrice: 10
         };
 
