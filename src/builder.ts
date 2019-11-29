@@ -38,7 +38,7 @@ export class Builder {
             return ProcessFacade.execute({
                 program: clangPath,
                 args: ["-cc1", "-Ofast", "-emit-llvm", "-triple=wasm32-unknown-unknown-wasm", filePath],
-                eventTag: "builder"
+                channels: ["builder", "build:C"]
             });
         }
 
@@ -46,7 +46,7 @@ export class Builder {
             return ProcessFacade.execute({
                 program: llcPath,
                 args: ["-O3", "-filetype=obj", filePath_ll, "-o", filePath_o],
-                eventTag: "builder"
+                channels: ["builder", "build:C"]
             });
         }
 
@@ -69,7 +69,7 @@ export class Builder {
             return ProcessFacade.execute({
                 program: wasmLdPath,
                 args: buildArgs,
-                eventTag: "builder"
+                channels: ["builder", "build:C"]
             });
         }
 
@@ -95,7 +95,7 @@ export class Builder {
                 RUSTUP_HOME: RUSTUP_HOME,
                 CARGO_HOME: CARGO_HOME
             },
-            eventTag: "builder"
+            channels: ["builder", "build:rust"]
         });
     }
 
@@ -133,7 +133,8 @@ define void @main() {
                 program: sollPath,
                 args: ["-action", "EmitLLVM", filePath],
                 stdoutToFile: filePath_ll,
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"],
+                doNotDumpStdout: true
             });
         }
 
@@ -142,7 +143,7 @@ define void @main() {
                 program: sollPath,
                 args: ["-action", "EmitFuncSig", filePath],
                 stdoutToFile: filePath_functions,
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"]
             });
         }
 
@@ -150,7 +151,7 @@ define void @main() {
             return ProcessFacade.execute({
                 program: llvmLinkPath,
                 args: [filePath_ll, filePath_main_ll, "-o", filePath_bc],
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"]
             });
         }
 
@@ -158,7 +159,7 @@ define void @main() {
             return ProcessFacade.execute({
                 program: llvmOptPath,
                 args: ["-std-link-opts", "-Oz", "-polly", filePath_bc, "-o", filePath_bc],
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"]
             });
         }
 
@@ -166,7 +167,7 @@ define void @main() {
             return ProcessFacade.execute({
                 program: llvmLlcPath,
                 args: ["-O3", "-filetype=obj", filePath_bc, "-o", filePath_o],
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"]
             });
         }
 
@@ -174,7 +175,7 @@ define void @main() {
             return ProcessFacade.execute({
                 program: wasmLdPath,
                 args: ["--entry", "main", /* "--gc-sections", */ "--demangle", "--no-gc-sections", "--export-all", "--allow-undefined", "--verbose", filePath_o, "-o", filePath_wasm],
-                eventTag: "builder"
+                channels: ["builder", "build:SOL"]
             });
         }
 

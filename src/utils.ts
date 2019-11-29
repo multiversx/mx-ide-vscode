@@ -24,22 +24,24 @@ export class ProcessFacade {
         let args = options.args;
         let environment = options.environment;
         let eventTag = options.eventTag;
+        let channels = options.channels || ["exec"];
         let stdoutToFile = options.stdoutToFile;
+        let doNotDumpStdout = options.doNotDumpStdout;
 
         let spawnOptions: child_process.SpawnOptions = {
             cwd: workingDirectory,
             env: environment
         };
 
-        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`, ["default", "exec"]);
+        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`, channels);
 
         if (workingDirectory) {
-            Feedback.debug(`Working directory: ${workingDirectory}`, ["default", "exec"]);
+            Feedback.debug(`Working directory: ${workingDirectory}`, channels);
         }
 
         if (environment) {
-            Feedback.debug(`Environment variables:`, ["default", "exec"]);
-            Feedback.debug(JSON.stringify(environment, null, 4), ["default", "exec"]);
+            Feedback.debug(`Environment variables:`, channels);
+            Feedback.debug(JSON.stringify(environment, null, 4), channels);
         }
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
@@ -64,7 +66,10 @@ export class ProcessFacade {
 
         subprocess.stdout.on("data", function (data) {
             latestStdout = data;
-            Feedback.debug(`[${programName}] says: ${data}`, ["exec"]);
+
+            if (!doNotDumpStdout) {
+                Feedback.debug(`[${programName}] says: ${data}`, channels);
+            }
 
             if (options.onOutput) {
                 options.onOutput(data);
@@ -77,7 +82,7 @@ export class ProcessFacade {
 
         subprocess.stderr.on("data", function (data) {
             latestStderr = data;
-            Feedback.debug(`[${programName}] says (stderr): ${data}`, ["exec"]);
+            Feedback.debug(`[${programName}] says (stderr): ${data}`, channels);
 
             if (options.onError) {
                 options.onError(data);
@@ -89,7 +94,7 @@ export class ProcessFacade {
         });
 
         subprocess.on("close", function (code) {
-            Feedback.debug(`[${programName}] exists, exit code = ${code}.`, ["default", "exec"]);
+            Feedback.debug(`[${programName}] exists, exit code = ${code}.`, channels);
 
             if (options.onClose) {
                 options.onClose(code, latestStdout.trim());
