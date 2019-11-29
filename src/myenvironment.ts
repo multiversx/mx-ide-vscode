@@ -18,7 +18,7 @@ export class MyEnvironment {
         let ideFolder = MySettings.getIdeFolder();
         let toolsFolder = Builder.getLlvmToolsFolder("v9");
         let downloadUrl = `${MyEnvironment.getLlvmDownloadUrl("v9")}`;
-        let archivePath = path.join(ideFolder, "vendor-llvm.tar.gz");
+        let archivePath = path.join(ideFolder, "vendor-llvm.v9.tar.gz");
 
         await RestFacade.download({
             url: downloadUrl,
@@ -110,6 +110,57 @@ export class MyEnvironment {
         Feedback.info("Rust tools are not uninstalled.");
     }
 
+    static async installBuildToolsForSolidity(): Promise<any> {
+        MyEnvironment.ensureFolderStructure();
+
+        let ideFolder = MySettings.getIdeFolder();
+        let solFolder = Builder.getSolidityToolsFolder();
+        let llvmFolder = Builder.getLlvmToolsFolder("v8");
+
+        let solArchivePath = path.join(ideFolder, "vendor-soll.tar.gz");
+        let llvmArchivePath = path.join(ideFolder, "vendor-llvm.v8.tar.gz");
+
+        await RestFacade.download({
+            url: MyEnvironment.getSOLLDownloadUrl(),
+            destination: solArchivePath
+        });
+
+        Feedback.debug("Downloaded SOLL (Second State) compiler.");
+
+        await RestFacade.download({
+            url: MyEnvironment.getLlvmDownloadUrl("v8"),
+            destination: llvmArchivePath
+        });
+
+        Feedback.debug("Downloaded LLVM subset archive.");
+
+        await FsFacade.untar(solArchivePath, solFolder);
+        await FsFacade.untar(llvmArchivePath, llvmFolder);
+
+        FsFacade.markAsExecutable(path.join(solFolder, "soll"));
+        FsFacade.markAsExecutable(path.join(llvmFolder, "llc"));
+        FsFacade.markAsExecutable(path.join(llvmFolder, "lld"));
+        FsFacade.markAsExecutable(path.join(llvmFolder, "llvm-link"));
+        FsFacade.markAsExecutable(path.join(llvmFolder, "opt"));
+        FsFacade.markAsExecutable(path.join(llvmFolder, "wasm-ld"));
+        
+        Feedback.info("Solidity tools are ready to use.");
+    }
+
+    static getSOLLDownloadUrl() {
+        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-soll`;
+        let urlLinux: string = `${urlRoot}/linux-amd64.tar.gz`;
+        let urlMacOS: string = `${urlRoot}/darwin-amd64.tar.gz`;
+
+        let platform = os.platform();
+
+        if (platform == "darwin") {
+            return urlMacOS;
+        }
+
+        return urlLinux;
+    }
+
     static async installDebugNode(): Promise<any> {
         MyEnvironment.ensureFolderStructure();
 
@@ -154,15 +205,19 @@ export class MyEnvironment {
 
     static ensureFolderStructure() {
         let ide = MySettings.getIdeFolder();
+        let llvmTools = Builder.getLlvmToolsFolder("");
         let llvmTools9 = Builder.getLlvmToolsFolder("v9");
         let llvmTools8 = Builder.getLlvmToolsFolder("v8");
+        let solTools = Builder.getSolidityToolsFolder();
         let nodeDebug = NodeDebug.getFolderPath();
         let nodeDebugConfig = path.join(nodeDebug, "config");
 
         FsFacade.mkDirByPathSync(ide);
 
+        FsFacade.createFolderIfNotExists(llvmTools);
         FsFacade.createFolderIfNotExists(llvmTools9);
         FsFacade.createFolderIfNotExists(llvmTools8);
+        FsFacade.createFolderIfNotExists(solTools);
         FsFacade.createFolderIfNotExists(nodeDebug);
         FsFacade.createFolderIfNotExists(nodeDebugConfig);
     }

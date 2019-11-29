@@ -156,7 +156,7 @@ export class NodeDebug {
 
     public static readTracedVMOutput(scAddress: string): any {
         let idePath = MySettings.getIdeFolder();
-        let toolPathFolder = path.join(idePath, "node-debug");
+        let toolPathFolder = path.join(idePath, "nodedebug");
         let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
         let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
         let vmOutput = JSON.parse(traceJson);
@@ -180,7 +180,7 @@ export class NodeDebug {
 
     public static getFolderPath(): string {
         let idePath = MySettings.getIdeFolder();
-        let subfolder = path.join(idePath, "node-debug");
+        let subfolder = path.join(idePath, "nodedebug");
         return subfolder;
     }
 

@@ -3,11 +3,13 @@
         <div class="col-sm-12 mt-2">
             <p class="mt-2">
                 Tools and dependencies are downloaded to the configured folder, which is:
-                <kbd class="configuration-ide-folder"></kbd> <button class="btn btn-xs btn-info btn-refresh" title="Refresh">&#x21bb;</button>
+                <kbd class="configuration-ide-folder"></kbd> <button class="btn btn-xs btn-info btn-refresh"
+                    title="Refresh">&#x21bb;</button>
                 - they are downloaded from a mirror created specifically for Elrond IDE, located at:
                 <kbd class="configuration-download-mirror"></kbd>.
-                If you wish to change the configured folder or the download mirror, <strong>please review the extension's
-                settings.</strong>
+                If you wish to change the configured folder or the download mirror, <strong>please review the
+                    extension's
+                    settings.</strong>
             </p>
         </div>
     </div>
@@ -56,6 +58,20 @@
                         <td><button class="btn btn-block btn-info btn-install-build-tools-rust">Install</button></td>
                         <td><button class="btn btn-block btn-danger btn-uninstall-build-tools-rust">Uninstall</button>
                         </td>
+                    </tr>
+                    <tr>
+                        <th>Solidity buildchain</th>
+                        <td>
+                            <a href="https://github.com/second-state/soll">Second State SOLL compiler</a>, plus
+                            <a href="https://llvm.org">LLVM (8.0.0)</a>
+                        </td>
+                        <td>
+                            <p>
+                                <strong>Second State - SOLL</strong> is a new compiler for generating Ewasm (Ethereum flavored WebAssembly) files from Solidity.
+                            </p>
+                        </td>
+                        <td><button class="btn btn-block btn-info btn-install-build-tools-sol">Download</button></td>
+                        <td><button class="btn btn-block btn-danger">Remove</button></td>
                     </tr>
                     <tr>
                         <th>Elrond nodedebug</th>

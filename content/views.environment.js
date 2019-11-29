@@ -4,6 +4,7 @@ var EnvironmentView = Backbone.View.extend({
         "click .btn-install-build-tools-c": "onClickInstallBuildToolsForC",
         "click .btn-install-build-tools-rust": "onClickInstallBuildToolsForRust",
         "click .btn-uninstall-build-tools-rust": "onClickUninstallBuildToolsForRust",
+        "click .btn-install-build-tools-sol": "onClickInstallBuildToolsForSol",
         "click .btn-install-go": "onClickInstallGo",
         "click .btn-install-debug-node": "onClickInstallDebugNode"
     },
@@ -51,6 +52,10 @@ var EnvironmentView = Backbone.View.extend({
 
     onClickUninstallBuildToolsForRust: function() {
         app.talkToVscode("environment-uninstall-build-tools-rust");
+    },
+
+    onClickInstallBuildToolsForSol: function() {
+        app.talkToVscode("environment-install-build-tools-sol");
     },
 
     onClickInstallGo: function() {

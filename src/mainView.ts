@@ -111,6 +111,10 @@ export class MainView {
             MyEnvironment.uninstallBuildToolsForRust().catch(MyErrorCatcher.topLevel);
         });
 
+        eventBus.on("view-message:environment-install-build-tools-sol", function (payload) {
+            MyEnvironment.installBuildToolsForSolidity().catch(MyErrorCatcher.topLevel);
+        });
+
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
             MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
         });
