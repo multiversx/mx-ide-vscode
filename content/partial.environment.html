@@ -4,15 +4,9 @@
             <button class="btn btn-info btn-refresh">Refresh environment settings</button>
             <p class="mt-2">
                 Tools and dependencies are downloaded to the configured folder, which is:
-                <kbd class="configuration-ide-folder"></kbd>
-            </p>
-
-            <p>
+                <kbd class="configuration-ide-folder"></kbd>.
                 They are downloaded from a mirror created specifically for Elrond IDE, located at:
-                <kbd class="configuration-download-mirror"></kbd>
-            </p>
-
-            <p>
+                <kbd class="configuration-download-mirror"></kbd>.
                 If you wish to change the configured folder or the download mirror, please review the extension's
                 settings.
             </p>
@@ -22,76 +16,66 @@
     <div class="row">
         <div class="col-sm-12">
             <p>
-                In order to build smart contracts to WASM bytecode, a subset of <a href="https://llvm.org/">LLVM</a>
-                is necessary. More specifically, <strong>clang</strong>, <strong>llc</strong> and
-                <strong>wasm-ld</strong>.
-            </p>
-
-            <p>
-                Furthermore, <strong>a variant of the Elrond node</strong> is required for debugging smart contracts.
-                This variant, called <a href="https://github.com/ElrondNetwork/elrond-go-node-debug">node-debug</a>,
-                enables a HTTP endpoint which is then used by the Visual Studio Code extension
-                to deploy smart contracts and execute exported functions.
-
-                <!-- The <strong>node-debug</strong> tool is built from source on your machine and this requires the
-                <strong>golang environment and tools</strong>. These are also downloaded automatically by the Elrond
-                IDE,
-                in the configured folder. -->
-            </p>
-
-            <p>
-                Please note that in order to <em>deploy</em> and <em>run</em> on a testnet, you need to
+                Please note that in order to <em>deploy</em> and <em>run</em> on a local testnet, you need to
                 <strong>separately</strong>
-                download and run an Elrond node.
+                download the Elrond node and start a testnet by yourself.
             </p>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-2">
         <div class="col-sm-12">
-            <div>
-                Upon setting up the environment, the configured IDE folder, <kbd class="configuration-ide-folder"></kbd>,
-                should have the following content:
-
-                <pre>
-    .
-    ├── node-debug
-    │   ├── config
-    │   │   ├── config.toml
-    │   │   └── genesis.json
-    │   ├── nodedebug
-    │   └── libwasmer_runtime_c_api.so
-    ├── vendor-rust
-    │   ├── bin
-    │   │   ├── cargo
-    │   │   ├── cargo-clippy
-    │   │   ├── cargo-fmt
-    │   │   ├── cargo-miri
-    │   │   ├── clippy-driver
-    │   │   ├── rls
-    │   │   ├── rustc
-    │   │   ├── rustdoc
-    │   │   ├── rustfmt
-    │   │   ├── rust-gdb
-    │   │   ├── rust-lldb
-    │   │   └── rustup
-    │   └── toolchains
-    │       └── nightly-x86_64-unknown-linux-gnu
-    └── vendor-llvm
-        ├── clang-9
-        ├── llc
-        ├── lld
-        └── wasm-ld -> lld
-                </pre>
-            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Site</th>
+                        <th scope="col">Details</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>C buildchain</th>
+                        <td><a href="https://llvm.org">LLVM</a></td>
+                        <td>
+                            <p>
+                                In order to build smart contracts to WASM bytecode, a subset of LLVM
+                                is necessary. More specifically, <strong>clang</strong>, <strong>llc</strong> and
+                                <strong>wasm-ld</strong>.
+                            </p>
+                        </td>
+                        <td><button class="btn btn-block btn-info btn-install-build-tools-c">Download</button></td>
+                        <td><button class="btn btn-block btn-danger">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <th>Rust buildchain</th>
+                        <td><a href="https://www.rust-lang.org/">rust-lang</a></td>
+                        <td>...</td>
+                        <td><button class="btn btn-block btn-info btn-install-build-tools-rust">Install</button></td>
+                        <td><button class="btn btn-block btn-danger btn-uninstall-build-tools-rust">Uninstall</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Elrond nodedebug</th>
+                        <td><a href="https://github.com/ElrondNetwork/elrond-go-node-debug">elrond-go-node-debug</a>
+                        </td>
+                        <td>
+                            <p>
+                                This <strong>variant of the Elrond node</strong> is required for debugging
+                                smart contracts. It enables a HTTP endpoint which is then used by the Visual Studio Code
+                                extension
+                                to deploy smart contracts and execute exported functions.
+                            </p>
+                        </td>
+                        <td><button class="btn btn-block btn-info btn-install-debug-node">Download</button></td>
+                        <td><button class="btn btn-block btn-danger">Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <button class="btn btn-info btn-install-build-tools-c">Get clang and llc</button>
-    <button class="btn btn-info btn-install-build-tools-rust">Get Rust tools</button>
-    <button class="btn btn-danger btn-uninstall-build-tools-rust">Uninstall Rust tools</button>
-    <!-- <button class="btn btn-info btn-install-go">Get go environment</button> -->
-    <button class="btn btn-info btn-install-debug-node">Install (reinstall) debug node</button>
 
     <div class="row mt-3">
         <div class="col-sm-12">

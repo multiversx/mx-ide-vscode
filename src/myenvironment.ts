@@ -40,8 +40,8 @@ export class MyEnvironment {
 
     static getLlvmDownloadUrl(version: string) {
         let urlRoot = `${MySettings.getDownloadMirrorUrl()}/vendor-llvm/${version}`;
-        let urlLinux: string = `${urlRoot}/linux.tar.gz`;
-        let urlMacOS: string = `${urlRoot}/macos.tar.gz`;
+        let urlLinux: string = `${urlRoot}/linux-amd64.tar.gz`;
+        let urlMacOS: string = `${urlRoot}/darwin-amd64.tar.gz`;
 
         let platform = os.platform();
 
