@@ -1,6 +1,10 @@
 var RestDialogueListView = Backbone.View.extend({
     tagName: "div",
 
+    events: {
+        "click .btn-clear": "onClickClear"
+    },
+
     initialize: function () {
         this.listenTo(this.collection, "add", this.onItemAdded);
         this.render();
@@ -12,7 +16,12 @@ var RestDialogueListView = Backbone.View.extend({
 
     onItemAdded: function (item) {
         var itemView = new RestDialogueItemView({ model: item });
-        this.$el.append(itemView.$el);
+        this.$el.find(".payload").append(itemView.$el);
+    },
+
+    onClickClear: function() {
+        this.collection.reset();
+        this.$el.find(".payload").empty();
     }
 });
 

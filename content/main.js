@@ -53,7 +53,7 @@ function main() {
     });
 
     app.restDialogueListView = new RestDialogueListView({
-        el: "#RestDialogue .payload",
+        el: "#RestDialogue",
         collection: app.restDialogue
     });
 }

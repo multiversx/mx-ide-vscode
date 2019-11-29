@@ -311,6 +311,7 @@ export class RestFacade {
         let url = options.url;
         let data = options.data;
         let eventTag = options.eventTag;
+        let channels = options.channels || ["http"];
         let requestOptions: any = {
             json: data
         };
@@ -319,8 +320,8 @@ export class RestFacade {
             eventBus.emit(`${eventTag}:request`, { url: url, data: data });
         }
 
-        Feedback.debug(`http post, ${url}`, ["default", "http"]);
-        Feedback.debug(JSON.stringify(options, null, 4), ["http"]);
+        Feedback.debug(`http post, ${url}`, channels);
+        Feedback.debug(JSON.stringify(options, null, 4), channels);
 
         request.post(url, requestOptions, function (error: any, response: any, body: any) {
             let statusCode = response ? response.statusCode : null;
@@ -331,8 +332,8 @@ export class RestFacade {
                 reject(new MyHttpError({ Url: url, RequestError: error }));
             } else {
                 eventBus.emit(`${eventTag}:response`, { url: url, data: body });
-                Feedback.debug(`http post, status=${statusCode}, response:`, ["http"]);
-                Feedback.debug(JSON.stringify(body, null, 4), ["http"]);
+                Feedback.debug(`http post, status=${statusCode}, response:`, channels);
+                Feedback.debug(JSON.stringify(body, null, 4), channels);
 
                 if (statusCode != 200) {
                     Feedback.error("Errorneous HTTP response, please check.");

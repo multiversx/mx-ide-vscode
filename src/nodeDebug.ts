@@ -60,6 +60,7 @@ export class NodeDebug {
             workingDirectory: toolPathFolder,
             args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
             eventTag: "debugger",
+            channels: ["debugger"],
             environment: {
                 LD_LIBRARY_PATH: LD_LIBRARY_PATH
             }
@@ -88,7 +89,8 @@ export class NodeDebug {
                 "GasPrice": options.gasPrice,
                 "TxData": options.transactionData
             },
-            eventTag: "debugger-dialogue"
+            eventTag: "debugger-dialogue",
+            channels: ["debugger-dialogue"]
         }).catch(e => {
             Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
             throw e;
@@ -111,7 +113,8 @@ export class NodeDebug {
                 "GasPrice": runOptions.gasPrice,
                 "TxData": runOptions.transactionData
             },
-            eventTag: "debugger-dialogue"
+            eventTag: "debugger-dialogue",
+            channels: ["debugger-dialogue"]
         }).catch(e => {
             Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
             throw e;

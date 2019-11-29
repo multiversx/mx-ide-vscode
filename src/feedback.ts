@@ -5,16 +5,12 @@ export class Feedback {
     private static OutputChannels: { [id: string]: vscode.OutputChannel; } = {};
 
     public static debug(message: string, channels: string[] = ["default"]) {
-        console.log(message);
-
         channels.forEach(function (tag) {
             Feedback.getChannel(tag).appendLine(`DEBUG: ${message}`);
         });
     }
 
     public static info(message: string, channels: string[] = ["default"]) {
-        console.info(message);
-
         channels.forEach(function (tag) {
             Feedback.getChannel(tag).appendLine(`INFO: ${message}`);
         });
