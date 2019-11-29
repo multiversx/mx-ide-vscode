@@ -30,6 +30,7 @@ function openIDE() {
 
 function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
+	SmartContractsCollection.syncWithWorkspace();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
 }
