@@ -138,6 +138,32 @@ define void @main() {
             });
         }
 
+        function traceLineByLine() {
+            let ll = FsFacade.readFile(filePath_ll);
+            let lines = ll.split(/\r?\n/);
+            let linesNew: string[] = [];
+
+            lines.forEach(line => {
+                linesNew.push(line);
+
+                if (line.startsWith("target triple =")) {
+                    linesNew.push("", "declare void @debugPrintLineNumber(i32) ; IDE-generated")
+                }
+
+                if (line.startsWith("  ret") || line.startsWith("  br") || line.startsWith("  unreachable") || 
+                    line.startsWith("  switch") || line.startsWith("  ]") || line.startsWith("    ") || line.indexOf(" = phi") > 0) {
+                    return;
+                }
+
+                if (line.startsWith("  ")) {
+                    linesNew.push(`  call void @debugPrintLineNumber(i32 ${linesNew.length + 1}) ; IDE-generated`)
+                }
+            });
+
+            let newLl = linesNew.join("\n");
+            FsFacade.writeFile(filePath_ll, newLl);
+        }
+
         function emitFuncSig(): Promise<any> {
             return ProcessFacade.execute({
                 program: sollPath,
@@ -181,6 +207,7 @@ define void @main() {
 
         FsFacade.writeFile(filePath_main_ll, mainLlContent)
         await emitLLVM();
+        //traceLineByLine();
         await emitFuncSig();
         await llvmLink();
         await llvmOpt();
