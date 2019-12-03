@@ -8,5 +8,3 @@ edition = "2018"
 
 [dependencies]
 elrond-wasm = { path = "../elrond-wasm" }
-elrond-wasm-derive = { path = "../elrond-wasm/derive" }
-

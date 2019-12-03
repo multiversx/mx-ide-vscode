@@ -1,5 +1,5 @@
 [package]
-name = "erc20-rust"
+name = "elrond-wasm-derive"
 version = "0.1.0"
 authors = ["andrei-marinica <andrei.marinica@elrond.com>"]
 edition = "2018"
@@ -7,6 +7,13 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-elrond-wasm = { path = "../elrond-wasm" }
-elrond-wasm-derive = { path = "../elrond-wasm/derive" }
+proc-macro2 = "0.4"
+quote = "0.6.8"
+syn = "0.15"
 
+[features]
+default = ["syn/full", "syn/parsing", "syn/extra-traits"]
+
+[lib]
+name = "elrond_wasm_derive"
+proc-macro = true
