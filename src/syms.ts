@@ -46,7 +46,8 @@ export class Syms {
             "debugPrintInt64",
             "debugPrintInt32",
             "debugPrintBytes",
-            "debugPrintString"
+            "debugPrintString",
+            "debugPrintLineNumber"
         ];
 
         return mainSyms.join("\n");
