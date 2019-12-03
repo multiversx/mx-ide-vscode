@@ -298,6 +298,11 @@ export class FsFacade {
         let workspaceFolder = FsFacade.getPathToWorkspace();
         return workspaceFolder ? true : false;
     }
+
+    public static listFolder(parentFolder: string): string[] {
+        let folders = fs.readdirSync(parentFolder).filter(child => fs.statSync(path.join(parentFolder, child)).isDirectory());
+        return folders;
+    }
 }
 
 export class RestFacade {

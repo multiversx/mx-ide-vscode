@@ -27,7 +27,7 @@ export class Projects {
     }
 
     static async askPrototype() {
-        let options = ["erc20-c", "erc20_0-0-3-sol" , "dummy-rust", "erc20-rust"];
+        let options = FsFacade.listFolder(FsFacade.getPathToSnippets());
         let prototype = await vscode.window.showQuickPick(options, { placeHolder: "Select prototype (template):" });
         return prototype;
     }
