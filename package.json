@@ -82,7 +82,8 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile",
 		"test": "node ./out/test/runTest.js",
-		"compile-theme": "node-sass --output-style compressed ./src/theme/theme.scss ./content/style.css"
+		"compile-bootstrap": "node-sass --output-style compressed ./src/theme/bootstrap.scss ./content/bootstrap.css",
+		"compile-theme": "node-sass --output-style compressed ./src/theme/theme.scss ./content/theme.css"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
