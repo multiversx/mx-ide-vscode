@@ -37,6 +37,11 @@ function main() {
         collection: app.smartContracts
     });
 
+    app.debugOnTestnetView = new DebugOnTestnetView({
+        el: ".debug-on-testnet-view",
+        collection: app.smartContracts
+    });
+
     app.environmentView = new EnvironmentView({
         el: ".environment-view",
         model: app.environment

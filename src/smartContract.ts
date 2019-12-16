@@ -147,15 +147,19 @@ export class SmartContract {
 
         for (var i = 0; i < variables.length; i++) {
             let variable = variables[i];
+            let variableValue = "N / A";
 
             options.scAddress = properties.Address;
             options.functionName = variable.FunctionName;
             options.arguments = variable.Arguments;
 
             let response = await NodeDebug.querySmartContract(options);
-            let returnData = response.data.ReturnData[0];
+            
+            if (response.data) {
+                variableValue = response.data.ReturnData[0];
+            }
 
-            properties.LatestRun.Variables[variable.Name] = returnData;
+            properties.LatestRun.Variables[variable.Name] = variableValue;
         }
     }
 

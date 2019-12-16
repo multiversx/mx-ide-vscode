@@ -27,84 +27,12 @@
                         <button class="btn btn-sm btn-primary btn-goto-debug" title="Go to debug">
                             <i class="fas fa-bolt"></i>
                         </button>
-                    </div>
-                </div>
-
-                <div class="col-sm-12">
-                    <div class="card mb-3">
-                        <div class="card-header">Node-debug</div>
-                        <div class="card-body">
-                            <div class="mb-2">
-                                Address:
-                                <strong><%= contract.PropertiesOnNodeDebug.Address || "none yet" %></strong>
-                                <span class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
-                            </div>
-
-                            <button class="btn btn-info btn-configure-watch">Watch variables</button>
-
-                            <% if (contract.BytecodeFile) { %>
-                            <button class="btn btn-info btn-deploy-contract">Deploy</button>
-                            <% } %>
-
-                            <% if (contract.PropertiesOnNodeDebug.Address) { %>
-                            <button class="btn btn-info btn-run-contract" type="button">Run function</button>
-                            <% } %>
-
-                            <div class="row mt-2">
-                                <div class="col-sm-6">
-                                    <div class="card mt-2">
-                                        <div class="card-header">VM output of latest run</div>
-                                        <div class="card-body">
-                                            <div class="vm-output-view"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="card mt-2">
-                                        <div class="card-header">Watched variables</div>
-                                        <div class="card-body">
-                                            <div class="watched-variables-view">
-                                                <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
-                                                <div>
-                                                    <strong><%= key %>:</strong>
-                                                    <kbd><%= value %></kbd>
-                                                </div>
-                                                <% }); %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-12">
-                    <div class="card mb-3">
-                        <div class="card-header">Testnet</div>
-                        <div class="card-body">
-                            <div class="mb-2">
-                                Address:
-                                <strong><%= contract.PropertiesOnTestnet.Address || "none yet" %></strong>
-                                <span class="text-muted"><%= contract.PropertiesOnTestnet.AddressTimestamp %></span>
-                            </div>
-
-                            <button class="btn btn-info btn-configure-watch-testnet">Watch variables</button>
-
-                            <% if (contract.BytecodeFile) { %>
-                            <button class="btn btn-warning btn-deploy-contract-testnet">Deploy</button>
-                            <% } %>
-
-                            <% if (contract.PropertiesOnTestnet.Address) { %>
-                            <button class="btn btn-warning btn-run-contract-testnet" type="button">Run
-                                function</button>
-                            <% } %>
-                        </div>
+                        <button class="btn btn-sm btn-primary btn-goto-debug-on-testnet" title="Go to debug on Testnet">
+                            <i class="fas fa-network-wired"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<hr class="hr-space" />
