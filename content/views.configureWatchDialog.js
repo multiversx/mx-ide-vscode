@@ -94,6 +94,5 @@ var ConfigureWatchDialog = Backbone.View.extend({
     },
 
     onClickSubmit: function () {
-
     }
 });

@@ -17,9 +17,8 @@ var DebugView = Backbone.View.extend({
     },
 
     renderListOfContracts: function () {
-        // todo: get selected
-
         var selectList = this.getListOfContractsElement();
+        var selected = selectList.val();
 
         if (this.collection.length == 0) {
             selectList.prop("disabled", "disabled");
@@ -35,7 +34,9 @@ var DebugView = Backbone.View.extend({
             selectList.append(option);
         });
 
-        // todo: restore selected
+        if (selected) {
+            selectList.val(selected);
+        }
     },
 
     getListOfContractsElement: function () {

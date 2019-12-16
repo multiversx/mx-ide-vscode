@@ -19,50 +19,55 @@
         <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h4 class="card-title">Node-debug</h4>
                     <div class="mb-2">
                         Address:
                         <strong><%= contract.PropertiesOnNodeDebug.Address || "none yet" %></strong>
                         <span class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
                     </div>
 
-                    <button class="btn btn-info btn-configure-watch">Watch variables</button>
+                    <button class="btn btn-primary btn-configure-watch" title="Watch variables">
+                        <i class="fas fa-glasses"></i>
+                    </button>
 
                     <% if (contract.BytecodeFile) { %>
-                    <button class="btn btn-info btn-deploy-contract">Deploy</button>
+                    <button class="btn btn-primary btn-deploy-contract" title="Deploy">
+                        <i class="fas fa-upload"></i>
+                    </button>
                     <% } %>
 
                     <% if (contract.PropertiesOnNodeDebug.Address) { %>
-                    <button class="btn btn-info btn-run-contract" type="button">Run function</button>
+                    <button class="btn btn-primary btn-run-contract" type="button" title="Run function">
+                        <i class="fas fa-play"></i>
+                    </button>
                     <% } %>
+                </div>
+            </div>
+        </div>
 
-                    <div class="row mt-2">
-                        <div class="col-sm-6">
-                            <div class="card mt-2">
-                                <div class="card-header">VM output of latest run</div>
-                                <div class="card-body">
-                                    <div class="vm-output-view"></div>
-                                </div>
-                            </div>
+        <div class="row mt-2">
+                <div class="col-sm-6">
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h5 class="card-title">VM output of latest run</h5>
+                            <div class="vm-output-view"></div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="card mt-2">
-                                <div class="card-header">Watched variables</div>
-                                <div class="card-body">
-                                    <div class="watched-variables-view">
-                                        <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
-                                        <div>
-                                            <strong><%= key %>:</strong>
-                                            <kbd><%= value %></kbd>
-                                        </div>
-                                        <% }); %>
-                                    </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Watched variables</h5>
+                            <div class="watched-variables-view">
+                                <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
+                                <div>
+                                    <strong><%= key %>:</strong>
+                                    <kbd><%= value %></kbd>
                                 </div>
+                                <% }); %>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </script>
 </div>

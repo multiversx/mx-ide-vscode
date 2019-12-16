@@ -1,9 +1,9 @@
 <% var properties = onTestnet ? contract.PropertiesOnTestnet : contract.PropertiesOnNodeDebug; %>
 <% _.each(properties.WatchedVariables, function(variable, index) { %>
 <div class="watched-variable" data-index="<%= index %>">
-    <div class="card border-info mb-3">
-        <div class="card-header">Watched variable: <kbd><%= variable.Name %></kbd></div>
+    <div class="card border-info mb-1">
         <div class="card-body">
+            <h4 class="card-title">Watched variable: <kbd><%= variable.Name %></kbd></h4>
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
@@ -28,17 +28,17 @@
 
             <div class="form-group">
                 <label>Aguments for the getter function</label>
-                <textarea name="Args" class="form-control" rows="3"><%= variable.Arguments.join("\n") %></textarea>
+                <textarea name="Args" class="form-control" rows="2"><%= variable.Arguments.join("\n") %></textarea>
             </div>
 
             <div class="row">
                 <div class="col-sm-6">
-                    <button type="button" class="btn btn-block btn-success btn-update-watch mt-2">Save
-                        watch</button>
-                </div>
-                <div class="col-sm-6">
-                    <button type="button" class="btn btn-block btn-warning btn-delete-watch mt-2">Delete
-                        watch</button>
+                    <button type="button" class="btn btn-lg btn-primary btn-update-watch" title="Save watch">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button type="button" class="btn btn-lg btn-outline-danger btn-delete-watch" title="Delete watch">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
         </div>
