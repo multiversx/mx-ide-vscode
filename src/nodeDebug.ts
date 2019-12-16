@@ -161,6 +161,17 @@ export class NodeDebug {
         let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
         let vmOutput = JSON.parse(traceJson);
 
+        let returnData: any[] = vmOutput.ReturnData || [];
+        vmOutput.ReturnDataHex = [];
+        vmOutput.ReturnDataDecimal = [];
+
+        returnData.forEach(function (data: any) {
+            var dataHex = Buffer.from(data, "base64").toString("hex");
+            var dataInt = parseInt(dataHex, 16);
+            vmOutput.ReturnDataHex.push(dataHex);
+            vmOutput.ReturnDataDecimal.push(dataInt);
+        });
+
         let outputAccounts: any[] = vmOutput.OutputAccounts || [];
 
         outputAccounts.forEach(function (account: any) {
