@@ -32,6 +32,11 @@ function main() {
         el: ".configuration-view"
     });
 
+    app.debugView = new DebugView({
+        el: ".debug-view",
+        collection: app.smartContracts
+    });
+
     app.environmentView = new EnvironmentView({
         el: ".environment-view",
         model: app.environment
@@ -61,20 +66,23 @@ function main() {
 function initializeNavigation() {
     $(".nav-item .nav-link").click(function (event) {
         event.stopPropagation();
-
-        var parentNav = $(this).closest("nav");
-        var navLinks = parentNav.find(".nav-link");
-        var navLinkToActivate = $(this);
-        var viewSelector = "#" + $(this).attr("data-view");
-        var views = $(document).find(".views-container .view");
-        var viewToShow = $(document).find(viewSelector);
-
-
-        navLinks.removeClass("active");
-        navLinkToActivate.addClass("active");
-        views.addClass("d-none");
-        viewToShow.removeClass("d-none");
+        
+        var viewName = $(this).attr("data-view");
+        showView(viewName);
     });
+}
+
+function showView(viewName) {
+    var views = $(document).find(".views-container .view");
+    var viewToShow = $(document).find(`#${viewName}`);
+    var nav = $(document).find("nav");
+    var navLinks = nav.find(".nav-link");
+    var navLinkToActivate = nav.find(`[data-view='${viewName}']`);
+
+    navLinks.removeClass("active");
+    navLinkToActivate.addClass("active");
+    views.addClass("d-none");
+    viewToShow.removeClass("d-none");
 }
 
 function initializeUnderscoreTemplates() {

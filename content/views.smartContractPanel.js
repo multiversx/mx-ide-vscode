@@ -4,6 +4,7 @@ var SmartContractPanelView = Backbone.View.extend({
     events: {
         "click .btn-build-contract": "onClickBuild",
         "click .btn-build-options": "onClickBuildOptions",
+        "click .btn-goto-debug": "onClickGotoDebug",
         "click .btn-deploy-contract": "onClickDeploy",
         "click .btn-deploy-contract-testnet": "onClickDeployOnTestnet",
         "click .btn-run-contract": "onClickRun",
@@ -52,6 +53,12 @@ var SmartContractPanelView = Backbone.View.extend({
         });
 
         dialog.show();
+    },
+
+    onClickGotoDebug: function() {
+        var friendlyId = this.model.get("FriendlyId");
+        app.debugView.focusOnSmartContract(friendlyId);
+        showView("Debug");
     },
 
     onClickDeploy: function () {
