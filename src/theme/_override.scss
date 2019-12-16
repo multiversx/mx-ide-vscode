@@ -2,7 +2,7 @@ $dark-blue: #212529;
 $nav-item-gray: #b8b8b8;
 
 body {
-    padding: 0;
+  padding: 0;
 }
 
 .navbar.override {
@@ -44,5 +44,12 @@ body {
       border-color: $blue !important;
       color: $dark-blue !important;
     }
+  }
+}
+
+// Larger fontawesome icons
+.btn {
+  i.fas {
+    font-size: large;
   }
 }
