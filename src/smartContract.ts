@@ -7,6 +7,7 @@ import path = require('path');
 import { MyFile } from "./myfile";
 import { Feedback } from "./feedback";
 import { Variables } from "./variables";
+import eventBus from "./eventBus";
 const assert = require('assert').strict;
 
 export class SmartContract {
@@ -244,6 +245,7 @@ export class SmartContractsCollection {
         });
 
         this.Items = smartContractsNow;
+        eventBus.emit("workspace:sync", this.Items);
     }
 
     public static getById(id: string): SmartContract {

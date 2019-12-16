@@ -44,6 +44,10 @@ export class MainView {
         eventBus.on("download", function (data, what) {
             self.talkToWebView(what, data);
         });
+
+        eventBus.on("workspace:sync", function (data, what) {
+            self.talkToWebView("refreshSmartContracts", data);
+        });
     }
 
     private listenToWebviewEvents() {
