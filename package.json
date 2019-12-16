@@ -19,6 +19,7 @@
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startNodeDebug",
+		"onCommand:extension.stopNodeDebug",
 		"onCommand:extension.createSmartContract"
 	],
 	"main": "./out/extension.js",
@@ -35,6 +36,10 @@
 			{
 				"command": "extension.startNodeDebug",
 				"title": "Elrond - start (restart) node debug"
+			},
+			{
+				"command": "extension.stopNodeDebug",
+				"title": "Elrond - stop node debug"
 			},
 			{
 				"command": "extension.createSmartContract",

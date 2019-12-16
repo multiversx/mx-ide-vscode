@@ -1,14 +1,12 @@
 var SmartContractsListView = Backbone.View.extend({
     tagName: "div",
 
-    events: {
-        "click .btn-refresh-smart-contracts": "onClickRefreshSmartContracts"
-    },
-
     initialize: function () {
         this.childViews = [];
         this.listenTo(this.collection, "update", this.render);
         this.render();
+
+        app.talkToVscode("refreshSmartContracts");
     },
 
     render: function () {
@@ -37,6 +35,6 @@ var SmartContractsListView = Backbone.View.extend({
     },
 
     onClickRefreshSmartContracts: function () {
-        app.talkToVscode("refreshSmartContracts");
+
     }
 });

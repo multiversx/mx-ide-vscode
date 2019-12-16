@@ -225,6 +225,8 @@ export class SmartContractsCollection {
     public static Items: SmartContract[] = [];
 
     public static syncWithWorkspace() {
+        Feedback.debug("SmartContractsCollection.syncWithWorkspace()");
+
         let sourceFilesNow = MyFile.find({
             Folder: FsFacade.getPathToWorkspace(),
             Extensions: ["c", "rs", "sol"],
