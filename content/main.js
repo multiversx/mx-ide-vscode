@@ -62,12 +62,13 @@ function initializeNavigation() {
     $(".nav-item .nav-link").click(function (event) {
         event.stopPropagation();
 
-        var parentNav = $(this).closest(".nav");
+        var parentNav = $(this).closest("nav");
         var navLinks = parentNav.find(".nav-link");
         var navLinkToActivate = $(this);
-        var viewSelector = $(this).attr("href");
+        var viewSelector = "#" + $(this).attr("data-view");
         var views = $(document).find(".views-container .view");
         var viewToShow = $(document).find(viewSelector);
+
 
         navLinks.removeClass("active");
         navLinkToActivate.addClass("active");
@@ -108,11 +109,4 @@ app.talkToVscode = function (what, payload) {
 
 app.log = function (message) {
     console.log(message);
-
-    if (typeof message !== "string") {
-        message = JSON.stringify(message, null, 4);
-    }
-
-    var element = $("<div>").text(message);
-    $("#ExtensionConsole .payload").append(element);
 };
