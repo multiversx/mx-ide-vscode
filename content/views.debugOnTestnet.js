@@ -1,6 +1,8 @@
 var DebugOnTestnetView = Backbone.View.extend({
     events: {
-        "change [name='FocusedSmartContract']": "onChangeFocusedContract"
+        "change [name='FocusedSmartContract']": "onChangeFocusedContract",
+        "click .btn-deploy-contract-testnet": "onClickDeployOnTestnet",
+        "click .btn-run-contract-testnet": "onClickRunTestnet"
     },
 
     initialize: function () {
@@ -14,9 +16,8 @@ var DebugOnTestnetView = Backbone.View.extend({
     },
 
     renderListOfContracts: function () {
-        // todo: get selected
-
         var selectList = this.getListOfContractsElement();
+        var selected = selectList.val();
 
         if (this.collection.length == 0) {
             selectList.prop("disabled", "disabled");
@@ -25,21 +26,23 @@ var DebugOnTestnetView = Backbone.View.extend({
         }
 
         selectList.empty();
-        
+
         this.collection.each(function (model) {
             var contractFriendlyId = model.get("FriendlyId");
             var option = new Option(contractFriendlyId, contractFriendlyId);
             selectList.append(option);
         });
 
-        // todo: restore selected
+        if (selected) {
+            selectList.val(selected);
+        }
     },
 
-    getListOfContractsElement: function() {
+    getListOfContractsElement: function () {
         return this.$el.find("[name='FocusedSmartContract']");
     },
 
-    renderPanelForContract: function() {
+    renderPanelForContract: function () {
         var model = this.getFocusedContract();
 
         if (!model) {
@@ -52,23 +55,43 @@ var DebugOnTestnetView = Backbone.View.extend({
         this.$el.find(".debug-panel").html(html);
     },
 
-    focusOnSmartContract: function(friendlyId) {
+    focusOnSmartContract: function (friendlyId) {
         this.getListOfContractsElement().val(friendlyId);
         this.onChangeFocusedContract();
     },
 
-    onChangeFocusedContract: function() {
+    onChangeFocusedContract: function () {
         this.renderPanelForContract();
     },
 
-    getFocusedContract: function() {
+    getFocusedContract: function () {
         var friendlyId = this.getListOfContractsElement().val();
-        
+
         if (!friendlyId) {
             return null;
         }
 
         var model = this.collection.get(friendlyId);
         return model;
-    }
+    },
+
+    onClickDeployOnTestnet: function () {
+        var model = this.getFocusedContract();
+        var dialog = new DeployDialog({
+            model: model,
+            onTestnet: true
+        });
+
+        dialog.show();
+    },
+
+    onClickRunTestnet: function () {
+        var model = this.getFocusedContract();
+        var dialog = new RunDialog({
+            model: model,
+            onTestnet: true
+        });
+
+        dialog.show();
+    },
 });

@@ -26,15 +26,20 @@
                         <span class="text-muted"><%= contract.PropertiesOnTestnet.AddressTimestamp %></span>
                     </div>
 
-                    <button class="btn btn-info btn-configure-watch-testnet">Watch variables</button>
+                    <!-- <button class="btn btn-primary btn-configure-watch" title="Watch variables">
+                        <i class="fas fa-glasses"></i>
+                    </button> -->
 
                     <% if (contract.BytecodeFile) { %>
-                    <button class="btn btn-warning btn-deploy-contract-testnet">Deploy</button>
+                    <button class="btn btn-primary btn-deploy-contract-testnet" title="Deploy">
+                        <i class="fas fa-upload"></i>
+                    </button>
                     <% } %>
 
                     <% if (contract.PropertiesOnTestnet.Address) { %>
-                    <button class="btn btn-warning btn-run-contract-testnet" type="button">Run
-                        function</button>
+                    <button class="btn btn-primary btn-run-contract-testnet" type="button" title="Run function">
+                        <i class="fas fa-play"></i>
+                    </button>
                     <% } %>
                 </div>
             </div>
