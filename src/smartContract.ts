@@ -156,7 +156,10 @@ export class SmartContract {
             let response = await NodeDebug.querySmartContract(options);
             
             if (response.data) {
-                variableValue = response.data.ReturnData[0];
+                let asBase64 = response.data.ReturnData[0];
+                let asHex = Buffer.from(asBase64, "base64").toString("hex");
+                var asInt = parseInt(asHex, 16);
+                variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
             }
 
             properties.LatestRun.Variables[variable.Name] = variableValue;
