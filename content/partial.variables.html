@@ -1,6 +1,12 @@
 <div class="variables-view">
     <div class="row mt-2">
         <div class="col-sm-12">
+            <p class="mt-2">
+                Here you can define variables you can use when deploying smart contracts or running smart contracts functions.<br />
+                For example, if you define a variable named <strong>x</strong>, 
+                then you can reference it in the deploy / run input fields like this: <strong>$x</strong>.
+            </p>
+
             <form>
                 <div class="form-group">
                     <label>Variables (JSON)</label>
@@ -9,7 +15,10 @@
 
                 <div class="row">
                     <div class="col-sm-12 text-right">
-                        <button type="button" class="btn btn-lg btn-block btn-success btn-submit">Save</button>
+                        <button type="button" class="btn btn-lg btn-block btn-primary btn-submit">
+                            <i class="fas fa-save"></i>&nbsp;
+                            Save
+                        </button>
                     </div>
                 </div>
             </form>
