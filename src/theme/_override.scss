@@ -53,3 +53,9 @@ body {
     font-size: large;
   }
 }
+
+.watched-variables-view {
+  .variable-value {
+    display: inline-block;
+  }
+}
