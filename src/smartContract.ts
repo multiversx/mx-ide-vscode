@@ -208,7 +208,9 @@ export class SmartContract {
                 } else {
                     let number = Number(item);
                     let hexString = number.toString(16);
-                    transactionData += hexString;
+                    let hexStringLength = hexString.length % 2 == 0 ? hexString.length : hexString.length + 1;
+                    let paddedHexString = hexString.padStart(hexStringLength, "0");
+                    transactionData += paddedHexString;
                 }
             }
         });
