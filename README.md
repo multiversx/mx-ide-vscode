@@ -2,39 +2,30 @@
 
 **This Visual Studio Code extension is still in development.**
 
-The **Elrond IDE** is a VS Code extension with two components: (1) the UI within VS Code itself, and (2) a debugging variant of the Elrond Node, known as **debug-node**, that runs in the background and is managed by the Elrond IDE through a REST API. The **debug-node** deploys and executes SmartContracts on demand and provides debugging information to the IDE. Note that you can reconfigure the IDE to connect to the REST API of any other Elrond Node.
+The **Elrond IDE** is a VS Code extension with two components: (1) the UI within VS Code itself, and (2) a debugging variant of the Elrond Node, known as **node-debug**, that runs in the background and is managed by the Elrond IDE through a REST API. The **node-debug** deploys and executes SmartContracts on demand and provides debugging information to the IDE. Note that you can reconfigure the IDE to connect to the REST API of any other Elrond Node.
 
-The IDE also assists with the build process of a SmartContract, from a high-level language (C) to WASM bytecode.
+The IDE also assists with the build process of a SmartContract, from a high-level language (C, Rust or Solidity) to WASM bytecode.
 
 ## Features
 
- - List SmartContracts in a Visual Studio Code workspace
- - Build SmartContracts to WASM
- - Deploy SmartContracts on the **debug-node** or another node of your choice
- - Execute exported functions of the SmartContracts on the **debug-node** or another node of your choice
- - Automatically prepare tools and dependencies (a subset of LLVM, golang, node-debug and so on)
+ - List smart contracts in a Visual Studio Code workspace
+ - Build smart contracts to WASM
+ - Deploy smart contracts on **node-debug**
+ - Execute exported functions of the smart contracts on the **node-debug**
+ - Automatically prepare tools and dependencies (subset of LLVM, SOLL compiler, node-debug and so on)
 
 
 ## Requirements
 The extension will download many of its dependencies and install them itself, so you do not have to worry much about setting up the development environment. These automatically installed dependencies are:
 
-* `clang` - for build to WASM
-* `llc` - for build to WASM
-* `wasm-ld` - for build to WASM
-* `golang` - to build **node-debug**
+* `LLVM (clang, llc, wasm-ld etc.)`
+* [SOLL compiler](https://github.com/second-state/soll)
 * [node-debug](https://github.com/ElrondNetwork/elrond-go-node-debug)
 
 
 In addition, the extension requires the following tools, which are **not** installed automatically:
 
-* `gcc` - required by the **debug-node** to build its Arwen Virtual Machine, the compilation of which requires a **C** compiler as well.
 * `untar` and `unzip` - you most probably already have them installed on your machine.
-
-In order to install `gcc` (on Ubuntu), run the following command in a termina;:
-
-```
-sudo apt-get install build-essential
-```
 
 ## How to install, uninstall and update the extension
 
@@ -71,5 +62,15 @@ This extension contributes the following settings:
 
 * `elrond.ideFolder`: base folder for tools.
 * `elrond.downloadMirror`: download mirror for tools and dependencies.
-* `elrond.restApi.port`: port of the REST API (**debug-node**).
+* `elrond.restApi.port`: port of the REST API (**node-debug**).
 * `elrond.testnetUrl`: URL of the testnet.
+
+## Extension Commands
+
+This extension contributes the following commands (`Ctrl+Shift+P`):
+
+* `openIDE`: opens the Elrond IDE Web View.
+* `buildCurrentFile`: builds the source file on focus to WASM bytecode.
+* `createSmartContract`: creates a new smart contract (subproject) from a list of predefined prototypes (templates).
+* `startNodeDebug`: starts node-debug.
+* `stopNodeDebug`: stops node-debug.
