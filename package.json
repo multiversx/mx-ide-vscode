@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -14,7 +14,7 @@
 	"categories": [
 		"Programming Languages", "Extension Packs", "Debuggers", "Other"
 	],
-	"icon": "content/logo_elrond_256.png",
+	"icon": "content/elrond_w.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
