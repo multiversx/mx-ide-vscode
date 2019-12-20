@@ -2,8 +2,8 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.2.7",
-	"publisher": "ElrondNetwork",
+	"version": "0.2.8",
+	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ElrondNetwork/vscode-elrond-c.git"
