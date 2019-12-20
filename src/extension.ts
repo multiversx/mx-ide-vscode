@@ -6,6 +6,7 @@ import { Feedback } from './feedback';
 import { Projects } from './projects';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
+import { FsFacade } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
@@ -29,6 +30,10 @@ function initialize() {
 }
 
 function initializeWorkspaceWatcher() {
+	if (!guardIsWorkspaceOpen()) {
+		return;
+	}
+
 	Root.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*");
 
 	var onWatcherEventThrottled = _.throttle(onWatcherEvent, 1000);
@@ -50,10 +55,18 @@ function registerCustomCommand(context: vscode.ExtensionContext, name: string, a
 }
 
 function openIDE() {
+	if (!guardIsWorkspaceOpen()) {
+		return;
+	}
+
 	Presenter.showMainView();
 }
 
 function buildCurrentFile() {
+	if (!guardIsWorkspaceOpen()) {
+		return;
+	}
+	
 	let filePath = Presenter.getActiveFilePath();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
@@ -65,4 +78,13 @@ function startNodeDebug() {
 
 function stopNodeDebug() {
 	NodeDebug.stop();
+}
+
+function guardIsWorkspaceOpen(): boolean {
+	if (!FsFacade.isWorkspaceOpen()) {
+		Feedback.info("No folder open in your workspace. Please open a folder.");
+		return false;
+	}
+
+	return true;
 }
