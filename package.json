@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE",
-	"version": "0.2.8",
+	"version": "0.2.9",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -12,9 +12,9 @@
 		"vscode": "^1.38.0"
 	},
 	"categories": [
-		"Other"
+		"Programming Languages", "Extension Packs", "Debuggers", "Other"
 	],
-	"icon": "content/logo-background.png",
+	"icon": "content/logo_elrond_256.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
