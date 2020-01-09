@@ -45,17 +45,32 @@ export class Variables {
     }
 
     public static getSnapshot(): any {
+        Variables.initializeIfMissing();
+
         let filePath = Variables.getFilePath();
-
-        if (!FsFacade.fileExists(filePath)) {
-            FsFacade.writeFile(filePath, "{}");
-        }
-
         let content = FsFacade.readFile(filePath);
         return { json: content };
     }
 
     private static getFilePath() {
         return path.join(FsFacade.getPathToWorkspace(), "variables.json");
+    }
+
+    private static initializeIfMissing() {
+        let filePath = Variables.getFilePath();
+
+        if (!FsFacade.fileExists(filePath)) {
+            let defaultVariables = Variables.getDefault();
+            let json = JSON.stringify(defaultVariables, null, 4);
+            FsFacade.writeFile(filePath, json);
+        }
+    }
+
+    private static getDefault(): any {
+        return {
+            alice: "010101",
+            bob: "02020202",
+            carol: "0303030"
+        };
     }
 }
