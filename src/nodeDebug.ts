@@ -74,60 +74,65 @@ export class NodeDebug {
         Feedback.info("node-debug started.");
     }
 
-    public static deploySmartContract(options: any): Promise<any> {
+    public static async deploySmartContract(options: any): Promise<any> {
         let url = NodeDebug.buildUrl("vm-values/deploy");
 
-        return RequestsFacade.post({
-            url: url,
-            data: {
-                "OnTestnet": options.onTestnet,
-                "PrivateKey": options.privateKey,
-                "TestnetNodeEndpoint": options.testnetNodeEndpoint,
-                "SndAddress": options.senderAddress,
-                "Value": options.value.toString(),
-                "GasLimit": options.gasLimit,
-                "GasPrice": options.gasPrice,
-                "TxData": options.transactionData
-            },
-            eventTag: "debugger-dialogue",
-            channels: ["debugger-dialogue"]
-        }).catch(e => {
+        try {
+            return RequestsFacade.post({
+                url: url,
+                data: {
+                    "OnTestnet": options.onTestnet,
+                    "PrivateKey": options.privateKey,
+                    "TestnetNodeEndpoint": options.testnetNodeEndpoint,
+                    "SndAddress": options.senderAddress,
+                    "Value": options.value.toString(),
+                    "GasLimit": options.gasLimit,
+                    "GasPrice": options.gasPrice,
+                    "TxData": options.transactionData
+                },
+                eventTag: "debugger-dialogue",
+                channels: ["debugger-dialogue"]
+            });
+        }
+        catch (e) {
             Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
             throw e;
-        });
+        }
     }
 
     public static async runSmartContract(runOptions: any): Promise<any> {
         let url = NodeDebug.buildUrl("vm-values/run");
 
-        await RequestsFacade.post({
-            url: url,
-            data: {
-                "OnTestnet": runOptions.onTestnet,
-                "PrivateKey": runOptions.privateKey,
-                "TestnetNodeEndpoint": runOptions.testnetNodeEndpoint,
-                "SndAddress": runOptions.senderAddress,
-                "ScAddress": runOptions.scAddress,
-                "Value": runOptions.value.toString(),
-                "GasLimit": runOptions.gasLimit,
-                "GasPrice": runOptions.gasPrice,
-                "TxData": runOptions.transactionData
-            },
-            eventTag: "debugger-dialogue",
-            channels: ["debugger-dialogue"]
-        }).catch(e => {
-            Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
+        try {
+            let response = await RequestsFacade.post({
+                url: url,
+                data: {
+                    "OnTestnet": runOptions.onTestnet,
+                    "PrivateKey": runOptions.privateKey,
+                    "TestnetNodeEndpoint": runOptions.testnetNodeEndpoint,
+                    "SndAddress": runOptions.senderAddress,
+                    "ScAddress": runOptions.scAddress,
+                    "Value": runOptions.value.toString(),
+                    "GasLimit": runOptions.gasLimit,
+                    "GasPrice": runOptions.gasPrice,
+                    "TxData": runOptions.transactionData
+                },
+                eventTag: "debugger-dialogue",
+                channels: ["debugger-dialogue"]
+            });
+
+            let vmOutput: any = response.data;
+
+            if (runOptions.onTestnet) {
+            } else {
+                NodeDebug.postProcessVMOutput(vmOutput);
+            }
+
+            return vmOutput;
+        } catch (e) {
+            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
             throw e;
-        });
-
-        let vmOutput: any = {};
-
-        if (runOptions.onTestnet) {
-        } else {
-            vmOutput = NodeDebug.readTracedVMOutput(runOptions.scAddress);
         }
-
-        return vmOutput;
     }
 
     public static async querySmartContract(options: any): Promise<any> {
@@ -154,13 +159,7 @@ export class NodeDebug {
         return `http://localhost:${port}/${relative}`;
     }
 
-    public static readTracedVMOutput(scAddress: string): any {
-        let idePath = MySettings.getIdeFolder();
-        let toolPathFolder = path.join(idePath, "nodedebug");
-        let tracePathParts = [toolPathFolder, "trace", "smart-contracts", scAddress]
-        let traceJson = FsFacade.readLatestFileInFolder(...tracePathParts);
-        let vmOutput = JSON.parse(traceJson);
-
+    public static postProcessVMOutput(vmOutput: any) {
         let returnData: any[] = vmOutput.ReturnData || [];
         vmOutput.ReturnDataHex = [];
         vmOutput.ReturnDataDecimal = [];
