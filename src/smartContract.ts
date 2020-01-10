@@ -85,7 +85,7 @@ export class SmartContract {
 
         // Use response of deploy (scAddress).
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-        properties.Address = response.data;
+        properties.Address = response.data.Address;
         properties.AddressTimestamp = new Date();
 
         await this.queryWatchedVariables({ onTestnet: options.onTestnet });
