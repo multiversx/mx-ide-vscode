@@ -23,8 +23,9 @@ export class Variables {
     public static apply(str: string): string {
         try {
             return Variables.tryApply(str);
-        } catch {
+        } catch (e) {
             Feedback.error(`Could not interpolate: ${str}.`)
+            throw e;
         }
     }
 
@@ -34,6 +35,10 @@ export class Variables {
         _.each(data, function (value: any, key: string) {
             str = str.replace("$" + key, value);
         });
+
+        if (str.indexOf("$") >= 0) {
+            throw new Error("Perhaps missing variable (alias)?");
+        }
 
         return str;
     }
@@ -68,9 +73,12 @@ export class Variables {
 
     private static getDefault(): any {
         return {
-            alice: "010101",
-            bob: "02020202",
-            carol: "0303030"
+            Alice: "0xaaaaaaaa112233441122334411223344112233441122334411223344aaaaaaaa",
+            Bob: "0xbbbbbbbb112233441122334411223344112233441122334411223344bbbbbbbb",
+            Carol: "0xcccccccc112233441122334411223344112233441122334411223344cccccccc",
+            David: "0xdddddddd112233441122334411223344112233441122334411223344dddddddd",
+            Erin: "0xeeeeeeee112233441122334411223344112233441122334411223344eeeeeeee",
+            Frank: "0xffffffff112233441122334411223344112233441122334411223344ffffffff"
         };
     }
 }

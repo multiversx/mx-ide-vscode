@@ -8,6 +8,7 @@ import { MyFile } from "./myfile";
 import { Feedback } from "./feedback";
 import { Variables } from "./variables";
 import eventBus from "./eventBus";
+import { Transaction } from "./transaction";
 const assert = require('assert').strict;
 
 export class SmartContract {
@@ -75,11 +76,11 @@ export class SmartContract {
     }
 
     public async deployToDebugger(options: any): Promise<any> {
-        options.senderAddress = Variables.apply(options.senderAddress);
+        options.senderAddress = Transaction.prepareSender(options.senderAddress);
 
         // Prepare transaction data, then deploy.
-        let transactionData = this.findHexArwenFile().readText();
-        options.transactionData = this.appendArgsToTxData(options.initArgs, transactionData);
+        let code = this.findHexArwenFile().readText();
+        options.transactionData = Transaction.prepareDeployTxData(code, options.initArgs);
         const response = await NodeDebug.deploySmartContract(options);
 
         // Use response of deploy (scAddress).
@@ -95,12 +96,11 @@ export class SmartContract {
         properties.LatestRun = new SmartContractRun();
         properties.LatestRun.Options = _.clone(options);
 
-        options.senderAddress = Variables.apply(options.senderAddress);
+        options.senderAddress = Transaction.prepareSender(options.senderAddress);
         options.scAddress = properties.Address;
 
         // Prepare transaction data, then run and use response (vmOutput).
-        let transactionData = options.functionName;
-        options.transactionData = this.appendArgsToTxData(options.functionArgs, transactionData);
+        options.transactionData = Transaction.prepareRunTxData(options.functionName, options.functionArgs);
 
         try {
             const vmOutput = await NodeDebug.runSmartContract(options);
@@ -151,7 +151,7 @@ export class SmartContract {
 
             options.scAddress = properties.Address;
             options.functionName = variable.FunctionName;
-            options.arguments = variable.Arguments;
+            options.arguments = _.map(variable.Arguments, Transaction.prepareArgument);
 
             let response = await NodeDebug.querySmartContract(options);
             
@@ -184,38 +184,6 @@ export class SmartContract {
         }
 
         this.loadWatchedVariables();
-    }
-
-    private appendArgsToTxData(args: string[], transactionData: string): string {
-        const hexPrefix = "0X";
-
-        _.each(args, function (item: string) {
-            item = Variables.apply(item);
-
-            if (item === "") {
-                return;
-            }
-
-            transactionData += "@";
-
-            if (item.toUpperCase().startsWith(hexPrefix)) {
-                item = item.substring(hexPrefix.length);
-                transactionData += item;
-            } else {
-                let itemAsAny: any = item;
-                if (isNaN(itemAsAny)) {
-                    throw new MyError({ Message: `Can't handle non-hex, non-number arguments yet: ${item}.` });
-                } else {
-                    let number = Number(item);
-                    let hexString = number.toString(16);
-                    let hexStringLength = hexString.length % 2 == 0 ? hexString.length : hexString.length + 1;
-                    let paddedHexString = hexString.padStart(hexStringLength, "0");
-                    transactionData += paddedHexString;
-                }
-            }
-        });
-
-        return transactionData;
     }
 }
 
