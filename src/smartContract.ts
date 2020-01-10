@@ -142,27 +142,32 @@ export class SmartContract {
     }
 
     public async queryWatchedVariables(options: any): Promise<any> {
-        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-        let variables = properties.WatchedVariables;
+        try {
+            let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+            let variables = properties.WatchedVariables;
 
-        for (var i = 0; i < variables.length; i++) {
-            let variable = variables[i];
-            let variableValue = "N / A";
+            for (var i = 0; i < variables.length; i++) {
+                let variable = variables[i];
+                let variableValue = "N / A";
 
-            options.scAddress = properties.Address;
-            options.functionName = variable.FunctionName;
-            options.arguments = _.map(variable.Arguments, Transaction.prepareArgument);
+                options.scAddress = properties.Address;
+                options.functionName = variable.FunctionName;
+                options.arguments = _.map(variable.Arguments, Transaction.prepareArgument);
 
-            let response = await NodeDebug.querySmartContract(options);
-            
-            if (response.data) {
-                let asBase64 = response.data.ReturnData[0];
-                let asHex = Buffer.from(asBase64, "base64").toString("hex");
-                var asInt = parseInt(asHex, 16);
-                variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
+                let response = await NodeDebug.querySmartContract(options);
+
+                if (response.data) {
+                    let asBase64 = response.data.ReturnData[0];
+                    let asHex = Buffer.from(asBase64, "base64").toString("hex");
+                    var asInt = parseInt(asHex, 16);
+                    variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
+                }
+
+                properties.LatestRun.Variables[variable.Name] = variableValue;
             }
-
-            properties.LatestRun.Variables[variable.Name] = variableValue;
+        } catch (error) {
+            Feedback.error("Could not query watched variables.");
+            Feedback.error(error.message);
         }
     }
 
