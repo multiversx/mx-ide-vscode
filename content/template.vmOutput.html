@@ -1,3 +1,6 @@
+<% if (!data.ReturnData) { %>
+<strong>no data yet</strong>
+<% } else { %>
 <div>Return data (base64): <strong><%= data.ReturnData %></strong></div>
 <div>Return data (hex): <strong><%= data.ReturnDataHex %></strong></div>
 <div>Return data (decimal): <strong><%= data.ReturnDataDecimal %></strong></div>
@@ -5,5 +8,22 @@
 <div>Gas remaining: <strong><%= data.GasRemaining %></strong></div>
 <div>Gas refund: <strong><%= data.GasRefund %></strong></div>
 
-<div>Output accounts:</div>
-<pre><%= JSON.stringify(data.OutputAccounts, null, 4) %></pre>
+<div>Storage updates:</div>
+<div>
+    <% _.each(data.OutputAccounts, function(account) { %>
+    <div class="card mt-4 mb-2">
+        <div class="card-body">
+            <h4 class="card-title"><%= account.Address %></h4>
+            <div class="row">
+                <div class="col-sm-12">
+                    <% _.each(account.StorageUpdates, function(update) { %>
+                    <div>Key: <strong><%= update.Offset %></strong></div>
+                    <div>Data: <strong><%= update.DataDecimal %></strong></div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }) %>
+</div>
+<% } %>
