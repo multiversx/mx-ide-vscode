@@ -252,8 +252,8 @@ class SmartContractRun {
             functionName: "your_function",
             functionArgs: [],
             value: 0,
-            gasLimit: 50000,
-            gasPrice: 10
+            gasLimit: 5000000,
+            gasPrice: 200000000000000
         };
 
         this.VMOutput = {};
