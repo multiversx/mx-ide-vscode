@@ -30,6 +30,10 @@ export class Variables {
     }
 
     private static tryApply(str: string): string {
+        if (!str) {
+            return "";
+        }
+
         let data = Variables.getParsed();
 
         _.each(data, function (value: any, key: string) {
