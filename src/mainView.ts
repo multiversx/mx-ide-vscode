@@ -6,7 +6,6 @@ import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
 import { MyEnvironment } from './myenvironment';
 import { MyError, MyErrorCatcher } from './errors';
-import { TestnetFacade } from './testnetFacade';
 import { MyFile } from './myfile';
 import { Variables } from './variables';
 
@@ -30,10 +29,6 @@ export class MainView {
         });
 
         eventBus.on("debugger-dialogue:*", function (data, what) {
-            self.talkToWebView(what, data);
-        });
-
-        eventBus.on("testnet-query:*", function (data, what) {
             self.talkToWebView(what, data);
         });
 
@@ -121,12 +116,6 @@ export class MainView {
 
         eventBus.on("view-message:environment-install-debug-node", function (payload) {
             MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:testnetQuerySendRequest", function (payload) {
-            TestnetFacade.query(payload)
-                .then(payload => self.talkToWebView("testnetQueryResponse", payload))
-                .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:variables-refresh", function () {

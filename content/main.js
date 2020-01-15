@@ -10,7 +10,6 @@ function main() {
     app.smartContracts = new SmartContractsCollection();
     app.restDialogue = new RestDialogueCollection();
     app.environment = new EnvironmentModel();
-    app.queryTestnetFacade = new QueryTestnetFacade();
     app.variables = new VariablesModel();
 
     initializeNavigation();
@@ -45,11 +44,6 @@ function main() {
     app.environmentView = new EnvironmentView({
         el: ".environment-view",
         model: app.environment
-    });
-
-    app.queryTestnetView = new QueryTestnetView({
-        el: ".query-testnet-view",
-        model: app.queryTestnetFacade
     });
 
     app.variablesView = new VariablesView({
