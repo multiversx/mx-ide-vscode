@@ -89,6 +89,13 @@ export class MainView {
                 .catch(MyErrorCatcher.topLevel);
         });
 
+        eventBus.on("view-message:queryWatchedVariables", function (payload) {
+            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
+            contract.queryWatchedVariables(payload)
+                .then(() => { self.doRefreshSmartContracts() })
+                .catch(MyErrorCatcher.topLevel);
+        });
+
         eventBus.on("view-message:setWatchedVariables", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.setWatchedVariables(payload);

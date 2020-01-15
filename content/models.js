@@ -26,6 +26,12 @@ var SmartContract = Backbone.Model.extend({
         app.talkToVscode("runSmartContract", payload);
     },
 
+    queryWatchedVariables: function (payload) {
+        payload = payload || {};
+        payload.id = this.id;
+        app.talkToVscode("queryWatchedVariables", payload);
+    },
+
     addWatchedVariable: function(options) {
         this.getWatchedVariables(options.onTestnet).push({
             Name: "alice's balance",

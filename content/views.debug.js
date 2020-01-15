@@ -121,7 +121,8 @@ var DebugView = Backbone.View.extend({
     },
 
     onRefreshWatchedVariables: function() {
-        
+        var model = this.getFocusedContract();
+        model.queryWatchedVariables();
     }
 });
 
