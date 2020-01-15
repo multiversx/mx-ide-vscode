@@ -1,27 +1,60 @@
 <% if (!data.ReturnData) { %>
 <strong>no data yet</strong>
 <% } else { %>
-<div>Return data (base64): <strong><%= data.ReturnData %></strong></div>
-<div>Return data (hex): <strong><%= data.ReturnDataHex %></strong></div>
-<div>Return data (decimal): <strong><%= data.ReturnDataDecimal %></strong></div>
-<div>Return code: <strong><%= data.ReturnCode %></strong></div>
-<div>Gas remaining: <strong><%= data.GasRemaining %></strong></div>
-<div>Gas refund: <strong><%= data.GasRefund %></strong></div>
 
-<div>Storage updates:</div>
+<table class="table table-hover">
+    <thead>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Return data (base64)</th>
+            <td><strong><%= data.ReturnData %></strong></td>
+        </tr>
+        <tr>
+            <th scope="row">Return data (hex)</th>
+            <td><strong><%= data.ReturnDataHex %></strong></td>
+        </tr>
+        <tr>
+            <th scope="row">Return data (decimal)</th>
+            <td><strong><%= data.ReturnDataDecimal %></strong></td>
+        </tr>
+        <tr>
+            <th scope="row">Return code</th>
+            <td><strong><%= data.ReturnCode %></strong></td>
+        </tr>
+        <!-- <tr>
+            <th scope="row">Gas remaining</th>
+            <td><strong><%= data.GasRemaining %></strong></td>
+        </tr>
+        <tr>
+            <th scope="row">Gas refund</th>
+            <td><strong><%= data.GasRefund %></strong></td>
+        </tr> -->
+    </tbody>
+</table>
+
 <div>
     <% _.each(data.OutputAccounts, function(account) { %>
-    <div class="card mt-4 mb-2">
-        <div class="card-body">
-            <h4 class="card-title"><%= account.Address %></h4>
-            <div class="row">
-                <div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-12">
+            <h5>Storage updates</h5>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Key</th>
+                        <th scope="col">Data (decimal)</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <% _.each(account.StorageUpdates, function(update) { %>
-                    <div>Key: <strong><%= update.Offset %></strong></div>
-                    <div>Data: <strong><%= update.DataDecimal %></strong></div>
+                    <tr>
+                        <th scope="row"><%= update.Offset %></th>
+                        <td><%= update.DataDecimal %></td>
+                    </tr>
                     <% }) %>
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
     <% }) %>
