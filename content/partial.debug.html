@@ -52,7 +52,7 @@
                     </button>
                 </div>
                 <div class="watched-variables-view mt-2">
-                    <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
+                    <% _.each(contract.PropertiesOnNodeDebug.WatchedVariablesValues, function(value, key) { %>
                     <div>
                         <strong class="variable-name"><%= key %>:</strong>
                         <kbd class="variable-value"><%= value %></kbd>

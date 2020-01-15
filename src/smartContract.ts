@@ -163,7 +163,7 @@ export class SmartContract {
                     variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
                 }
 
-                properties.LatestRun.Variables[variable.Name] = variableValue;
+                properties.WatchedVariablesValues[variable.Name] = variableValue;
             }
         } catch (error) {
             Feedback.error("Could not query watched variables.");
@@ -197,10 +197,12 @@ class PropertiesOnNetwork {
     public AddressTimestamp: Date;
     public LatestRun: SmartContractRun;
     public WatchedVariables: WatchedVariable[];
+    public WatchedVariablesValues: any;
 
     constructor() {
         this.LatestRun = new SmartContractRun();
         this.WatchedVariables = [];
+        this.WatchedVariablesValues = {};
     }
 }
 
@@ -244,7 +246,6 @@ export class SmartContractsCollection {
 class SmartContractRun {
     public Options: any;
     public VMOutput: any;
-    public Variables: any;
 
     constructor() {
         this.Options = {
@@ -257,7 +258,6 @@ class SmartContractRun {
         };
 
         this.VMOutput = {};
-        this.Variables = {};
     }
 }
 
