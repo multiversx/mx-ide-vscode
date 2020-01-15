@@ -10,7 +10,7 @@ import { Feedback } from './feedback';
 import { MySetupError } from './errors';
 
 export class MyEnvironment {
-    static readonly DebugNodeArchiveUrl: string = "https://github.com/ElrondNetwork/elrond-go-node-debug/archive/master.zip";
+    static readonly NodeDebugVersion = "v003";
 
     static async installBuildToolsForC(): Promise<any> {
         MyEnvironment.ensureFolderStructure();
@@ -167,7 +167,7 @@ export class MyEnvironment {
         let downloadUrl = MyEnvironment.getNodeDebugDownloadUrl();
         let idePath = MySettings.getIdeFolder();
         let nodeDebugPath = NodeDebug.getFolderPath();
-        let archivePath = path.join(idePath, "nodedebug.tar.gz");
+        let archivePath = path.join(idePath, `nodedebug-${MyEnvironment.NodeDebugVersion}.tar.gz`);
 
         await RestFacade.download({
             url: downloadUrl,
@@ -183,18 +183,10 @@ export class MyEnvironment {
     }
 
     static getNodeDebugDownloadUrl() {
-        let version = "v002";
-        let urlRoot = `${MySettings.getDownloadMirrorUrl()}/nodedebug/${version}`;
-        let urlLinux: string = `${urlRoot}/linux-amd64.tar.gz`;
-        let urlMacOS: string = `${urlRoot}/darwin-amd64.tar.gz`;
-
         let platform = os.platform();
-
-        if (platform == "darwin") {
-            return urlMacOS;
-        }
-
-        return urlLinux;
+        let archive = platform == "darwin" ? "darwin-amd64.tar.gz" : "linux-amd64.tar.gz"; 
+        let url = `${MySettings.getDownloadMirrorUrl()}/nodedebug/${MyEnvironment.NodeDebugVersion}/${archive}?t=${new Date().getTime()}`;
+        return url;
     }
 
     static getSnapshot(): EnvironmentSnapshot {
