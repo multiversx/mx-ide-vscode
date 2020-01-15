@@ -3,7 +3,8 @@ var DebugView = Backbone.View.extend({
         "change [name='FocusedSmartContract']": "onChangeFocusedContract",
         "click .btn-deploy-contract": "onClickDeploy",
         "click .btn-run-contract": "onClickRun",
-        "click .btn-configure-watch": "onClickConfigureWatch"
+        "click .btn-configure-watch": "onClickConfigureWatch",
+        "click .btn-refresh-watched": "onRefreshWatchedVariables"
     },
 
     initialize: function () {
@@ -117,6 +118,10 @@ var DebugView = Backbone.View.extend({
         });
 
         dialog.show();
+    },
+
+    onRefreshWatchedVariables: function() {
+        
     }
 });
 

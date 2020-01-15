@@ -18,7 +18,8 @@
     <script type="text/template" id="DebugPanelForContract">
         <div class="card mt-3">
             <div class="card-body">
-                <div>
+                <h4 class="card-title">Node debug</h4>
+                <div class="mb-2">
                     Address:
                     <strong><%= contract.PropertiesOnNodeDebug.Address || "none yet" %></strong>
                     <span class="text-muted"><%= contract.PropertiesOnNodeDebug.AddressTimestamp %></span>
@@ -47,10 +48,10 @@
                 <h5 class="card-title">Watched variables</h5>
                 <div>
                     <button class="btn btn-primary btn-refresh-watched" type="button" title="Refresh watched variables">
-                        <i class="fas fa-play"></i>
+                        <i class="fas fa-sync"></i>
                     </button>
                 </div>
-                <div class="watched-variables-view">
+                <div class="watched-variables-view mt-2">
                     <% _.each(contract.PropertiesOnNodeDebug.LatestRun.Variables, function(value, key) { %>
                     <div>
                         <strong class="variable-name"><%= key %>:</strong>

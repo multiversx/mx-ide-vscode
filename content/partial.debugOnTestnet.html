@@ -16,31 +16,48 @@
     </div>
 
     <script type="text/template" id="DebugOnTestnetPanelForContract">
-        <div class="col-sm-12">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h4 class="card-title">Testnet</h4>
-                    <div class="mb-2">
-                        Address:
-                        <strong><%= contract.PropertiesOnTestnet.Address || "none yet" %></strong>
-                        <span class="text-muted"><%= contract.PropertiesOnTestnet.AddressTimestamp %></span>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4 class="card-title">Testnet</h4>
+                <div class="mb-2">
+                    Address:
+                    <strong><%= contract.PropertiesOnTestnet.Address || "none yet" %></strong>
+                    <span class="text-muted"><%= contract.PropertiesOnTestnet.AddressTimestamp %></span>
+                </div>
+
+                <button class="btn btn-primary btn-configure-watch-testnet" title="Watch variables">
+                    <i class="fas fa-glasses"></i>
+                </button>
+
+                <% if (contract.BytecodeFile) { %>
+                <button class="btn btn-primary btn-deploy-contract-testnet" title="Deploy">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <% } %>
+
+                <% if (contract.PropertiesOnTestnet.Address) { %>
+                <button class="btn btn-primary btn-run-contract-testnet" type="button" title="Run function">
+                    <i class="fas fa-play"></i>
+                </button>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Watched variables</h5>
+                <div>
+                    <button class="btn btn-primary btn-refresh-watched" type="button" title="Refresh watched variables">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div class="watched-variables-view mt-2">
+                    <% _.each(contract.PropertiesOnTestnet.LatestRun.Variables, function(value, key) { %>
+                    <div>
+                        <strong class="variable-name"><%= key %>:</strong>
+                        <kbd class="variable-value"><%= value %></kbd>
                     </div>
-
-                    <button class="btn btn-primary btn-configure-watch" title="Watch variables">
-                        <i class="fas fa-glasses"></i>
-                    </button>
-
-                    <% if (contract.BytecodeFile) { %>
-                    <button class="btn btn-primary btn-deploy-contract-testnet" title="Deploy">
-                        <i class="fas fa-upload"></i>
-                    </button>
-                    <% } %>
-
-                    <% if (contract.PropertiesOnTestnet.Address) { %>
-                    <button class="btn btn-primary btn-run-contract-testnet" type="button" title="Run function">
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <% } %>
+                    <% }); %>
                 </div>
             </div>
         </div>
