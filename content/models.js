@@ -81,10 +81,6 @@ var SmartContractDeployOptions = Backbone.Model.extend({
             if (!attrs.privateKey) {
                 return "When deploying on testnet, the private key is required.";
             }
-
-            if (!attrs.testnetNodeEndpoint) {
-                return "When deploying on testnet, the node endpoint (url) is required.";
-            }
         }
         else {
             if (!attrs.senderAddress) {
@@ -103,10 +99,6 @@ var SmartContractRunOptions = Backbone.Model.extend({
         if (attrs.onTestnet) {
             if (!attrs.privateKey) {
                 return "When running on testnet, the private key is required.";
-            }
-
-            if (!attrs.testnetNodeEndpoint) {
-                return "When running on testnet, the node endpoint (url) is required.";
             }
         }
         else {

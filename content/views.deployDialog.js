@@ -62,7 +62,6 @@ var DeployDialog = Backbone.View.extend({
     },
 
     onClickSubmit: function () {
-        var testnetNodeEndpoint = this.getTestnetNodeEndpoint();
         var senderAddress = this.getSenderAddress();
         var initArgs = this.getInitArgs();
         var value = this.getDeployValue();
@@ -70,7 +69,6 @@ var DeployDialog = Backbone.View.extend({
         var gasPrice = this.getGasPrice();
 
         var deployOptions = new SmartContractDeployOptions({
-            testnetNodeEndpoint: testnetNodeEndpoint,
             privateKey: this.privateKey,
             senderAddress: senderAddress,
             initArgs: initArgs,
@@ -96,10 +94,6 @@ var DeployDialog = Backbone.View.extend({
 
     displayValidationErrors: function (validationError) {
         this.$el.find(".validation-errors-container").removeClass("d-none").text(validationError);
-    },
-
-    getTestnetNodeEndpoint() {
-        return this.$el.find("[name='TestnetNodeEndpoint']").val();
     },
 
     getSenderAddress() {

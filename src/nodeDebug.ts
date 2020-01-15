@@ -83,7 +83,7 @@ export class NodeDebug {
                 data: {
                     "OnTestnet": options.onTestnet,
                     "PrivateKey": options.privateKey,
-                    "TestnetNodeEndpoint": options.testnetNodeEndpoint,
+                    "TestnetNodeEndpoint": MySettings.getTestnetUrl(),
                     "SndAddress": options.senderAddress,
                     "Value": options.value.toString(),
                     "GasLimit": options.gasLimit,
@@ -109,7 +109,7 @@ export class NodeDebug {
                 data: {
                     "OnTestnet": runOptions.onTestnet,
                     "PrivateKey": runOptions.privateKey,
-                    "TestnetNodeEndpoint": runOptions.testnetNodeEndpoint,
+                    "TestnetNodeEndpoint": MySettings.getTestnetUrl(),
                     "SndAddress": runOptions.senderAddress,
                     "ScAddress": runOptions.scAddress,
                     "Value": runOptions.value.toString(),
@@ -142,7 +142,7 @@ export class NodeDebug {
             url: url,
             data: {
                 "OnTestnet": options.onTestnet,
-                "TestnetNodeEndpoint": options.testnetNodeEndpoint,
+                "TestnetNodeEndpoint": MySettings.getTestnetUrl(),
                 "ScAddress": options.scAddress,
                 "FuncName": options.functionName,
                 "Args": options.arguments

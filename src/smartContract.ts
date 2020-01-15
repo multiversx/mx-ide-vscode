@@ -87,8 +87,6 @@ export class SmartContract {
         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
         properties.Address = response.data.Address;
         properties.AddressTimestamp = new Date();
-
-        await this.queryWatchedVariables({ onTestnet: options.onTestnet });
     }
 
     public async runFunction(options: any): Promise<any> {
@@ -108,8 +106,6 @@ export class SmartContract {
         } catch (e) {
             properties.LatestRun.VMOutput = {};
         }
-
-        await this.queryWatchedVariables({ onTestnet: options.onTestnet });
     }
 
     public setWatchedVariables(options: any) {

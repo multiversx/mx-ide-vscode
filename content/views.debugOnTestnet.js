@@ -3,7 +3,8 @@ var DebugOnTestnetView = Backbone.View.extend({
         "change [name='FocusedSmartContract']": "onChangeFocusedContract",
         "click .btn-deploy-contract-testnet": "onClickDeployOnTestnet",
         "click .btn-run-contract-testnet": "onClickRunOnTestnet",
-        "click .btn-configure-watch-testnet": "onClickConfigureWatchOnTestnet"
+        "click .btn-configure-watch-testnet": "onClickConfigureWatchOnTestnet",
+        "click .btn-refresh-watched-testnet": "onRefreshWatchedVariablesOnTestnet"
     },
 
     initialize: function () {
@@ -104,5 +105,10 @@ var DebugOnTestnetView = Backbone.View.extend({
         });
 
         dialog.show();
+    },
+
+    onRefreshWatchedVariablesOnTestnet: function () {
+        var model = this.getFocusedContract();
+        model.queryWatchedVariables({ onTestnet: true });
     }
 });

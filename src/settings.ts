@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { MyError } from './errors';
 
 export class MySettings {
 
@@ -15,7 +16,12 @@ export class MySettings {
     }
 
     public static getTestnetUrl() : string {
-        return MySettings.getConfigurationValue("testnetUrl").toString();
+        var url = MySettings.getConfigurationValue("testnetUrl").toString();
+        if (!url) {
+            throw new MyError({Message: `Bad testnet url: ${url}.`});
+        }
+
+        return url;
     }
 
     private static getConfigurationValue(key: string) {
