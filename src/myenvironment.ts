@@ -183,7 +183,7 @@ export class MyEnvironment {
     }
 
     static getNodeDebugDownloadUrl() {
-        let version = "v001";
+        let version = "v002";
         let urlRoot = `${MySettings.getDownloadMirrorUrl()}/nodedebug/${version}`;
         let urlLinux: string = `${urlRoot}/linux-amd64.tar.gz`;
         let urlMacOS: string = `${urlRoot}/darwin-amd64.tar.gz`;
