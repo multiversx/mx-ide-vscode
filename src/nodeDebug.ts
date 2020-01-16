@@ -78,7 +78,7 @@ export class NodeDebug {
         let url = NodeDebug.buildUrl("vm-values/deploy");
 
         try {
-            return RequestsFacade.post({
+            let response = await RequestsFacade.post({
                 url: url,
                 data: {
                     "OnTestnet": options.onTestnet,
@@ -93,9 +93,16 @@ export class NodeDebug {
                 eventTag: "debugger-dialogue",
                 channels: ["debugger-dialogue"]
             });
+
+            if (response.error) {
+                Feedback.error(`Deploy error: ${response.error}`);
+                return {};
+            }    
+
+            return response.data;
         }
         catch (e) {
-            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
+            Feedback.error(`Cannot deploy. Please see output channels.`);
             throw e;
         }
     }
@@ -121,6 +128,11 @@ export class NodeDebug {
                 channels: ["debugger-dialogue"]
             });
 
+            if (response.error) {
+                Feedback.error(`Run error: ${response.error}`);
+                return {};
+            }  
+
             let vmOutput: any = response.data;
 
             if (runOptions.onTestnet) {
@@ -130,7 +142,7 @@ export class NodeDebug {
 
             return vmOutput;
         } catch (e) {
-            Feedback.error(`Cannot deploy. Perhaps node-debug is stopped?`);
+            Feedback.error(`Cannot deploy. Please see output channels.`);
             throw e;
         }
     }
@@ -149,7 +161,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Perhaps node-debug is stopped?`);
+            Feedback.error(`Cannot run. Please see output channels.`);
             throw e;
         });
     }
