@@ -1,0 +1,19 @@
+[package]
+name = "factorial"
+version = "0.1.0"
+authors = ["andrei-marinica <andrei.marinica@elrond.com>"]
+edition = "2018"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "wasm"
+path = "src/lib.rs"
+
+
+[dependencies]
+# the framework is not currently published, so use relative paths for now
+elrond-wasm = { path = "../../elrond-wasm-rs/elrond-wasm" }
+elrond-wasm-node = { path = "../../elrond-wasm-rs/elrond-wasm-node" }
+elrond-wasm-derive = { path = "../../elrond-wasm-rs/elrond-wasm-derive" }
