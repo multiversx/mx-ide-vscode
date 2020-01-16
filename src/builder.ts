@@ -54,6 +54,9 @@ export class Builder {
         let exportsRaw = new Array<String>();
         if (FsFacade.fileExists(filePath_export)) {
             exportsRaw = FsFacade.readFile(filePath_export).split(/\r?\n/);
+        } else {
+            Feedback.error(`Missing functions export file: ${filePath_export}.`)
+            return;
         }
 
         function doWasm(): Promise<any> {
