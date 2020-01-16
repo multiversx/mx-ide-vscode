@@ -175,12 +175,15 @@ export class NodeDebug {
         let returnData: any[] = vmOutput.ReturnData || [];
         vmOutput.ReturnDataHex = [];
         vmOutput.ReturnDataDecimal = [];
+        vmOutput.ReturnDataString = [];
 
         returnData.forEach(function (data: any) {
             var dataHex = Buffer.from(data, "base64").toString("hex");
             var dataInt = parseInt(dataHex, 16);
+            var dataString = Buffer.from(data, "base64").toString();
             vmOutput.ReturnDataHex.push(dataHex);
             vmOutput.ReturnDataDecimal.push(dataInt);
+            vmOutput.ReturnDataString.push(dataString);
         });
 
         let outputAccounts: any[] = vmOutput.OutputAccounts || [];
