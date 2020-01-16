@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -75,7 +75,7 @@
 				},
 				"elrond.testnetUrl": {
 					"type": "string",
-					"default": "https://testnet.elrond.com/#/wallet",
+					"default": "https://wallet-api.elrond.com",
 					"description": "Testnet proxy URL."
 				}
 			}
