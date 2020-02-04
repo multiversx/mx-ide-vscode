@@ -42,12 +42,8 @@ export class Syms {
             "bigIntGetCallValue",
             "bigIntGetExternalBalance",
 
-            "debugPrintBigInt",
-            "debugPrintInt64",
-            "debugPrintInt32",
-            "debugPrintBytes",
-            "debugPrintString",
-            "debugPrintLineNumber"
+            "sha256",
+            "keccak256"
         ];
 
         return mainSyms.join("\n");
