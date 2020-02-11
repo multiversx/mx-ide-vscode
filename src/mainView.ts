@@ -61,13 +61,6 @@ export class MainView {
             self.doRefreshSmartContracts();
         });
 
-        eventBus.on("view-message:buildSmartContract", function (payload) {
-            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.build()
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
-        });
-
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
             contract.deployToDebugger(payload)

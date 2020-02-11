@@ -14,6 +14,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Removed the stub user interface for "Build Options". This was only available for C projects, and only used to edit the exported functions of the smart contract. The user interface was somehow redundant, because editing can be done in the `*.exported` file. Since build options will get more complex, it is more maintainable to keep build options in specific files for the moment, without an associated user interface: `*.exported` for C exported functions, `Cargo.toml` for Rust's build options and so on.
 
+- Removed "Build" button from user interface. Build is available via command (and we will also add the command in a contextual menu in a future release). This is more in the spirit of VSCODE extensions - rely less on webviews, rely more on commands, menus and shortcuts.
+
 ## Temporary code sandbox
 
 ```

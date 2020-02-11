@@ -17,7 +17,7 @@
 	"icon": "content/elrond_b.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
-		"onCommand:extension.buildCurrentFile",
+		"onCommand:extension.buildContract",
 		"onCommand:extension.startNodeDebug",
 		"onCommand:extension.stopNodeDebug"
 	],
@@ -29,8 +29,8 @@
 				"title": "Elrond - open IDE"
 			},
 			{
-				"command": "extension.buildCurrentFile",
-				"title": "Elrond - build current file"
+				"command": "extension.buildContract",
+				"title": "Elrond - build contract"
 			},
 			{
 				"command": "extension.startNodeDebug",
@@ -44,7 +44,7 @@
 		"menus": {
 			"editor/context": [
 				{
-					"command": "extension.buildCurrentFile",
+					"command": "extension.buildContract",
 					"group": "dummyGroup",
 					"when": "resourceExtname == .c"
 				}

@@ -70,7 +70,6 @@ This extension contributes the following settings:
 This extension contributes the following commands (`Ctrl+Shift+P`):
 
 * `openIDE`: opens the Elrond IDE Web View.
-* `buildCurrentFile`: builds the source file on focus to WASM bytecode.
-* `createSmartContract`: creates a new smart contract (subproject) from a list of predefined prototypes (templates).
+* `buildContract`: builds the smart contract to WASM bytecode.
 * `startNodeDebug`: starts node-debug.
 * `stopNodeDebug`: stops node-debug.

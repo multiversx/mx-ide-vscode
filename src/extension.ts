@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
 
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
-	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
+	registerCustomCommand(context, 'extension.buildContract', buildContract);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
 	registerCustomCommand(context, 'extension.stopNodeDebug', stopNodeDebug);
 
@@ -60,7 +60,7 @@ function openIDE() {
 	Presenter.showMainView();
 }
 
-function buildCurrentFile() {
+function buildContract() {
 	if (!guardIsWorkspaceOpen()) {
 		return;
 	}

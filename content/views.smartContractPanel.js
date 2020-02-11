@@ -2,7 +2,6 @@ var SmartContractPanelView = Backbone.View.extend({
     tagName: "div",
 
     events: {
-        "click .btn-build-contract": "onClickBuild",
         "click .btn-goto-debug": "onClickGotoDebug",
         "click .btn-goto-debug-on-testnet": "onClickGotoDebugOnTestnet"
     },
@@ -22,10 +21,6 @@ var SmartContractPanelView = Backbone.View.extend({
         this.$el.html(html);
 
         return this;
-    },
-
-    onClickBuild: function () {
-        this.model.build();
     },
 
     onClickGotoDebug: function () {
