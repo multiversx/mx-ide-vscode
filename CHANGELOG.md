@@ -16,6 +16,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Removed "Build" button from user interface. Build is available via command (and we will also add the command in a contextual menu in a future release). This is more in the spirit of VSCODE extensions - rely less on webviews, rely more on commands, menus and shortcuts.
 
+- Removed user interface and implementation for downloading dependencies (LLVM, Rust, Soll, Nodedebug). This has been replaced by `erdpy`'s automatic download mechanism.
+
+- TODO: extension requirement at install for rust debug
+
+- TODO: delegate build to erdpy
+
+- TODO: only allow one project per workspace (otherwise rust issues etc.)
+
+- TODO: no list of contracts, no concept of focused contract.
+
+
 ## Temporary code sandbox
 
 ```
