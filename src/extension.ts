@@ -3,7 +3,6 @@ import { NodeDebug } from './nodeDebug';
 import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
-import { Projects } from './projects';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import { FsFacade } from './utils';
@@ -15,7 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
 	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
 	registerCustomCommand(context, 'extension.stopNodeDebug', stopNodeDebug);
-	registerCustomCommand(context, 'extension.createSmartContract', Projects.createSmartContract);
 
 	Feedback.debug("ElrondIDE.activate()");
 	initialize();

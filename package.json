@@ -19,8 +19,7 @@
 		"onCommand:extension.openIDE",
 		"onCommand:extension.buildCurrentFile",
 		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.stopNodeDebug",
-		"onCommand:extension.createSmartContract"
+		"onCommand:extension.stopNodeDebug"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -40,10 +39,6 @@
 			{
 				"command": "extension.stopNodeDebug",
 				"title": "Elrond - stop node debug"
-			},
-			{
-				"command": "extension.createSmartContract",
-				"title": "Elrond - create smart contract from prototype (template)"
 			}
 		],
 		"menus": {

@@ -174,11 +174,6 @@ export class FsFacade {
         return path.join(extensionPath, "content");
     }
 
-    public static getPathToSnippets() {
-        let extensionPath = Root.ExtensionContext.extensionPath;
-        return path.join(extensionPath, "snippets");
-    }
-
     public static getPathToWorkspace() {
         let folders = vscode.workspace.workspaceFolders;
         let workspaceFolder: vscode.WorkspaceFolder = folders ? folders[0] : null;
