@@ -68,7 +68,7 @@ export class ProcessFacade {
             latestStdout = data;
 
             if (!doNotDumpStdout) {
-                Feedback.debug(`[${programName}] says: ${data}`, channels);
+                Feedback.programOutput(programName, data, channels);
             }
 
             if (options.onOutput) {
@@ -82,7 +82,7 @@ export class ProcessFacade {
 
         subprocess.stderr.on("data", function (data) {
             latestStderr = data;
-            Feedback.debug(`[${programName}] says (stderr): ${data}`, channels);
+            Feedback.programOutput(programName, data, channels);
 
             if (options.onError) {
                 options.onError(data);

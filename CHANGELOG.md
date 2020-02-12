@@ -18,9 +18,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Removed user interface and implementation for downloading dependencies (LLVM, Rust, Soll, Nodedebug). This has been replaced by `erdpy`'s automatic download mechanism.
 
-- TODO: extension requirement at install for rust debug
+- Building smart contracts has a new backend: `erdpy build`, which, in turn, delegates to LLVM, Rust / Cargo, SOLL (SOLL support isn't completely ported from the IDE to `erdpy` yet, but it will be soon).
 
-- TODO: delegate build to erdpy
+- TODO: extension requirement at install for rust debug
 
 - TODO: only allow one project per workspace (otherwise rust issues etc.)
 
