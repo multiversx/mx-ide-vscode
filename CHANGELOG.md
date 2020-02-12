@@ -24,6 +24,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Building smart contracts has a new backend: `erdpy build`, which, in turn, delegates to LLVM, Rust / Cargo, SOLL (SOLL support isn't completely ported from the IDE to `erdpy` yet, but it will be soon).
 
+- Hide first tab (`Workspace`), not actually needed. It was a bit redundant, and the UX wasn't optimal.
+
 - TODO: only allow one project per workspace (otherwise rust issues etc.)
 
 - TODO: no list of contracts, no concept of focused contract.
