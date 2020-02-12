@@ -27,15 +27,3 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Hide first tab (`Workspace`), not actually needed. It was a bit redundant, and the UX wasn't optimal.
 
 - TODO: only allow one project per workspace (otherwise rust issues etc.)
-
-- TODO: no list of contracts, no concept of focused contract.
-
-
-## Temporary code sandbox
-
-```
-if (!FsFacade.isWorkspaceOpen()) {
-    Feedback.info("No folder open in your workspace. Please open a folder.");
-    return;
-}
-```

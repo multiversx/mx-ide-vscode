@@ -4,66 +4,21 @@ import { MySettings } from "./settings";
 import eventBus from "./eventBus";
 import path = require('path');
 import { Feedback } from "./feedback";
+import { Erdpy } from './erdpy';
 
 export class NodeDebug {
 
     public static start() {
-        NodeDebug.stop()
-            .catch(() => { })
-            .finally(() => NodeDebug.performStart());
-    }
+        Erdpy.require();
 
-    public static stop(): Promise<any> {
-        let port: any = MySettings.getRestDebuggerPort();
-
-        let platform = os.platform();
-
-        if (platform == "darwin") {
-            return NodeDebug.stopMacOs(port);
-        }
-
-        return ProcessFacade.execute({
-            program: "fuser",
-            args: ["-k", `${port}/tcp`]
-        });
-    }
-
-    public static async stopMacOs(port: any): Promise<any> {
-        let lsof: any;
-        try {
-            lsof = await ProcessFacade.execute({
-                program: "lsof",
-                args: ["-nti", `:${port}`]
-            });
-        } catch (e) {
-            throw e;
-        }
-
-        return ProcessFacade.execute({
-            program: "kill",
-            args: [lsof.stdOut, "-9"]
-        });
-    }
-
-    private static performStart() {
-        let toolPathFolder = NodeDebug.getFolderPath();
-        let toolPath = NodeDebug.getToolPath();
-        let port: any = MySettings.getRestDebuggerPort();
-        let configPath: any = path.join(toolPathFolder, "config", "config.toml");
-        let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
-
-        let LD_LIBRARY_PATH = process.env["LD_LIBRARY_PATH"] || "/usr/lib";
-        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${toolPathFolder}`;
+        let workspaceFolder = FsFacade.getPathToWorkspace();
 
         ProcessFacade.execute({
-            program: toolPath,
-            workingDirectory: toolPathFolder,
-            args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
+            program: "erdpy",
+            workingDirectory: workspaceFolder,
+            args: ["nodedebug"],
             eventTag: "debugger",
-            channels: ["debugger"],
-            environment: {
-                LD_LIBRARY_PATH: LD_LIBRARY_PATH
-            }
+            channels: ["debugger"]
         })
             .catch(() => { })
             .finally(() => {
@@ -72,6 +27,17 @@ export class NodeDebug {
 
         eventBus.emit("debugger:started");
         Feedback.info("node-debug started.");
+    };
+
+    public static async stop(): Promise<any> {
+        await Erdpy.require();
+        
+        return ProcessFacade.execute({
+            program: "erdpy",
+            args: ["nodedebug", "--stop"],
+            eventTag: "debugger",
+            channels: ["debugger"]
+        });
     }
 
     public static async deploySmartContract(options: any): Promise<any> {
@@ -97,7 +63,7 @@ export class NodeDebug {
             if (response.error) {
                 Feedback.error(`Deploy error: ${response.error}`);
                 return {};
-            }    
+            }
 
             return response.data;
         }
@@ -131,7 +97,7 @@ export class NodeDebug {
             if (response.error) {
                 Feedback.error(`Run error: ${response.error}`);
                 return {};
-            }  
+            }
 
             let vmOutput: any = response.data;
 
