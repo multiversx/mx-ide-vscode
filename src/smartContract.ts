@@ -42,6 +42,7 @@ export class SmartContract {
         await Builder.buildModule(this);
         this.syncWithWorkspace();
         this.createArwenFiles();
+        Feedback.info("Build done.");
     }
 
     public createArwenFiles() {
