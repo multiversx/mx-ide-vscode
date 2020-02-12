@@ -21,15 +21,7 @@ function main() {
         app.log(event.data.payload);
         app.events.trigger(`extension-message:${event.data.what}`, event.data.payload || {});
     });
-
-    app.manageNodeDebugView = new ManageNodeDebugView({
-        el: ".manage-node-debug-view"
-    });
-
-    app.configurationView = new ConfigurationView({
-        el: ".configuration-view"
-    });
-
+    
     app.debugView = new DebugView({
         el: ".debug-view",
         collection: app.smartContracts
