@@ -1,45 +1,9 @@
 import os = require('os');
 import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
-import eventBus from "./eventBus";
 import path = require('path');
 import { Feedback } from "./feedback";
-import { Erdpy } from './erdpy';
-
 export class NodeDebug {
-
-    public static start() {
-        Erdpy.require();
-
-        let workspaceFolder = FsFacade.getPathToWorkspace();
-
-        ProcessFacade.execute({
-            program: "erdpy",
-            workingDirectory: workspaceFolder,
-            args: ["nodedebug"],
-            eventTag: "debugger",
-            channels: ["debugger"]
-        })
-            .catch(() => { })
-            .finally(() => {
-                Feedback.info("node-debug stopped.");
-            });
-
-        eventBus.emit("debugger:started");
-        Feedback.info("node-debug started.");
-    };
-
-    public static async stop(): Promise<any> {
-        await Erdpy.require();
-        
-        return ProcessFacade.execute({
-            program: "erdpy",
-            args: ["nodedebug", "--stop"],
-            eventTag: "debugger",
-            channels: ["debugger"]
-        });
-    }
-
     public static async deploySmartContract(options: any): Promise<any> {
         let url = NodeDebug.buildUrl("vm-values/deploy");
 

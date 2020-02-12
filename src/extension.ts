@@ -12,8 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildContract', buildContract);
-	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
-	registerCustomCommand(context, 'extension.stopNodeDebug', stopNodeDebug);
 
 	Feedback.debug("ElrondIDE.activate()");
 	initialize();
@@ -68,14 +66,6 @@ function buildContract() {
 	let filePath = Presenter.getActiveFilePath();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
-}
-
-function startNodeDebug() {
-	NodeDebug.start();
-}
-
-function stopNodeDebug() {
-	NodeDebug.stop();
 }
 
 function guardIsWorkspaceOpen(): boolean {

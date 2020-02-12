@@ -26,4 +26,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Hide first tab (`Workspace`), not actually needed. It was a bit redundant, and the UX wasn't optimal.
 
+- Remove commands to start and stop nodedebug. They were a bit problematic and also redundant. One can use `erdpy nodedebug` and `erdpy nodedebug --stop` commands.
+
 - TODO: only allow one project per workspace (otherwise rust issues etc.)

@@ -17,9 +17,7 @@
 	"icon": "content/elrond_b.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
-		"onCommand:extension.buildContract",
-		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.stopNodeDebug"
+		"onCommand:extension.buildContract"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -31,14 +29,6 @@
 			{
 				"command": "extension.buildContract",
 				"title": "Elrond - build contract"
-			},
-			{
-				"command": "extension.startNodeDebug",
-				"title": "Elrond - start (restart) node debug"
-			},
-			{
-				"command": "extension.stopNodeDebug",
-				"title": "Elrond - stop node debug"
 			}
 		],
 		"menus": {

@@ -47,15 +47,6 @@ export class MainView {
     private listenToWebviewEvents() {
         let self = this;
 
-        eventBus.on("view-message:startNodeDebug", function () {
-            NodeDebug.start();
-            self.doRefreshSmartContracts();
-        });
-
-        eventBus.on("view-message:stopNodeDebug", function () {
-            NodeDebug.stop().catch(() => { });
-        });
-
         eventBus.on("view-message:refreshSmartContracts", function () {
             self.doRefreshSmartContracts();
         });
