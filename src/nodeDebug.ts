@@ -72,7 +72,7 @@ export class NodeDebug {
 
             return vmOutput;
         } catch (e) {
-            Feedback.error(`Cannot deploy. Please see output channels.`);
+            Feedback.error(`Cannot run. Please see output channels.`);
             throw e;
         }
     }
@@ -118,12 +118,15 @@ export class NodeDebug {
 
         let outputAccounts: any[] = vmOutput.OutputAccounts || [];
 
-        outputAccounts.forEach(function (account: any) {
+        Object.keys(outputAccounts).forEach(function (key: any) {
+            let account = outputAccounts[key];
             account.Address = Buffer.from(account.Address, "base64").toString("hex");
 
             let storageUpdates: any[] = account.StorageUpdates || [];
 
-            storageUpdates.forEach(function (update) {
+            Object.keys(storageUpdates).forEach(function (key: any) {
+                let update = storageUpdates[key];
+                update.Key = key;
                 update.DataHex = Buffer.from(update.Data, "base64").toString("hex");
                 update.DataDecimal = parseInt(update.DataHex, 16);
                 update.Offset = Buffer.from(update.Offset, "base64").toString("hex");
