@@ -8,7 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
-## [0.4.0]
+## [0.3.8]
 
 - Added **[erdpy](https://github.com/ElrondNetwork/erdpy)** as a required dependency.
 
@@ -22,10 +22,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Removed user interface and implementation for downloading dependencies (LLVM, Rust, Soll, Nodedebug). This has been replaced by `erdpy`'s automatic download mechanism.
 
-- Building smart contracts has a new backend: `erdpy build`, which, in turn, delegates to LLVM, Rust / Cargo, SOLL (SOLL support isn't completely ported from the IDE to `erdpy` yet, but it will be soon).
+- Building smart contracts has a new backend: `erdpy build`, which, in turn, delegates to LLVM, Rust / Cargo, SOLL (SOLL support isn't completely ported from the IDE to `erdpy` yet, but it will be soon). Solidity compilation is temporarily disabled, until we finish the migration of the build process to `erdpy` (and also update to latest **SOLL** compiler).
 
 - Hide first tab (`Workspace`), not actually needed. It was a bit redundant, and the UX wasn't optimal.
 
-- Remove commands to start and stop nodedebug. They were a bit problematic and also redundant. One can use `erdpy nodedebug` and `erdpy nodedebug --stop` commands.
+- Remove commands to start and stop **nodedebug**. They were a bit problematic and also redundant. One can use `erdpy nodedebug` and `erdpy nodedebug --stop` commands.
 
-- TODO: only allow one project per workspace (otherwise rust issues etc.)
+
+## [Upcoming (TODO)]
+
+- Only allow one project per workspace (otherwise Rust / Cargo build issues).
