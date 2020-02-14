@@ -4,7 +4,6 @@ import { Root } from './root';
 import { NodeDebug } from './nodeDebug';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
-import { MyEnvironment } from './myenvironment';
 import { MyError, MyErrorCatcher } from './errors';
 import { MyFile } from './myfile';
 import { Variables } from './variables';
@@ -48,31 +47,8 @@ export class MainView {
     private listenToWebviewEvents() {
         let self = this;
 
-        eventBus.on("view-message:startNodeDebug", function () {
-            NodeDebug.start();
-            self.doRefreshSmartContracts();
-        });
-
-        eventBus.on("view-message:stopNodeDebug", function () {
-            NodeDebug.stop().catch(() => { });
-        });
-
         eventBus.on("view-message:refreshSmartContracts", function () {
             self.doRefreshSmartContracts();
-        });
-
-        eventBus.on("view-message:buildSmartContract", function (payload) {
-            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.build()
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:setSmartContractBuildOptions", function (payload) {
-            let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.setBuildOptions(payload)
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
@@ -101,30 +77,6 @@ export class MainView {
             contract.setWatchedVariables(payload);
         });
 
-        eventBus.on("view-message:environment-refresh", function () {
-            self.doRefreshEnvironment();
-        });
-
-        eventBus.on("view-message:environment-install-build-tools-c", function (payload) {
-            MyEnvironment.installBuildToolsForC().catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:environment-install-build-tools-rust", function (payload) {
-            MyEnvironment.installBuildToolsForRust().catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:environment-uninstall-build-tools-rust", function (payload) {
-            MyEnvironment.uninstallBuildToolsForRust().catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:environment-install-build-tools-sol", function (payload) {
-            MyEnvironment.installBuildToolsForSolidity().catch(MyErrorCatcher.topLevel);
-        });
-
-        eventBus.on("view-message:environment-install-debug-node", function (payload) {
-            MyEnvironment.installDebugNode().catch(MyErrorCatcher.topLevel);
-        });
-
         eventBus.on("view-message:variables-refresh", function () {
             self.talkToWebView("variables-refresh", Variables.getSnapshot());
         });
@@ -138,10 +90,6 @@ export class MainView {
     private doRefreshSmartContracts() {
         SmartContractsCollection.syncWithWorkspace();
         this.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
-    }
-
-    private doRefreshEnvironment() {
-        this.talkToWebView("refreshEnvironment", MyEnvironment.getSnapshot());
     }
 
     private talkToWebView(what: string, payload: any) {

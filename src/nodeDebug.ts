@@ -1,79 +1,9 @@
 import os = require('os');
 import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
-import eventBus from "./eventBus";
 import path = require('path');
 import { Feedback } from "./feedback";
-
 export class NodeDebug {
-
-    public static start() {
-        NodeDebug.stop()
-            .catch(() => { })
-            .finally(() => NodeDebug.performStart());
-    }
-
-    public static stop(): Promise<any> {
-        let port: any = MySettings.getRestDebuggerPort();
-
-        let platform = os.platform();
-
-        if (platform == "darwin") {
-            return NodeDebug.stopMacOs(port);
-        }
-
-        return ProcessFacade.execute({
-            program: "fuser",
-            args: ["-k", `${port}/tcp`]
-        });
-    }
-
-    public static async stopMacOs(port: any): Promise<any> {
-        let lsof: any;
-        try {
-            lsof = await ProcessFacade.execute({
-                program: "lsof",
-                args: ["-nti", `:${port}`]
-            });
-        } catch (e) {
-            throw e;
-        }
-
-        return ProcessFacade.execute({
-            program: "kill",
-            args: [lsof.stdOut, "-9"]
-        });
-    }
-
-    private static performStart() {
-        let toolPathFolder = NodeDebug.getFolderPath();
-        let toolPath = NodeDebug.getToolPath();
-        let port: any = MySettings.getRestDebuggerPort();
-        let configPath: any = path.join(toolPathFolder, "config", "config.toml");
-        let genesisPath: any = path.join(toolPathFolder, "config", "genesis.json");
-
-        let LD_LIBRARY_PATH = process.env["LD_LIBRARY_PATH"] || "/usr/lib";
-        LD_LIBRARY_PATH = `${LD_LIBRARY_PATH}:${toolPathFolder}`;
-
-        ProcessFacade.execute({
-            program: toolPath,
-            workingDirectory: toolPathFolder,
-            args: ["--rest-api-port", port, "--config", configPath, "--genesis-file", genesisPath],
-            eventTag: "debugger",
-            channels: ["debugger"],
-            environment: {
-                LD_LIBRARY_PATH: LD_LIBRARY_PATH
-            }
-        })
-            .catch(() => { })
-            .finally(() => {
-                Feedback.info("node-debug stopped.");
-            });
-
-        eventBus.emit("debugger:started");
-        Feedback.info("node-debug started.");
-    }
-
     public static async deploySmartContract(options: any): Promise<any> {
         let url = NodeDebug.buildUrl("vm-values/deploy");
 
@@ -97,7 +27,7 @@ export class NodeDebug {
             if (response.error) {
                 Feedback.error(`Deploy error: ${response.error}`);
                 return {};
-            }    
+            }
 
             return response.data;
         }
@@ -131,7 +61,7 @@ export class NodeDebug {
             if (response.error) {
                 Feedback.error(`Run error: ${response.error}`);
                 return {};
-            }  
+            }
 
             let vmOutput: any = response.data;
 
@@ -142,7 +72,7 @@ export class NodeDebug {
 
             return vmOutput;
         } catch (e) {
-            Feedback.error(`Cannot deploy. Please see output channels.`);
+            Feedback.error(`Cannot run. Please see output channels.`);
             throw e;
         }
     }
@@ -161,7 +91,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Please see output channels.`);
+            Feedback.error(`Cannot query. Please see output channels.`);
             throw e;
         });
     }
@@ -188,12 +118,15 @@ export class NodeDebug {
 
         let outputAccounts: any[] = vmOutput.OutputAccounts || [];
 
-        outputAccounts.forEach(function (account: any) {
+        Object.keys(outputAccounts).forEach(function (key: any) {
+            let account = outputAccounts[key];
             account.Address = Buffer.from(account.Address, "base64").toString("hex");
 
             let storageUpdates: any[] = account.StorageUpdates || [];
 
-            storageUpdates.forEach(function (update) {
+            Object.keys(storageUpdates).forEach(function (key: any) {
+                let update = storageUpdates[key];
+                update.Key = key;
                 update.DataHex = Buffer.from(update.Data, "base64").toString("hex");
                 update.DataDecimal = parseInt(update.DataHex, 16);
                 update.Offset = Buffer.from(update.Offset, "base64").toString("hex");

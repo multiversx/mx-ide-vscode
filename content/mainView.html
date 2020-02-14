@@ -21,12 +21,7 @@
     <div class="container-fluid">
         <div class="main">
             <div class="views-container">
-                <div class="view" id="Workspace">
-                    <div class="row configuration-view">
-                        <div class="col-sm-12">
-                        </div>
-                    </div>
-
+                <div class="view d-none" id="Workspace">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="smart-contracts-list-view">
@@ -34,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="view d-none" id="Debug">
+                <div class="view" id="Debug">
                     <div class="mt-3">
                         {{partial.debug.html}}
                     </div>
@@ -55,11 +50,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="view d-none" id="Environment">
-                    <div class="mt-3">
-                        {{partial.environment.html}}
-                    </div>
-                </div>
                 <div class="view d-none" id="Variables">
                     {{partial.variables.html}}
                 </div>
@@ -72,25 +62,20 @@
     <script type="text/javascript" src="vendor/backbone.min.js"></script>
 
     <script type="text/javascript" src="models.js"></script>
-    <script type="text/javascript" src="models.environment.js"></script>
     <script type="text/javascript" src="models.restDialogue.js"></script>
     <script type="text/javascript" src="models.variables.js"></script>
     <script type="text/javascript" src="views.debug.js"></script>
     <script type="text/javascript" src="views.debugOnTestnet.js"></script>
-    <script type="text/javascript" src="views.environment.js"></script>
     <script type="text/javascript" src="views.variables.js"></script>
     <script type="text/javascript" src="views.smartContractsList.js"></script>
     <script type="text/javascript" src="views.smartContractPanel.js"></script>
-    <script type="text/javascript" src="views.buildOptionsDialog.js"></script>
     <script type="text/javascript" src="views.deployDialog.js"></script>
     <script type="text/javascript" src="views.runDialog.js"></script>
     <script type="text/javascript" src="views.configureWatchDialog.js"></script>
-    <script type="text/javascript" src="views.others.js"></script>
     <script type="text/javascript" src="views.restDialogue.js"></script>
     <script type="text/javascript" src="main.js"></script>
 
     <script id="TemplateSmartContractPanel" type="text/template">{{template.smartContractPanel.html}}</script>
-    <script id="TemplateBuildOptionsDialog" type="text/template">{{template.buildOptionsDialog.html}}</script>
     <script id="TemplateDeployDialog" type="text/template">{{template.deployDialog.html}}</script>
     <script id="TemplateRunDialog" type="text/template">{{template.runDialog.html}}</script>
     <script id="TemplateConfigureWatchDialog" type="text/template">{{template.configureWatchDialog.html}}</script>

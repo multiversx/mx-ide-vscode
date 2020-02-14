@@ -38,17 +38,11 @@ export class SmartContract {
         return this.BytecodeFile ? true : false;
     }
 
-    public async setBuildOptions(options: any): Promise<any> {
-        if (this.IsSourceC) {
-            let exportFilePath = `${this.SourceFile.PathWithoutExtension}.export`;
-            FsFacade.writeFile(exportFilePath, options.exportedFunctions);
-        }
-    }
-
     public async build(): Promise<any> {
         await Builder.buildModule(this);
         this.syncWithWorkspace();
         this.createArwenFiles();
+        Feedback.info("Build done.");
     }
 
     public createArwenFiles() {

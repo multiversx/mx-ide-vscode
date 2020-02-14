@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.3.6",
+	"version": "0.3.8",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -17,10 +17,7 @@
 	"icon": "content/elrond_b.png",
 	"activationEvents": [
 		"onCommand:extension.openIDE",
-		"onCommand:extension.buildCurrentFile",
-		"onCommand:extension.startNodeDebug",
-		"onCommand:extension.stopNodeDebug",
-		"onCommand:extension.createSmartContract"
+		"onCommand:extension.buildContract"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -30,26 +27,14 @@
 				"title": "Elrond - open IDE"
 			},
 			{
-				"command": "extension.buildCurrentFile",
-				"title": "Elrond - build current file"
-			},
-			{
-				"command": "extension.startNodeDebug",
-				"title": "Elrond - start (restart) node debug"
-			},
-			{
-				"command": "extension.stopNodeDebug",
-				"title": "Elrond - stop node debug"
-			},
-			{
-				"command": "extension.createSmartContract",
-				"title": "Elrond - create smart contract from prototype (template)"
+				"command": "extension.buildContract",
+				"title": "Elrond - build contract"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "extension.buildCurrentFile",
+					"command": "extension.buildContract",
 					"group": "dummyGroup",
 					"when": "resourceExtname == .c"
 				}
@@ -58,16 +43,6 @@
 		"configuration": {
 			"title": "vscode-elrond-ide",
 			"properties": {
-				"elrond.downloadMirror": {
-					"type": "string",
-					"default": "https://ide.elrond.com",
-					"description": "Download mirror for Elrond IDE tools."
-				},
-				"elrond.ideFolder": {
-					"type": "string",
-					"default": "/home/someone/Elrond/ide",
-					"description": "Folder for IDE tools."
-				},
 				"elrond.restApi.port": {
 					"type": "number",
 					"default": "8080",
@@ -108,5 +83,6 @@
 		"request": "^2.88.0",
 		"underscore": "^1.9.1",
 		"glob": "^7.1.4"
-	}
+	},
+	"extensionDependencies": ["vadimcn.vscode-lldb"]
 }

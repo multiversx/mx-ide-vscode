@@ -53,7 +53,7 @@
                 <tbody>
                     <% _.each(account.StorageUpdates, function(update) { %>
                     <tr>
-                        <th scope="row"><%= update.Offset %></th>
+                        <th scope="row"><%= update.Offset %> / <%= update.Key %></th>
                         <td><%= update.DataDecimal %></td>
                     </tr>
                     <% }) %>

@@ -9,7 +9,6 @@ function main() {
     app.vscode = acquireVsCodeApi();
     app.smartContracts = new SmartContractsCollection();
     app.restDialogue = new RestDialogueCollection();
-    app.environment = new EnvironmentModel();
     app.variables = new VariablesModel();
 
     initializeNavigation();
@@ -22,15 +21,7 @@ function main() {
         app.log(event.data.payload);
         app.events.trigger(`extension-message:${event.data.what}`, event.data.payload || {});
     });
-
-    app.manageNodeDebugView = new ManageNodeDebugView({
-        el: ".manage-node-debug-view"
-    });
-
-    app.configurationView = new ConfigurationView({
-        el: ".configuration-view"
-    });
-
+    
     app.debugView = new DebugView({
         el: ".debug-view",
         collection: app.smartContracts
@@ -40,12 +31,7 @@ function main() {
         el: ".debug-on-testnet-view",
         collection: app.smartContracts
     });
-
-    app.environmentView = new EnvironmentView({
-        el: ".environment-view",
-        model: app.environment
-    });
-
+    
     app.variablesView = new VariablesView({
         el: ".variables-view",
         model: app.variables

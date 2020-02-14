@@ -3,7 +3,6 @@ import { NodeDebug } from './nodeDebug';
 import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
-import { Projects } from './projects';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import { FsFacade } from './utils';
@@ -12,10 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
 
 	registerCustomCommand(context, 'extension.openIDE', openIDE);
-	registerCustomCommand(context, 'extension.buildCurrentFile', buildCurrentFile);
-	registerCustomCommand(context, 'extension.startNodeDebug', startNodeDebug);
-	registerCustomCommand(context, 'extension.stopNodeDebug', stopNodeDebug);
-	registerCustomCommand(context, 'extension.createSmartContract', Projects.createSmartContract);
+	registerCustomCommand(context, 'extension.buildContract', buildContract);
 
 	Feedback.debug("ElrondIDE.activate()");
 	initialize();
@@ -62,7 +58,7 @@ function openIDE() {
 	Presenter.showMainView();
 }
 
-function buildCurrentFile() {
+function buildContract() {
 	if (!guardIsWorkspaceOpen()) {
 		return;
 	}
@@ -70,14 +66,6 @@ function buildCurrentFile() {
 	let filePath = Presenter.getActiveFilePath();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
-}
-
-function startNodeDebug() {
-	NodeDebug.start();
-}
-
-function stopNodeDebug() {
-	NodeDebug.stop();
 }
 
 function guardIsWorkspaceOpen(): boolean {
