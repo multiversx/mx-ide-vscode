@@ -91,7 +91,7 @@ export class NodeDebug {
             },
             eventTag: "debugger-dialogue"
         }).catch(e => {
-            Feedback.error(`Cannot run. Please see output channels.`);
+            Feedback.error(`Cannot query. Please see output channels.`);
             throw e;
         });
     }
