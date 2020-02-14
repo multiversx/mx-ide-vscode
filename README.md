@@ -1,6 +1,6 @@
 # Elrond IDE for Visual Studio Code
 
-**This Visual Studio Code extension is under development: [CHANGELOG](CHANGELOG.md)**
+**This Visual Studio Code extension is under development: [CHANGELOG](https://github.com/ElrondNetwork/elrond-ide-vscode/releases)**
 
 ## What is it?
 

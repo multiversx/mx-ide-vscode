@@ -6,7 +6,7 @@
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ElrondNetwork/vscode-elrond-c.git"
+		"url": "https://github.com/ElrondNetwork/elrond-ide-vscode.git"
 	},
 	"engines": {
 		"vscode": "^1.38.0"
