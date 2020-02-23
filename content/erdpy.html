@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <base href="{{baseHref}}/">
+    </base>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elrond IDE</title>
@@ -16,7 +18,11 @@
 </head>
 
 <body>
-    <iframe src="http://localhost:8081"></iframe>    
+    <iframe id="ErdpyIframe" src="http://localhost:8081?vscode=true"></iframe>
+    <script type="text/javascript" src="vendor/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/underscore.min.js"></script>
+    <script type="text/javascript" src="vendor/backbone.min.js"></script>
+    <script type="text/javascript" src="main.js"></script> 
 </body>
 
 </html>
