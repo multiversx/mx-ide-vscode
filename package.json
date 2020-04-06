@@ -12,7 +12,10 @@
 		"vscode": "^1.38.0"
 	},
 	"categories": [
-		"Programming Languages", "Extension Packs", "Debuggers", "Other"
+		"Programming Languages",
+		"Extension Packs",
+		"Debuggers",
+		"Other"
 	],
 	"icon": "content/elrond_b.png",
 	"activationEvents": [
@@ -74,7 +77,7 @@
 		"@types/vscode": "^1.38.0",
 		"bootstrap": "^4.3.1",
 		"mocha": "^6.1.4",
-		"node-sass": "^4.13.0",
+		"node-sass": "^4.13.1",
 		"tslint": "^5.12.1",
 		"typescript": "^3.3.1",
 		"vscode-test": "^1.2.0"
@@ -84,5 +87,7 @@
 		"underscore": "^1.9.1",
 		"glob": "^7.1.4"
 	},
-	"extensionDependencies": ["vadimcn.vscode-lldb"]
+	"extensionDependencies": [
+		"vadimcn.vscode-lldb"
+	]
 }
