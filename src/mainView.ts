@@ -141,21 +141,9 @@ export class MainView {
     }
 
     private getHtmlContent() {
-        let html: string = FsFacade.readFileInContent("mainView.html");
+        let html: string = FsFacade.readFileInContent("erdpy.html");
         let baseHref = this.getBaseHref();
         html = html.replace("{{baseHref}}", baseHref.toString());
-
-        // Include partial views and templates.
-        MyFile
-            .find({
-                Folder: FsFacade.getPathToContent(),
-                Extensions: ["html"]
-            })
-            .filter(file => file.Name.startsWith("template") || file.Name.startsWith("partial"))
-            .forEach(file => {
-                html = html.replace("{{" + file.Name + "}}", file.readText());
-            });
-
         return html;
     }
 

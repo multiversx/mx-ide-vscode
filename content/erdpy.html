@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base href="{{baseHref}}/">
+    </base>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elrond IDE</title>
+    <style>
+        iframe {
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe id="ErdpyIframe" src="http://localhost:8081?vscode=true"></iframe>
+    <script type="text/javascript" src="vendor/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/underscore.min.js"></script>
+    <script type="text/javascript" src="vendor/backbone.min.js"></script>
+    <script type="text/javascript" src="main.js"></script> 
+</body>
+
+</html>
