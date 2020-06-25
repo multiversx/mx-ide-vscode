@@ -1,5 +1,4 @@
 import { FsFacade } from "./utils";
-import { NodeDebug } from "./nodeDebug";
 import { Builder } from "./builder";
 import _ = require("underscore");
 import path = require('path');
@@ -18,18 +17,12 @@ export class SmartContract {
     public readonly IsSourceRust: boolean;
     public readonly IsSourceSol: boolean;
 
-    public readonly PropertiesOnNodeDebug: PropertiesOnNetwork;
-    public readonly PropertiesOnTestnet: PropertiesOnNetwork;
-
     constructor(sourceFile: MyFile) {
         this.SourceFile = sourceFile;
         this.IsSourceC = this.SourceFile.Extension == ".c";
         this.IsSourceRust = this.SourceFile.Extension == ".rs";
         this.IsSourceSol = this.SourceFile.Extension == ".sol";
         this.FriendlyId = this.SourceFile.PathRelativeToWorkspace;
-
-        this.PropertiesOnNodeDebug = new PropertiesOnNetwork();
-        this.PropertiesOnTestnet = new PropertiesOnNetwork();
     }
 
     public isBuilt(): boolean {
@@ -38,146 +31,113 @@ export class SmartContract {
 
     public async build(): Promise<any> {
         await Builder.buildModule(this);
-        this.syncWithWorkspace();
-        this.createArwenFiles();
+        //this.syncWithWorkspace();
+        //this.createArwenFiles();
         Feedback.info("Build done.");
     }
 
-    public createArwenFiles() {
-        assert.ok(this.BytecodeFile, "BytecodeFile nok.");
+    // public createArwenFiles() {
+    //     assert.ok(this.BytecodeFile, "BytecodeFile nok.");
 
-        let wasmHexPath = `${this.BytecodeFile.PathWithoutExtension}.hex`;
-        let wasmHexArwenPath = `${wasmHexPath}.arwen`;
-        const ArwenTag = "0500";
+    //     let wasmHexPath = `${this.BytecodeFile.PathWithoutExtension}.hex`;
+    //     let wasmHexArwenPath = `${wasmHexPath}.arwen`;
+    //     const ArwenTag = "0500";
 
-        let wasmHex = this.BytecodeFile.readBinaryHex();
-        let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
+    //     let wasmHex = this.BytecodeFile.readBinaryHex();
+    //     let wasmHexArwen = `${wasmHex}@${ArwenTag}`;
 
-        FsFacade.writeFile(wasmHexPath, wasmHex);
-        FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
-    }
+    //     FsFacade.writeFile(wasmHexPath, wasmHex);
+    //     FsFacade.writeFile(wasmHexArwenPath, wasmHexArwen);
+    // }
 
-    public findHexArwenFile(): MyFile {
-        let file = MyFile.findFirst({
-            Folder: this.SourceFile.WorkspaceProject,
-            Extensions: ["hex.arwen"],
-            Recursive: true
-        }, true)
+    // public findHexArwenFile(): MyFile {
+    //     let file = MyFile.findFirst({
+    //         Folder: this.SourceFile.WorkspaceProject,
+    //         Extensions: ["hex.arwen"],
+    //         Recursive: true
+    //     }, true)
 
-        return file;
-    }
+    //     return file;
+    // }
 
-    public async deployToDebugger(options: any): Promise<any> {
-        options.senderAddress = Transaction.prepareSender(options.senderAddress);
+    // public setWatchedVariables(options: any) {
+    //     let variables: WatchedVariable[] = options.variables;
+    //     let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+    //     properties.WatchedVariables.length = 0;
+    //     properties.WatchedVariables.push(...variables);
 
-        // Prepare transaction data, then deploy.
-        let code = this.findHexArwenFile().readText();
-        options.transactionData = Transaction.prepareDeployTxData(code, options.initArgs);
-        const response = await NodeDebug.deploySmartContract(options);
+    //     this.storeWatchedVariables();
+    // }
 
-        // Use response of deploy (scAddress).
-        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-        properties.Address = response.Address;
-        properties.AddressTimestamp = new Date();
-    }
+    // private storeWatchedVariables() {
+    //     let folder = this.SourceFile.FolderPath;
+    //     FsFacade.writeFile(path.join(folder, "watched.json"), JSON.stringify(this.PropertiesOnNodeDebug.WatchedVariables, null, 4));
+    //     FsFacade.writeFile(path.join(folder, "watched.testnet.json"), JSON.stringify(this.PropertiesOnTestnet.WatchedVariables, null, 4));
+    // }
 
-    public async runFunction(options: any): Promise<any> {
-        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-        properties.LatestRun = new SmartContractRun();
-        properties.LatestRun.Options = _.clone(options);
+    // private loadWatchedVariables() {
+    //     let filePath = (path.join(this.SourceFile.FolderPath, "watched.json"));
 
-        options.senderAddress = Transaction.prepareSender(options.senderAddress);
-        options.scAddress = properties.Address;
+    //     if (FsFacade.fileExists(filePath)) {
+    //         this.PropertiesOnNodeDebug.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
+    //     }
 
-        // Prepare transaction data, then run and use response (vmOutput).
-        options.transactionData = Transaction.prepareRunTxData(options.functionName, options.functionArgs);
+    //     filePath = (path.join(this.SourceFile.FolderPath, "watched.testnet.json"));
 
-        try {
-            const vmOutput = await NodeDebug.runSmartContract(options);
-            properties.LatestRun.VMOutput = vmOutput;
-        } catch (e) {
-            properties.LatestRun.VMOutput = {};
-        }
-    }
+    //     if (FsFacade.fileExists(filePath)) {
+    //         this.PropertiesOnTestnet.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
+    //     }
+    // }
 
-    public setWatchedVariables(options: any) {
-        let variables: WatchedVariable[] = options.variables;
-        let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-        properties.WatchedVariables.length = 0;
-        properties.WatchedVariables.push(...variables);
+    // public async queryWatchedVariables(options: any): Promise<any> {
+    //     try {
+    //         let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
+    //         let variables = properties.WatchedVariables;
 
-        this.storeWatchedVariables();
-    }
+    //         for (var i = 0; i < variables.length; i++) {
+    //             let variable = variables[i];
+    //             let variableValue = "N / A";
 
-    private storeWatchedVariables() {
-        let folder = this.SourceFile.FolderPath;
-        FsFacade.writeFile(path.join(folder, "watched.json"), JSON.stringify(this.PropertiesOnNodeDebug.WatchedVariables, null, 4));
-        FsFacade.writeFile(path.join(folder, "watched.testnet.json"), JSON.stringify(this.PropertiesOnTestnet.WatchedVariables, null, 4));
-    }
+    //             options.scAddress = properties.Address;
+    //             options.functionName = variable.FunctionName;
+    //             options.arguments = _.map(variable.Arguments, Transaction.prepareArgument);
 
-    private loadWatchedVariables() {
-        let filePath = (path.join(this.SourceFile.FolderPath, "watched.json"));
+    //             let response = await NodeDebug.querySmartContract(options);
 
-        if (FsFacade.fileExists(filePath)) {
-            this.PropertiesOnNodeDebug.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
-        }
+    //             if (response.data) {
+    //                 let asBase64 = response.data.ReturnData[0];
+    //                 let asHex = Buffer.from(asBase64, "base64").toString("hex");
+    //                 var asInt = parseInt(asHex, 16);
+    //                 variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
+    //             }
 
-        filePath = (path.join(this.SourceFile.FolderPath, "watched.testnet.json"));
+    //             properties.WatchedVariablesValues[variable.Name] = variableValue;
+    //         }
+    //     } catch (error) {
+    //         Feedback.error("Could not query watched variables.");
+    //         Feedback.error(error.message);
+    //     }
+    // }
 
-        if (FsFacade.fileExists(filePath)) {
-            this.PropertiesOnTestnet.WatchedVariables = JSON.parse(FsFacade.readFile(filePath));
-        }
-    }
+    // public syncWithWorkspace() {
+    //     this.BytecodeFile = MyFile.findFirst({
+    //         Folder: this.SourceFile.WorkspaceProject,
+    //         Extensions: ["wasm"],
+    //         Recursive: true
+    //     });
 
-    public async queryWatchedVariables(options: any): Promise<any> {
-        try {
-            let properties = options.onTestnet ? this.PropertiesOnTestnet : this.PropertiesOnNodeDebug;
-            let variables = properties.WatchedVariables;
+    //     this.ExportFile = MyFile.findFirst({
+    //         Folder: this.SourceFile.WorkspaceProject,
+    //         Extensions: ["export"],
+    //         Recursive: true
+    //     });
 
-            for (var i = 0; i < variables.length; i++) {
-                let variable = variables[i];
-                let variableValue = "N / A";
+    //     if (this.ExportFile) {
+    //         this.ExportFile.readText();
+    //     }
 
-                options.scAddress = properties.Address;
-                options.functionName = variable.FunctionName;
-                options.arguments = _.map(variable.Arguments, Transaction.prepareArgument);
-
-                let response = await NodeDebug.querySmartContract(options);
-
-                if (response.data) {
-                    let asBase64 = response.data.ReturnData[0];
-                    let asHex = Buffer.from(asBase64, "base64").toString("hex");
-                    var asInt = parseInt(asHex, 16);
-                    variableValue = `${asBase64} / 0x${asHex} / ${asInt}`;
-                }
-
-                properties.WatchedVariablesValues[variable.Name] = variableValue;
-            }
-        } catch (error) {
-            Feedback.error("Could not query watched variables.");
-            Feedback.error(error.message);
-        }
-    }
-
-    public syncWithWorkspace() {
-        this.BytecodeFile = MyFile.findFirst({
-            Folder: this.SourceFile.WorkspaceProject,
-            Extensions: ["wasm"],
-            Recursive: true
-        });
-
-        this.ExportFile = MyFile.findFirst({
-            Folder: this.SourceFile.WorkspaceProject,
-            Extensions: ["export"],
-            Recursive: true
-        });
-
-        if (this.ExportFile) {
-            this.ExportFile.readText();
-        }
-
-        this.loadWatchedVariables();
-    }
+    //     this.loadWatchedVariables();
+    // }
 }
 
 class PropertiesOnNetwork {
@@ -197,28 +157,28 @@ class PropertiesOnNetwork {
 export class SmartContractsCollection {
     public static Items: SmartContract[] = [];
 
-    public static syncWithWorkspace() {
-        Feedback.debug("SmartContractsCollection.syncWithWorkspace()");
+    // public static syncWithWorkspace() {
+    //     Feedback.debug("SmartContractsCollection.syncWithWorkspace()");
 
-        let sourceFilesNow = MyFile.find({
-            Folder: FsFacade.getPathToWorkspace(),
-            Extensions: ["c", "rs", "sol"],
-            Recursive: true
-        });
+    //     let sourceFilesNow = MyFile.find({
+    //         Folder: FsFacade.getPathToWorkspace(),
+    //         Extensions: ["c", "rs", "sol"],
+    //         Recursive: true
+    //     });
 
-        let smartContractsNow = sourceFilesNow.map(e => new SmartContract(e));
-        let smartContractsBefore = this.Items;
+    //     let smartContractsNow = sourceFilesNow.map(e => new SmartContract(e));
+    //     let smartContractsBefore = this.Items;
 
-        // Keep data after sync.
-        smartContractsNow.forEach(contractNow => {
-            let contractBefore = smartContractsBefore.find(e => e.FriendlyId == contractNow.FriendlyId);
-            _.extendOwn(contractNow, contractBefore);
-            contractNow.syncWithWorkspace();
-        });
+    //     // Keep data after sync.
+    //     smartContractsNow.forEach(contractNow => {
+    //         let contractBefore = smartContractsBefore.find(e => e.FriendlyId == contractNow.FriendlyId);
+    //         _.extendOwn(contractNow, contractBefore);
+    //         contractNow.syncWithWorkspace();
+    //     });
 
-        this.Items = smartContractsNow;
-        eventBus.emit("workspace:sync", this.Items);
-    }
+    //     this.Items = smartContractsNow;
+    //     eventBus.emit("workspace:sync", this.Items);
+    // }
 
     public static getById(id: string): SmartContract {
         let item = this.Items.find(e => e.FriendlyId == id);

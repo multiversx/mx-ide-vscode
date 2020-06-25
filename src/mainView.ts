@@ -1,11 +1,9 @@
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { Root } from './root';
-import { NodeDebug } from './nodeDebug';
 import { SmartContract, SmartContractsCollection } from './smartContract';
 import eventBus from './eventBus';
-import { MyError, MyErrorCatcher } from './errors';
-import { MyFile } from './myfile';
+import { MyErrorCatcher } from './errors';
 import { Variables } from './variables';
 
 export class MainView {
@@ -39,7 +37,7 @@ export class MainView {
             self.talkToWebView(what, data);
         });
 
-        eventBus.on("workspace:sync", function (data, what) {
+        eventBus.on("workspace:sync", function (data) {
             self.talkToWebView("refreshSmartContracts", data);
         });
     }
@@ -53,28 +51,28 @@ export class MainView {
 
         eventBus.on("view-message:deploySmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.deployToDebugger(payload)
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
+            // contract.deployToDebugger(payload)
+            //     .then(() => { self.doRefreshSmartContracts() })
+            //     .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:runSmartContract", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.runFunction(payload)
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
+            // contract.runFunction(payload)
+            //     .then(() => { self.doRefreshSmartContracts() })
+            //     .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:queryWatchedVariables", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.queryWatchedVariables(payload)
-                .then(() => { self.doRefreshSmartContracts() })
-                .catch(MyErrorCatcher.topLevel);
+            // contract.queryWatchedVariables(payload)
+            //     .then(() => { self.doRefreshSmartContracts() })
+            //     .catch(MyErrorCatcher.topLevel);
         });
 
         eventBus.on("view-message:setWatchedVariables", function (payload) {
             let contract: SmartContract = SmartContractsCollection.getById(payload.id);
-            contract.setWatchedVariables(payload);
+            //contract.setWatchedVariables(payload);
         });
 
         eventBus.on("view-message:variables-refresh", function () {
@@ -88,7 +86,7 @@ export class MainView {
     }
 
     private doRefreshSmartContracts() {
-        SmartContractsCollection.syncWithWorkspace();
+        //SmartContractsCollection.syncWithWorkspace();
         this.talkToWebView("refreshSmartContracts", SmartContractsCollection.Items);
     }
 
