@@ -3,15 +3,38 @@ import { ProcessFacade } from "./utils";
 import { window } from 'vscode';
 
 export class ElrondSdk {
-    public static async requireErdpy() {
+    public static async require() {
+        await ElrondSdk.requireErdpy();
+    }
+
+    private static async requireErdpy() {
         try {
             await ProcessFacade.execute({
                 program: "erdpy",
                 args: ["--version"]
             });
         } catch (e) {
-            Feedback.error("erdpy isn't installed on your machine. Please go to https://github.com/ElrondNetwork/erdpy and follow the instructions.");
-            throw e;
+            let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?")
+            if (answer) {
+                await ElrondSdk.installErdpy();
+            }
         }
     }
+
+    private static async installErdpy() {
+        runInTerminal("wget -O - https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/master/erdpy-up.py | python3");
+    }
+}
+
+async function askYesNo(question: string): Promise<Boolean> {
+    let answerYes = "yes";
+    let answerNo = "no";
+    let answer = await window.showInformationMessage(question, { modal: true}, answerYes, answerNo);
+    return answer === answerYes;
+}
+
+async function runInTerminal(command: string) {
+    let terminal = window.createTerminal("elrond-sdk");
+    terminal.sendText(command);
+    terminal.show(false);
 }

@@ -4,7 +4,7 @@ import { ElrondSdk } from "./elrondSdk";
 
 export class Builder {
     static async buildModule(smartContract: SmartContract): Promise<any> {
-        await ElrondSdk.requireErdpy();
+        await ElrondSdk.require();
 
         let workspaceProject = smartContract.SourceFile.WorkspaceProject;
 

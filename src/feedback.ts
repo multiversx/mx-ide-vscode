@@ -12,7 +12,7 @@ export class Feedback {
                 if (line) {
                     Feedback.getChannel(tag).appendLine(`[${programName}]: ${line}`);
                 }
-            })
+            });
         });
     }
 
@@ -45,7 +45,7 @@ export class Feedback {
 
         if (!Feedback.OutputChannels[channelName]) {
             Feedback.OutputChannels[channelName] = vscode.window.createOutputChannel(channelName);
-            Feedback.OutputChannels[channelName].show();
+            //Feedback.OutputChannels[channelName].show();
         }
 
         return Feedback.OutputChannels[channelName];

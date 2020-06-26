@@ -22,7 +22,7 @@ export function deactivate() {
 }
 
 function initialize() {
-	ElrondSdk.requireErdpy();
+	ElrondSdk.require();
 	//initializeWorkspaceWatcher();
 }
 
