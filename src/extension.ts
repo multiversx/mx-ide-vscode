@@ -9,7 +9,7 @@ import { FsFacade } from './utils';
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
 
-	registerCustomCommand(context, 'extension.openIDE', openIDE);
+	//registerCustomCommand(context, 'extension.openIDE', openIDE);
 	registerCustomCommand(context, 'extension.buildContract', buildContract);
 
 	Feedback.debug("ElrondIDE.activate()");
