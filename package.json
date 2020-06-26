@@ -19,8 +19,9 @@
 	],
 	"icon": "content/elrond_logo.png",
 	"activationEvents": [
-		"onCommand:extension.buildContract"
+		"workspaceContains:**/elrond.json"
 	],
+
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [

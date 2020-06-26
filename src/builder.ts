@@ -1,10 +1,10 @@
 import { ProcessFacade } from "./utils";
 import { SmartContract } from './smartContract';
-import { Erdpy } from "./erdpy";
+import { ElrondSdk } from "./elrondSdk";
 
 export class Builder {
     static async buildModule(smartContract: SmartContract): Promise<any> {
-        await Erdpy.require()
+        await ElrondSdk.requireErdpy();
 
         let workspaceProject = smartContract.SourceFile.WorkspaceProject;
 

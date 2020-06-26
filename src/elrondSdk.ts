@@ -1,8 +1,9 @@
 import { Feedback } from './feedback';
 import { ProcessFacade } from "./utils";
+import { window } from 'vscode';
 
-export class Erdpy {
-    public static async require() {
+export class ElrondSdk {
+    public static async requireErdpy() {
         try {
             await ProcessFacade.execute({
                 program: "erdpy",

@@ -5,6 +5,7 @@ import { Feedback } from './feedback';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import { FsFacade } from './utils';
+import { ElrondSdk } from './elrondSdk';
 
 export function activate(context: vscode.ExtensionContext) {
 	Root.ExtensionContext = context;
@@ -21,7 +22,8 @@ export function deactivate() {
 }
 
 function initialize() {
-	initializeWorkspaceWatcher();
+	ElrondSdk.requireErdpy();
+	//initializeWorkspaceWatcher();
 }
 
 function initializeWorkspaceWatcher() {
