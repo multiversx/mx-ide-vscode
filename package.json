@@ -17,32 +17,80 @@
 		"Debuggers",
 		"Other"
 	],
-	"icon": "content/elrond_logo.png",
+	"icon": "content/logo.png",
 	"activationEvents": [
+		"onCommand:elrond.installSdk",
 		"workspaceContains:**/elrond.json"
 	],
-
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.buildContract",
-				"title": "Elrond - build contract"
+				"command": "elrond.installSdk",
+				"title": "Elrond: Install (Update) SDK"
+			},
+			{
+				"command": "elrond.refreshTemplates",
+				"title": "Refresh",
+				"icon": {
+					"light": "content/light/refresh.svg",
+					"dark": "content/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "elrond.buildContract",
+				"title": "Elrond: Build Contract"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "extension.buildContract",
+					"command": "elrond.buildContract",
 					"group": "buildGroup",
 					"when": "resourceExtname == .c || resourceExtname == .cpp || resourceExtname == .rs"
+				}
+			],
+			"view/title": [
+				{
+					"command": "elrond.refreshTemplates",
+					"when": "view == contractTemplates",
+					"group": "navigation"
 				}
 			]
 		},
 		"configuration": {
 			"title": "vscode-elrond-ide",
 			"properties": {}
-		}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "elrond",
+					"title": "Elrond Explorer",
+					"icon": "content/logo.png"
+				}
+			]
+		},
+		"views": {
+			"elrond": [
+				{
+					"id": "contracts",
+					"name": "Contracts",
+					"contextualTitle": "Smart Contracts in Workspace"
+				},
+				{
+					"id": "contractTemplates",
+					"name": "Templates",
+					"contextualTitle": "Smart Contract Templates"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "contractTemplates",
+				"contents": "Write Smart Contracts using one of the templates as a starting point."
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

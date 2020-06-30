@@ -4,25 +4,29 @@ import { window } from 'vscode';
 
 export class ElrondSdk {
     public static async require() {
-        await ElrondSdk.requireErdpy();
+        //await ElrondSdk.requireErdpy();
     }
 
     private static async requireErdpy() {
-        try {
-            await ProcessFacade.execute({
-                program: "erdpy",
-                args: ["--version"]
-            });
-        } catch (e) {
-            let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?")
-            if (answer) {
-                await ElrondSdk.installErdpy();
-            }
-        }
+        // try {
+        //     await ProcessFacade.execute({
+        //         program: "erdpy",
+        //         args: ["--version"]
+        //     });
+        // } catch (e) {
+        //     let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?")
+        //     if (answer) {
+        //         await ElrondSdk.installErdpy();
+        //     }
+        // }
     }
 
-    private static async installErdpy() {
-        runInTerminal("wget -O - https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/master/erdpy-up.py | python3");
+    public static async install() {
+        await ElrondSdk.installErdpy();
+    }
+
+    public static async installErdpy() {
+        runInTerminal("wget -O - https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py | python3");
     }
 }
 
@@ -37,4 +41,5 @@ async function runInTerminal(command: string) {
     let terminal = window.createTerminal("elrond-sdk");
     terminal.sendText(command);
     terminal.show(false);
+    //terminal.dispose();
 }

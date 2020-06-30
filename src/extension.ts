@@ -6,14 +6,20 @@ import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import { FsFacade } from './utils';
 import { ElrondSdk } from './elrondSdk';
+import { ContractTemplatesProvider } from './templates';
 
 export function activate(context: vscode.ExtensionContext) {
+	Feedback.debug("ElrondIDE.activate()");
+
 	Root.ExtensionContext = context;
 
-	//registerCustomCommand(context, 'extension.openIDE', openIDE);
-	registerCustomCommand(context, 'extension.buildContract', buildContract);
+	let templatesProvider = new ContractTemplatesProvider();
+	vscode.window.registerTreeDataProvider("contractTemplates", templatesProvider);
 
-	Feedback.debug("ElrondIDE.activate()");
+	registerCustomCommand(context, "elrond.installSdk", installSdk);
+	registerCustomCommand(context, "elrond.buildContract", buildContract);
+	registerCustomCommand(context, "elrond.refreshTemplates", () => templatesProvider.refresh());
+
 	initialize();
 }
 
@@ -59,11 +65,15 @@ function openIDE() {
 	Presenter.showMainView();
 }
 
+function installSdk() {
+	ElrondSdk.install();
+}
+
 function buildContract() {
 	if (!guardIsWorkspaceOpen()) {
 		return;
 	}
-	
+
 	let filePath = Presenter.getActiveFilePath();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
