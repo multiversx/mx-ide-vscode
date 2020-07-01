@@ -60,7 +60,7 @@ function upsertSettings(): boolean {
 
     let patched = false;
     for (const [key, value] of Object.entries(patch)) {
-        if (settings[key] !== value) {
+        if (settings[key] != value) {
             settings[key] = value;
             patched = true;
         }

@@ -7,6 +7,7 @@ import _ = require('underscore');
 import * as sdk from "./sdk";
 import { ContractTemplatesProvider } from './templates';
 import * as workspace from "./workspace";
+import { Environment } from './environment';
 
 export function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("ElrondIDE.activate()");
@@ -28,7 +29,7 @@ export function deactivate() {
 }
 
 function initialize() {
-	sdk.setupEnvironment();
+	Environment.set();
 	sdk.ensureInstalled();
 	workspace.setup();
 	//initializeWorkspaceWatcher();

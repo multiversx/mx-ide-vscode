@@ -1,28 +1,23 @@
 import { Feedback } from './feedback';
-import { ProcessFacade } from "./utils";
+import { ProcessFacade, RestFacade } from "./utils";
 import { window } from 'vscode';
 import { MySettings } from './settings';
 import path = require("path");
+import * as storage from "./storage";
+import { MyErrorCatcher } from './errors';
+import { Environment } from './environment';
 
-
-export function setupEnvironment() {
-    let folder = MySettings.getElrondSdk();
-    let erdpyEnvFolder = path.join(getPath(), "erdpy-venv");
-    let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
-
-    delete process.env["PYTHONHOME"];
-    process.env["PATH"] = `${erdpyBinFolder}:${process.env["PATH"]}`;
-    process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
-    process.env["ELROND_IDE"] = "true";
-    Feedback.info(`Folder [${folder}] has been added to $PATH for the current session.`);
-}
 
 export function getPath() {
     return MySettings.getElrondSdk();
 }
 
 export async function reinstall() {
-    await reinstallErdpy();
+    try {
+        await reinstallErdpy();
+    } catch (error) {
+        MyErrorCatcher.topLevel(error);
+    }
 }
 
 export async function ensureInstalled() {
@@ -36,7 +31,7 @@ async function ensureErdpy() {
             args: ["--version"]
         });
     } catch (e) {
-        let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?")
+        let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?");
         if (answer) {
             await reinstallErdpy();
         }
@@ -44,9 +39,14 @@ async function ensureErdpy() {
 }
 
 export async function reinstallErdpy() {
-    // TODO: download to private storage
-    // TODO: run with modify-path=false.
-    runInTerminal("wget -O - https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py | python3");
+    let erdpyUp = storage.getPathTo("erdpy-up.py");
+    await RestFacade.download({
+        url: "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py",
+        destination: erdpyUp
+    });
+
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b3`;
+    await runInTerminal(erdpyUpCommand, Environment.old);
 }
 
 export async function getTemplates() {
@@ -65,8 +65,8 @@ async function askYesNo(question: string): Promise<Boolean> {
     return answer === answerYes;
 }
 
-async function runInTerminal(command: string) {
-    let terminal = window.createTerminal("elrond-sdk");
+async function runInTerminal(command: string, env: any) {
+    let terminal = window.createTerminal({ name: "elrond-sdk", env: env });
     terminal.sendText(command);
     terminal.show(false);
 }
