@@ -49,17 +49,16 @@ export async function reinstallErdpy() {
     await runInTerminal(erdpyUpCommand, Environment.old);
 }
 
-export async function getTemplates() {
-    let templatesFile = storage.getPathTo("templates.json");
+export async function fetchTemplates(cacheFile: string) {
     await ProcessFacade.execute({
         program: "erdpy",
         args: ["contract", "templates", "--json"],
         channels: ["erdpy"],
         doNotDumpStdout: true,
-        stdoutToFile: templatesFile
+        stdoutToFile: cacheFile
     });
     
-    Feedback.debug(`Templates saved to ${templatesFile}`);
+    Feedback.debug(`Templates fetched, saved to ${cacheFile}`);
 }
 
 async function askYesNo(question: string): Promise<Boolean> {

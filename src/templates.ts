@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
+import fs = require("fs");
 import { Feedback } from './feedback';
 import path = require("path");
 import * as sdk from "./sdk";
+import * as storage from "./storage";
 
 export class ContractTemplatesProvider implements vscode.TreeDataProvider<ContractTemplate> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContractTemplate | undefined> = new vscode.EventEmitter<ContractTemplate | undefined>();
@@ -10,10 +12,8 @@ export class ContractTemplatesProvider implements vscode.TreeDataProvider<Contra
     constructor() {
     }
 
-    refresh(): void {
-        sdk.getTemplates();
-
-        Feedback.info("Templates refreshed.");
+    async refresh() {
+        await sdk.fetchTemplates(this.getCacheFile());
         this._onDidChangeTreeData.fire(null);
     }
 
@@ -26,19 +26,27 @@ export class ContractTemplatesProvider implements vscode.TreeDataProvider<Contra
             return [];
         }
 
-        return [
-            new ContractTemplate("foo"),
-            new ContractTemplate("bar"),
-        ];
+        let templatesJson = fs.readFileSync(this.getCacheFile(), { encoding: "utf8" });
+        let templatesPlain = JSON.parse(templatesJson) as any[];
+        return templatesPlain.map(item => new ContractTemplate(item));
+    }
+
+    private getCacheFile(): string {
+        return storage.getPathTo("templates.json");
     }
 }
 
 export class ContractTemplate {
-    constructor(public readonly label: string) {
+    readonly name: string;
+    readonly language: string;
+
+    constructor(item: any) {
+        this.name = item.name;
+        this.language = item.language;
     }
 
     getTreeItem(): vscode.TreeItem {
-        let item = new vscode.TreeItem(this.label);
+        let item = new vscode.TreeItem(this.name);
         item.contextValue = "template";
         item.iconPath = {
             light: path.join(__filename, "..", "..", "content", "light", "folder.svg"),
