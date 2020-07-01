@@ -28,6 +28,7 @@ export function deactivate() {
 }
 
 function initialize() {
+	ElrondSdk.setupEnvironment();
 	ElrondSdk.require();
 	//initializeWorkspaceWatcher();
 }

@@ -1,3 +1,4 @@
+/*
 import os = require('os');
 import { FsFacade, ProcessFacade, RestFacade as RequestsFacade } from "./utils";
 import { MySettings } from "./settings";
@@ -147,3 +148,4 @@ export class NodeDebug {
         return toolPath;
     }
 }
+*/

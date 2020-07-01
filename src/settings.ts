@@ -1,27 +1,10 @@
-import * as vscode from 'vscode';
-import { MyError } from './errors';
+import * as vscode from "vscode";
+const os = require("os");
 
 export class MySettings {
-
-    public static getRestDebuggerPort() {
-        return MySettings.getConfigurationValue("restApi.port");
-    }
-
-    public static getIdeFolder() : string {
-        return MySettings.getConfigurationValue("ideFolder").toString();
-    }
-
-    public static getDownloadMirrorUrl() : string {
-        return MySettings.getConfigurationValue("downloadMirror").toString();
-    }
-
-    public static getTestnetUrl() : string {
-        var url = MySettings.getConfigurationValue("testnetUrl").toString();
-        if (!url) {
-            throw new MyError({Message: `Bad testnet url: ${url}.`});
-        }
-
-        return url;
+    public static getElrondSdk() : string {
+        let folder = MySettings.getConfigurationValue("elrondsdk").toString();
+        return folder.replace("~", os.homedir);
     }
 
     private static getConfigurationValue(key: string) {

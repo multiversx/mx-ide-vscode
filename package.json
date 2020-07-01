@@ -60,7 +60,12 @@
 		},
 		"configuration": {
 			"title": "vscode-elrond-ide",
-			"properties": {}
+			"properties": {
+				"elrond.elrondsdk": {
+					"type": "string",
+					"default": "~/elrondsdk"
+				}
+			}
 		},
 		"viewsContainers": {
 			"activitybar": [

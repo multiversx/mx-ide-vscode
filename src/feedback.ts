@@ -41,7 +41,7 @@ export class Feedback {
     }
 
     private static getChannel(tag: string): vscode.OutputChannel {
-        let channelName: string = `ElrondIDE - ${tag}`;
+        let channelName: string = `Elrond: ${tag}`;
 
         if (!Feedback.OutputChannels[channelName]) {
             Feedback.OutputChannels[channelName] = vscode.window.createOutputChannel(channelName);

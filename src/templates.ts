@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Feedback } from './feedback';
 import path = require("path");
+import { ElrondSdk } from './elrondSdk';
 
 export class ContractTemplatesProvider implements vscode.TreeDataProvider<ContractTemplate> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContractTemplate | undefined> = new vscode.EventEmitter<ContractTemplate | undefined>();
@@ -10,6 +11,8 @@ export class ContractTemplatesProvider implements vscode.TreeDataProvider<Contra
     }
 
     refresh(): void {
+        ElrondSdk.getTemplates();
+
         Feedback.info("Templates refreshed.");
         this._onDidChangeTreeData.fire();
     }
