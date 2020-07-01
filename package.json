@@ -38,6 +38,10 @@
 				}
 			},
 			{
+				"command": "elrond.newFromTemplate",
+				"title": "New Contract"
+			},
+			{
 				"command": "elrond.buildContract",
 				"title": "Elrond: Build Contract"
 			}
@@ -55,6 +59,13 @@
 					"command": "elrond.refreshTemplates",
 					"when": "view == contractTemplates",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "elrond.newFromTemplate",
+					"when": "view == contractTemplates",
+					"group": "inline"
 				}
 			]
 		},

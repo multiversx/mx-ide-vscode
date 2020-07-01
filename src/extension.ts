@@ -5,7 +5,7 @@ import { Feedback } from './feedback';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import * as sdk from "./sdk";
-import { ContractTemplatesProvider } from './templates';
+import { ContractTemplatesProvider, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
 import { Environment } from './environment';
 
@@ -17,9 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
 	let templatesProvider = new ContractTemplatesProvider();
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesProvider);
 
-	registerCustomCommand(context, "elrond.installSdk", installSdk);
-	registerCustomCommand(context, "elrond.buildContract", buildContract);
-	registerCustomCommand(context, "elrond.refreshTemplates", () => templatesProvider.refresh());
+	vscode.commands.registerCommand("elrond.installSdk", installSdk);
+	vscode.commands.registerCommand("elrond.buildContract", buildContract);
+	vscode.commands.registerCommand("elrond.refreshTemplates", () => templatesProvider.refresh());
+	vscode.commands.registerCommand("elrond.newFromTemplate", (item: ContractTemplate) => vscode.window.showInformationMessage(`New from template ${JSON.stringify(item)}`));
 
 	initialize();
 }
@@ -53,11 +54,6 @@ function initializeWorkspaceWatcher() {
 	Root.FileSystemWatcher.onDidDelete(onWatcherEventThrottled);
 
 	//SmartContractsCollection.syncWithWorkspace();
-}
-
-function registerCustomCommand(context: vscode.ExtensionContext, name: string, action: CallableFunction) {
-	let disposable = vscode.commands.registerCommand(name, () => action());
-	context.subscriptions.push(disposable);
 }
 
 function installSdk() {
