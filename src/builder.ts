@@ -1,10 +1,10 @@
 import { ProcessFacade } from "./utils";
 import { SmartContract } from './smartContract';
-import { ElrondSdk } from "./elrondSdk";
+import * as sdk from "./sdk";
 
 export class Builder {
     static async buildModule(smartContract: SmartContract): Promise<any> {
-        await ElrondSdk.require();
+        await sdk.ensureInstalled();
 
         let workspaceProject = smartContract.SourceFile.WorkspaceProject;
 

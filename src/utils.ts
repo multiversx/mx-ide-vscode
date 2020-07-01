@@ -3,7 +3,6 @@ import fs = require('fs');
 import os = require('os');
 import path = require('path');
 import { Root } from './root';
-import * as vscode from 'vscode';
 import eventBus from './eventBus';
 import request = require('request');
 import _ = require('underscore');
@@ -174,22 +173,8 @@ export class FsFacade {
         return path.join(extensionPath, "content");
     }
 
-    public static getPathToWorkspace() {
-        let folders = vscode.workspace.workspaceFolders;
-        let workspaceFolder: vscode.WorkspaceFolder = folders ? folders[0] : null;
-
-        if (workspaceFolder) {
-            return workspaceFolder.uri.fsPath;
-        }
-    }
-
     public static writeFile(filePath: string, content: string) {
         fs.writeFileSync(filePath, content);
-    }
-
-    public static createFolderInWorkspace(folderName: string) {
-        let folderPath = path.join(FsFacade.getPathToWorkspace(), folderName);
-        fs.mkdirSync(folderPath);
     }
 
     public static fileExists(filePath: string): boolean {
@@ -289,10 +274,6 @@ export class FsFacade {
         child_process.execSync(`cp -r ${sourceFolder}/* ${destinationFolder}`);
     }
 
-    public static isWorkspaceOpen(): boolean {
-        let workspaceFolder = FsFacade.getPathToWorkspace();
-        return workspaceFolder ? true : false;
-    }
 
     public static listFolder(parentFolder: string): string[] {
         let folders = fs.readdirSync(parentFolder).filter(child => fs.statSync(path.join(parentFolder, child)).isDirectory());

@@ -9,7 +9,7 @@ export class Variables {
         try {
             return Variables.trySave(json);
         } catch {
-            Feedback.error(`Could not save json variables.`)
+            Feedback.error(`Could not save json variables.`);
         }
     }
 
@@ -24,7 +24,7 @@ export class Variables {
         try {
             return Variables.tryApply(str);
         } catch (e) {
-            Feedback.error(`Could not interpolate: ${str}.`)
+            Feedback.error(`Could not interpolate: ${str}.`);
             throw e;
         }
     }
@@ -61,8 +61,8 @@ export class Variables {
         return { json: content };
     }
 
-    private static getFilePath() {
-        return path.join(FsFacade.getPathToWorkspace(), "variables.json");
+    private static getFilePath(): string {
+        throw new Error("not implemented");
     }
 
     private static initializeIfMissing() {

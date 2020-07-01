@@ -4,9 +4,9 @@ import { Root } from './root';
 import { Feedback } from './feedback';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
-import { FsFacade } from './utils';
-import { ElrondSdk } from './elrondSdk';
+import * as sdk from "./sdk";
 import { ContractTemplatesProvider } from './templates';
+import * as workspace from "./workspace";
 
 export function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("ElrondIDE.activate()");
@@ -28,13 +28,14 @@ export function deactivate() {
 }
 
 function initialize() {
-	ElrondSdk.setupEnvironment();
-	ElrondSdk.require();
+	sdk.setupEnvironment();
+	sdk.ensureInstalled();
+	workspace.setup();
 	//initializeWorkspaceWatcher();
 }
 
 function initializeWorkspaceWatcher() {
-	if (!guardIsWorkspaceOpen()) {
+	if (!workspace.guardIsOpen()) {
 		return;
 	}
 
@@ -58,33 +59,16 @@ function registerCustomCommand(context: vscode.ExtensionContext, name: string, a
 	context.subscriptions.push(disposable);
 }
 
-function openIDE() {
-	if (!guardIsWorkspaceOpen()) {
-		return;
-	}
-
-	Presenter.showMainView();
-}
-
 function installSdk() {
-	ElrondSdk.install();
+	sdk.reinstall();
 }
 
 function buildContract() {
-	if (!guardIsWorkspaceOpen()) {
+	if (!workspace.guardIsOpen()) {
 		return;
 	}
 
 	let filePath = Presenter.getActiveFilePath();
 	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 	smartContract.build();
-}
-
-function guardIsWorkspaceOpen(): boolean {
-	if (!FsFacade.isWorkspaceOpen()) {
-		Feedback.info("No folder open in your workspace. Please open a folder.");
-		return false;
-	}
-
-	return true;
 }

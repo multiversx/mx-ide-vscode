@@ -38,10 +38,11 @@ export class MyFile {
         this.FolderName = path.basename(parsedPath.dir);
         this.ModifiedOn = fs.statSync(filePath).mtime;
 
-        this.PathRelativeToWorkspace = this.Path.replace(FsFacade.getPathToWorkspace(), "");
-        this.PathRelativeToContent = this.Path.replace(FsFacade.getPathToContent(), "");
-        this.WorkspaceProjectName = this.PathRelativeToWorkspace.split(path.sep).filter(item => item.length > 0)[0];
-        this.WorkspaceProject = path.join(FsFacade.getPathToWorkspace(), this.WorkspaceProjectName);
+        // TODO: Perhaps remove not needed
+        // this.PathRelativeToWorkspace = this.Path.replace(FsFacade.getPathToWorkspace(), "");
+        // this.PathRelativeToContent = this.Path.replace(FsFacade.getPathToContent(), "");
+        // this.WorkspaceProjectName = this.PathRelativeToWorkspace.split(path.sep).filter(item => item.length > 0)[0];
+        // this.WorkspaceProject = path.join(FsFacade.getPathToWorkspace(), this.WorkspaceProjectName);
     }
 
     public static findFirst(query: MyFilesQuery, require: boolean = false): MyFile {
