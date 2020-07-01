@@ -3,6 +3,7 @@ import path = require("path");
 import fs = require("fs");
 import { Feedback } from "./feedback";
 import { MySettings } from "./settings";
+import _ = require('underscore');
 
 export function setup() {
     if (!isOpen()) {
@@ -60,7 +61,7 @@ function upsertSettings(): boolean {
 
     let patched = false;
     for (const [key, value] of Object.entries(patch)) {
-        if (settings[key] != value) {
+        if (!_.isEqual(settings[key], value)) {
             settings[key] = value;
             patched = true;
         }
