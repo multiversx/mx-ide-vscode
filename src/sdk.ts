@@ -50,12 +50,16 @@ export async function reinstallErdpy() {
 }
 
 export async function getTemplates() {
-    // TODO: run erdpy, fetch templates
+    let templatesFile = storage.getPathTo("templates.json");
     await ProcessFacade.execute({
         program: "erdpy",
-        args: ["--version"],
-        channels: ["erdpy"]
+        args: ["contract", "templates", "--json"],
+        channels: ["erdpy"],
+        doNotDumpStdout: true,
+        stdoutToFile: templatesFile
     });
+    
+    Feedback.debug(`Templates saved to ${templatesFile}`);
 }
 
 async function askYesNo(question: string): Promise<Boolean> {

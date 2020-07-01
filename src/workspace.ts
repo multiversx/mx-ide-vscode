@@ -68,9 +68,9 @@ function upsertSettings(): boolean {
     }
 
     if (patched) {
-        Feedback.info("Updating settings.json.");
         let content = JSON.stringify(settings, null, 4);
         fs.writeFileSync(filePath, content);
+        Feedback.info("Updated settings.json.");
     }
 
     return patched;
@@ -85,6 +85,7 @@ export function guardIsOpen(): boolean {
     return true;
 }
 
+// TODO: Adjust launch.json and tasks.json for each project (smart contract) in the workspace.
 /*
 {
     "version": "0.2.0",
