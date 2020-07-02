@@ -45,28 +45,30 @@ export class MyHttpError extends MyError {
 export class MySetupError extends MyError {
 }
 
-export function caughtTopLevel(error: any) {
-    if (error instanceof Error) {
-        Feedback.error(error.message);
+export function caughtTopLevel(originalError: any) {
+    if (originalError instanceof Error) {
+        Feedback.error(originalError.message);
         return;
     }
 
     let chain: MyError[] = [];
-    chain.push(error);
+    chain.push(originalError);
 
+    let error = originalError;
     while (error.Inner) {
         error = error.Inner;
         chain.push(error);
     }
 
-    let messageBuilder: string[] = [];
+    let summary = originalError.getPretty();
+    let detailedBuilder: string[] = [];
 
     chain.forEach(function (item) {
         let errorType = item.constructor.name;
         let pretty = item.getPretty();
-        messageBuilder.push(`[${errorType}]: ${pretty}`);
+        detailedBuilder.push(`[${errorType}]: ${pretty}`);
     });
 
-    let message = messageBuilder.join("...\n");
-    Feedback.error(message, ["default"]);
+    let detailed = detailedBuilder.join("...\n");
+    Feedback.error(summary, detailed, ["default"]);
 }

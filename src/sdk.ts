@@ -29,7 +29,7 @@ async function ensureErdpy() {
             channels: ["erdpy"]
         });
     } catch (e) {
-        let answer = await presenter.askYesNo("erdpy (part of Elrond SDK) isn't available in your environment. Do you agree to install it?");
+        let answer = await presenter.askInstallErdpy();
         if (answer) {
             await reinstallErdpy();
         }
@@ -43,20 +43,24 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b4`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b5`;
     await runInTerminal(erdpyUpCommand, Environment.old);
 }
 
 export async function fetchTemplates(cacheFile: string) {
-    await ProcessFacade.execute({
-        program: "erdpy",
-        args: ["contract", "templates", "--json"],
-        channels: ["erdpy"],
-        doNotDumpStdout: true,
-        stdoutToFile: cacheFile
-    });
+    try {
+        await ProcessFacade.execute({
+            program: "erdpy",
+            args: ["contract", "templates", "--json"],
+            channels: ["erdpy"],
+            doNotDumpStdout: true,
+            stdoutToFile: cacheFile
+        });
 
-    Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
+        Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not fetch templates", Inner: error });
+    }
 }
 
 export async function newFromTemplate(folder: string, template: string, name: string) {
@@ -77,6 +81,5 @@ async function runInTerminal(command: string, env: any) {
     let terminal = window.createTerminal({ name: "elrond-sdk", env: env });
     terminal.sendText(command);
     terminal.show(false);
-
     // TODO, resolve here only when erdpy is available.
 }

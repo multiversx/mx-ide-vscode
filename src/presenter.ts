@@ -25,7 +25,17 @@ export async function askContractName() {
     return result;
 }
 
-export async function askYesNo(question: string): Promise<Boolean> {
+export async function askModifySettings(): Promise<boolean> {
+    let answer = askYesNo(`Allow Elrond IDE to modify this workspace's "settings.json"?\nThe changes include setting environment variables for the terminal integrated in Visual Studio Code.`);
+    return answer;
+}
+
+export async function askInstallErdpy(): Promise<boolean> {
+    let answer = askYesNo(`erdpy (part of Elrond SDK) isn't available in your environment. Do you agree to install it?`);
+    return answer;
+}
+
+export async function askYesNo(question: string): Promise<boolean> {
     let answerYes = "Yes";
     let answerNo = "No";
     let answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);

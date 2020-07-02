@@ -105,7 +105,7 @@
 		"viewsWelcome": [
 			{
 				"view": "contractTemplates",
-				"contents": "Write Smart Contracts using one of the templates as a starting point."
+				"contents": "Hit the refresh button to fetch or update the available Smart Contract templates."
 			}
 		]
 	},

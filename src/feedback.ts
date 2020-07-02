@@ -30,14 +30,14 @@ export class Feedback {
         vscode.window.showInformationMessage(message);
     }
 
-    public static error(message: string, channels: string[] = ["default"]) {
-        console.error(message);
+    public static error(summary: string, detailed?: string, channels: string[] = ["default"]) {
+        console.error(detailed);
 
         channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`ERROR: ${message}`);
+            Feedback.getChannel(tag).appendLine(`ERROR: ${detailed}`);
         });
 
-        vscode.window.showErrorMessage(message, { modal: true });
+        vscode.window.showErrorMessage(`${summary}. See the Output Channels for more details.`, { modal: true });
     }
 
     private static getChannel(tag: string): vscode.OutputChannel {

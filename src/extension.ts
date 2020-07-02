@@ -4,7 +4,7 @@ import { Feedback } from './feedback';
 import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import * as sdk from "./sdk";
-import { ContractTemplatesProvider, ContractTemplate } from './templates';
+import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
@@ -16,12 +16,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	Root.ExtensionContext = context;
 
-	let templatesProvider = new ContractTemplatesProvider();
-	vscode.window.registerTreeDataProvider("contractTemplates", templatesProvider);
+	let templatesViewModel = new TemplatesViewModel();
+	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
 
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
-	vscode.commands.registerCommand("elrond.refreshTemplates", () => templatesProvider.refresh());
+	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshTemplates(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 
 	await initialize();
@@ -35,7 +35,7 @@ async function initialize() {
 	Environment.set();
 	await workspace.setup();
 	sdk.ensureInstalled();
-	
+
 	//initializeWorkspaceWatcher();
 }
 
@@ -59,9 +59,17 @@ function initializeWorkspaceWatcher() {
 	//SmartContractsCollection.syncWithWorkspace();
 }
 
-function installSdk() {
+async function installSdk() {
 	try {
-		sdk.reinstall();
+		await sdk.reinstall();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function refreshTemplates(viewModel: TemplatesViewModel) {
+	try {
+		await viewModel.refresh();
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
@@ -85,11 +93,11 @@ function buildContract() {
 		if (!workspace.guardIsOpen()) {
 			return;
 		}
-	
+
 		let filePath = presenter.getActiveFilePath();
 		let smartContract = SmartContractsCollection.getBySourceFile(filePath);
 		smartContract.build();
 	} catch (error) {
 		errors.caughtTopLevel(error);
-	}	
+	}
 }

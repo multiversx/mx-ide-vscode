@@ -73,7 +73,7 @@ async function upsertSettings(): Promise<boolean> {
         return false;
     }
 
-    let allow = await presenter.askYesNo("Allow Elrond IDE to modify [settings.json]?");
+    let allow = await presenter.askModifySettings();
     if (!allow) {
         return false;
     }

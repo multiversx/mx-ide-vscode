@@ -5,7 +5,7 @@ import path = require("path");
 import * as sdk from "./sdk";
 import * as storage from "./storage";
 
-export class ContractTemplatesProvider implements vscode.TreeDataProvider<ContractTemplate> {
+export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTemplate> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContractTemplate | undefined> = new vscode.EventEmitter<ContractTemplate | undefined>();
     readonly onDidChangeTreeData?: vscode.Event<ContractTemplate> = this._onDidChangeTreeData.event;
 
@@ -26,7 +26,12 @@ export class ContractTemplatesProvider implements vscode.TreeDataProvider<Contra
             return [];
         }
 
-        let templatesJson = fs.readFileSync(this.getCacheFile(), { encoding: "utf8" });
+        let cacheFile = this.getCacheFile();
+        if (!fs.existsSync(cacheFile)) {
+            return [];
+        }
+
+        let templatesJson = fs.readFileSync(cacheFile, { encoding: "utf8" });
         let templatesPlain = JSON.parse(templatesJson) as any[];
         return templatesPlain.map(item => new ContractTemplate(item));
     }
