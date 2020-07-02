@@ -12,7 +12,7 @@ export async function setup() {
     }
 
     ensureFolder(".vscode");
-    await upsertSettings();
+    await patchSettings();
 }
 
 export function isOpen(): boolean {
@@ -37,14 +37,14 @@ function ensureFolder(folderName: string) {
     fs.mkdirSync(folderPath);
 }
 
-async function upsertSettings(): Promise<boolean> {
+async function patchSettings(): Promise<boolean> {
     let filePath = path.join(getPath(), ".vscode", "settings.json");
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
 
-    let settingsJson = fs.readFileSync(filePath, { encoding: "utf8" });
-    let settings = JSON.parse(settingsJson);
+    let json = fs.readFileSync(filePath, { encoding: "utf8" });
+    let settings = JSON.parse(json);
     let sdkPath = MySettings.getElrondSdk();
 
     let env: any = {
@@ -94,6 +94,114 @@ export function guardIsOpen(): boolean {
     return true;
 }
 
+export function patchLaunchAndTasks() {
+    patchLaunch();
+    patchTasks();
+}
+
+export function patchLaunch() {
+    let filePath = path.join(getPath(), ".vscode", "launch.json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, `{
+    "version": "0.2.0",
+    "configurations": []
+}`);
+    }
+
+    let json = fs.readFileSync(filePath, { encoding: "utf8" });
+    let launchObject = JSON.parse(json);
+    let projects = getProjects();
+
+    projects.forEach(project => {
+        let language = getLanguage(project);
+        if (language == "rust") {
+            let debugProject: any = {
+                "type": "lldb",
+                "request": "launch",
+                "name": `Debug ${project}`,
+                "preLaunchTask": `${project}-debug-build`,
+                "program": "${workspaceFolder}/" + `${project}/debug/target/debug/${project}-debug`,
+                "args": [],
+                "cwd": "${workspaceFolder}",
+                // TODO: In erdpy, add symbolic links to /rust/bin, /arwentools/test etc.
+                // TODO: That is, create symbolic links to skip the tags.
+                // "env": {
+                //     "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
+                //     "RUSTUP_HOME": "{{RUSTUP_HOME}}",
+                //     "CARGO_HOME": "{{CARGO_HOME}}"
+                // }
+            };
+
+            // TODO: Check if not exists.
+            launchObject["configurations"].push(debugProject);
+        }
+    });
+
+    // TODO: Ask for permission.
+    let content = JSON.stringify(launchObject, null, 4);
+    fs.writeFileSync(filePath, content);
+    Feedback.info("Updated launch.json.");
+}
+
+export function patchTasks() {
+    let filePath = path.join(getPath(), ".vscode", "tasks.json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, `{
+            "version": "2.0.0",
+            "tasks": []
+        }`);
+    }
+
+    let json = fs.readFileSync(filePath, { encoding: "utf8" });
+    let tasksObject = JSON.parse(json);
+    let projects = getProjects();
+
+    projects.forEach(project => {
+        let language = getLanguage(project);
+        if (language == "rust") {
+            let buildTask: any = {
+                "label": `${project}-debug-build`,
+                "command": "cargo",
+                "args": ["build"],
+                "options": {
+                    "cwd": "${workspaceFolder}/" + `${project}/debug`,
+                    // "env": {
+                    //     "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
+                    //     "RUSTUP_HOME": "{{RUSTUP_HOME}}",
+                    //     "CARGO_HOME": "{{CARGO_HOME}}"
+                    // }
+                },
+                "type": "shell"
+            };
+
+            // TODO: Check if not exists already.
+            tasksObject["tasks"].push(buildTask);
+        }
+    });
+
+    // TODO: Ask for permission.
+    let content = JSON.stringify(tasksObject, null, 4);
+    fs.writeFileSync(filePath, content);
+    Feedback.info("Updated tasks.json.");
+}
+
+export function getProjects(): string[] {
+    return fs.readdirSync(getPath(), { withFileTypes: true })
+        .filter(item => item.isDirectory())
+        .filter(folder => folder.name != ".vscode")
+        .map(folder => folder.name);
+}
+
+function getLanguage(project: string) {
+    return getMetadata(project).language;
+}
+
+function getMetadata(project: string) {
+    let filePath = path.join(getPath(), project, "elrond.json");
+    let json = fs.readFileSync(filePath, { encoding: "utf8" });
+    return JSON.parse(json);
+}
+
 // TODO: Adjust launch.json and tasks.json for each project (smart contract) in the workspace.
 /*
 {
@@ -135,17 +243,6 @@ export function guardIsOpen(): boolean {
         }
     ]
 }
-
-
-launch_file = package_path.joinpath("vscode_launch_rust.json")
-tasks_file = package_path.joinpath("vscode_tasks_rust.json")
-vscode_directory = path.join(self.directory, ".vscode")
-
-logger.info("Creating directory [.vscode]...")
-os.mkdir(vscode_directory)
-logger.info("Adding files: [launch.json], [tasks.json]")
-shutil.copy(launch_file, path.join(vscode_directory, "launch.json"))
-shutil.copy(tasks_file, path.join(vscode_directory, "tasks.json"))
 
 self._replace_in_files(
             [launch_path, tasks_path],

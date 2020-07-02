@@ -82,6 +82,7 @@ async function newFromTemplate(template: ContractTemplate) {
 		let contractName = await presenter.askContractName();
 
 		await sdk.newFromTemplate(parentFolder, templateName, contractName);
+		workspace.patchLaunchAndTasks();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
 		errors.caughtTopLevel(error);
