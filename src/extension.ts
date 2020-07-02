@@ -11,7 +11,7 @@ import { Environment } from './environment';
 import * as errors from './errors';
 
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("ElrondIDE.activate()");
 
 	Root.ExtensionContext = context;
@@ -24,17 +24,18 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.refreshTemplates", () => templatesProvider.refresh());
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 
-	initialize();
+	await initialize();
 }
 
 export function deactivate() {
 	Feedback.debug("ElrondIDE.deactivate()");
 }
 
-function initialize() {
+async function initialize() {
 	Environment.set();
+	await workspace.setup();
 	sdk.ensureInstalled();
-	workspace.setup();
+	
 	//initializeWorkspaceWatcher();
 }
 

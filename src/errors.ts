@@ -23,7 +23,7 @@ export class MyExecError extends MyError {
     }
 
     public getPretty(): string {
-        return `${this.Program}, code = ${this.Code}, ${this.Message}`;
+        return `[${this.Program}] said ${this.Message} (code = ${this.Code})`;
     }
 }
 
@@ -64,20 +64,9 @@ export function caughtTopLevel(error: any) {
     chain.forEach(function (item) {
         let errorType = item.constructor.name;
         let pretty = item.getPretty();
-        messageBuilder.push(errorType + ":");
-        messageBuilder.push(pretty + ";");
+        messageBuilder.push(`[${errorType}]: ${pretty}`);
     });
 
-    let message = messageBuilder.join("\n");
-    let channels = ["default"];
-
-    if (chain.some((item: any) => item instanceof MyExecError)) {
-        channels.push("exec");
-    }
-
-    if (chain.some((item: any) => item instanceof MyHttpError)) {
-        channels.push("http");
-    }
-
-    Feedback.error(message, channels);
+    let message = messageBuilder.join("...\n");
+    Feedback.error(message, ["default"]);
 }

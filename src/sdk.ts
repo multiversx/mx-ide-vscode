@@ -4,7 +4,8 @@ import { window } from 'vscode';
 import { MySettings } from './settings';
 import path = require("path");
 import * as storage from "./storage";
-import { MyErrorCatcher } from './errors';
+import * as errors from './errors';
+import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
@@ -13,11 +14,7 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    try {
-        await reinstallErdpy();
-    } catch (error) {
-        MyErrorCatcher.topLevel(error);
-    }
+    await reinstallErdpy();
 }
 
 export async function ensureInstalled() {
@@ -28,10 +25,11 @@ async function ensureErdpy() {
     try {
         await ProcessFacade.execute({
             program: "erdpy",
-            args: ["--version"]
+            args: ["--version"],
+            channels: ["erdpy"]
         });
     } catch (e) {
-        let answer = await askYesNo("erdpy isn't available in your environment. Do you agree to install it?");
+        let answer = await presenter.askYesNo("erdpy (part of Elrond SDK) isn't available in your environment. Do you agree to install it?");
         if (answer) {
             await reinstallErdpy();
         }
@@ -45,7 +43,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b3`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b4`;
     await runInTerminal(erdpyUpCommand, Environment.old);
 }
 
@@ -57,19 +55,28 @@ export async function fetchTemplates(cacheFile: string) {
         doNotDumpStdout: true,
         stdoutToFile: cacheFile
     });
-    
-    Feedback.debug(`Templates fetched, saved to ${cacheFile}`);
+
+    Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
 }
 
-async function askYesNo(question: string): Promise<Boolean> {
-    let answerYes = "yes";
-    let answerNo = "no";
-    let answer = await window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
-    return answer === answerYes;
+export async function newFromTemplate(folder: string, template: string, name: string) {
+    try {
+        await ProcessFacade.execute({
+            program: "erdpy",
+            args: ["contract", "new", "--directory", folder, "--template", template, name],
+            channels: ["erdpy"]
+        });
+
+        Feedback.info(`Smart Contract [${name}] created, based on template [${template}].`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not create Smart Contract", Inner: error });
+    }
 }
 
 async function runInTerminal(command: string, env: any) {
     let terminal = window.createTerminal({ name: "elrond-sdk", env: env });
     terminal.sendText(command);
     terminal.show(false);
+
+    // TODO, resolve here only when erdpy is available.
 }

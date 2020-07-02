@@ -4,14 +4,15 @@ import fs = require("fs");
 import { Feedback } from "./feedback";
 import { MySettings } from "./settings";
 import _ = require('underscore');
+import * as presenter from "./presenter";
 
-export function setup() {
+export async function setup() {
     if (!isOpen()) {
         return;
     }
 
     ensureFolder(".vscode");
-    upsertSettings();
+    await upsertSettings();
 }
 
 export function isOpen(): boolean {
@@ -36,7 +37,7 @@ function ensureFolder(folderName: string) {
     fs.mkdirSync(folderPath);
 }
 
-function upsertSettings(): boolean {
+async function upsertSettings(): Promise<boolean> {
     let filePath = path.join(getPath(), ".vscode", "settings.json");
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
@@ -45,18 +46,19 @@ function upsertSettings(): boolean {
     let settingsJson = fs.readFileSync(filePath, { encoding: "utf8" });
     let settings = JSON.parse(settingsJson);
     let sdkPath = MySettings.getElrondSdk();
-    
+
     let env: any = {
         "PYTHONHOME": null,
         "PATH": path.join(sdkPath, "erdpy-venv", "bin") + ":" + "${env:PATH}",
         "VIRTUAL_ENV": path.join(sdkPath, "erdpy-venv")
     };
-    
+
     let patch = {
         "terminal.integrated.env.linux": env,
         "terminal.integrated.env.osx": env,
         "terminal.integrated.environmentChangesIndicator": "on",
-        "terminal.integrated.inheritEnv": true
+        "terminal.integrated.inheritEnv": true,
+        "workbench.dialogs.customEnabled": true
     };
 
     let patched = false;
@@ -67,13 +69,20 @@ function upsertSettings(): boolean {
         }
     }
 
-    if (patched) {
-        let content = JSON.stringify(settings, null, 4);
-        fs.writeFileSync(filePath, content);
-        Feedback.info("Updated settings.json.");
+    if (!patched) {
+        return false;
     }
 
-    return patched;
+    let allow = await presenter.askYesNo("Allow Elrond IDE to modify [settings.json]?");
+    if (!allow) {
+        return false;
+    }
+
+    let content = JSON.stringify(settings, null, 4);
+    fs.writeFileSync(filePath, content);
+    Feedback.info("Updated settings.json.");
+
+    return true;
 }
 
 export function guardIsOpen(): boolean {

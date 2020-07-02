@@ -37,7 +37,7 @@ export class Feedback {
             Feedback.getChannel(tag).appendLine(`ERROR: ${message}`);
         });
 
-        vscode.window.showErrorMessage(message);
+        vscode.window.showErrorMessage(message, { modal: true });
     }
 
     private static getChannel(tag: string): vscode.OutputChannel {
@@ -45,7 +45,6 @@ export class Feedback {
 
         if (!Feedback.OutputChannels[channelName]) {
             Feedback.OutputChannels[channelName] = vscode.window.createOutputChannel(channelName);
-            //Feedback.OutputChannels[channelName].show();
         }
 
         return Feedback.OutputChannels[channelName];

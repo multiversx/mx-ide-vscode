@@ -200,12 +200,12 @@ export class FsFacade {
     }
 
     public static markAsExecutable(filePath: string) {
-        Feedback.debug(`markAsExecutable(${filePath})`)
+        Feedback.debug(`markAsExecutable(${filePath})`);
         fs.chmodSync(filePath, "755");
     }
 
     public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
-        Feedback.debug(`unzip ${archivePath} to ${destinationFolder}.`)
+        Feedback.debug(`unzip ${archivePath} to ${destinationFolder}.`);
 
         return ProcessFacade.execute({
             program: "unzip",
@@ -214,7 +214,7 @@ export class FsFacade {
     }
 
     public static untar(archivePath: string, destinationFolder: string): Promise<any> {
-        Feedback.debug(`untar ${archivePath} to ${destinationFolder}.`)
+        Feedback.debug(`untar ${archivePath} to ${destinationFolder}.`);
 
         return ProcessFacade.execute({
             program: "tar",

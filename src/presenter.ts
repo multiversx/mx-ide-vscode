@@ -24,3 +24,10 @@ export async function askContractName() {
 
     return result;
 }
+
+export async function askYesNo(question: string): Promise<Boolean> {
+    let answerYes = "Yes";
+    let answerNo = "No";
+    let answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
+    return answer === answerYes;
+}

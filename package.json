@@ -20,7 +20,8 @@
 	"icon": "content/logo.png",
 	"activationEvents": [
 		"onCommand:elrond.installSdk",
-		"workspaceContains:**/elrond.json"
+		"workspaceContains:**/elrond.json",
+		"onView:contractTemplates"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
