@@ -2,15 +2,20 @@ import { EventEmitter } from 'events';
 
 export class MyEventBus extends EventEmitter { 
     public emit(event: string | symbol, ...args: any[]): boolean {
-        let globalWildcard = "*";
-        let namespacedWildcard = `${event.toString().split(":")[0]}:*`;
+        let argsClone = Object.assign([], args);
+        // Emit for "precise observers".
+        super.emit(event, ...argsClone);
 
-        // Last argument will be event name, in all cases.
-        args.push(event);
+        let eventNamespace = event.toString().split(":")[0];
+        if (eventNamespace) {
+            let argsClone = Object.assign([], args);
+            // Last argument will be the precise event identifier
+            argsClone.push(event);
+            // Emit for "wildcard observers".
+            super.emit(`${eventNamespace}:*`, ...argsClone);
+        }
 
-        super.emit(globalWildcard, ...args);
-        super.emit(namespacedWildcard, ...args)
-        return super.emit(event, ...args);
+        return true;
     }
 }
 

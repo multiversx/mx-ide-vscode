@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { Presenter } from './presenter';
 import { Root } from './root';
 import { Feedback } from './feedback';
 import { SmartContractsCollection } from './smartContract';
@@ -7,7 +6,10 @@ import _ = require('underscore');
 import * as sdk from "./sdk";
 import { ContractTemplatesProvider, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
+import * as presenter from "./presenter";
 import { Environment } from './environment';
+import * as errors from './errors';
+
 
 export function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("ElrondIDE.activate()");
@@ -20,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", () => templatesProvider.refresh());
-	vscode.commands.registerCommand("elrond.newFromTemplate", (item: ContractTemplate) => vscode.window.showInformationMessage(`New from template ${JSON.stringify(item)}`));
+	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 
 	initialize();
 }
@@ -57,15 +59,36 @@ function initializeWorkspaceWatcher() {
 }
 
 function installSdk() {
-	sdk.reinstall();
+	try {
+		sdk.reinstall();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function newFromTemplate(template: ContractTemplate) {
+	try {
+		let parentFolder = workspace.getPath();
+		let templateName = template.name;
+		let contractName = await presenter.askContractName();
+
+		await sdk.newFromTemplate(parentFolder, templateName, contractName);
+		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
 }
 
 function buildContract() {
-	if (!workspace.guardIsOpen()) {
-		return;
-	}
-
-	let filePath = Presenter.getActiveFilePath();
-	let smartContract = SmartContractsCollection.getBySourceFile(filePath);
-	smartContract.build();
+	try {
+		if (!workspace.guardIsOpen()) {
+			return;
+		}
+	
+		let filePath = presenter.getActiveFilePath();
+		let smartContract = SmartContractsCollection.getBySourceFile(filePath);
+		smartContract.build();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}	
 }
