@@ -1,3 +1,4 @@
+/*
 import * as vscode from 'vscode';
 import { FsFacade } from './utils';
 import { Root } from './root';
@@ -152,3 +153,4 @@ export class MainView {
         return baseHref;
     }
 }
+*/
