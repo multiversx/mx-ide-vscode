@@ -45,41 +45,39 @@ export class MyHttpError extends MyError {
 export class MySetupError extends MyError {
 }
 
-export class MyErrorCatcher {
-    public static topLevel(error: any) {
-        if (error instanceof Error) {
-            Feedback.error(error.message);
-            return;
-        }
-
-        let chain: MyError[] = [];
-        chain.push(error);
-
-        while (error.Inner) {
-            error = error.Inner;
-            chain.push(error);
-        }
-
-        let messageBuilder: string[] = [];
-
-        chain.forEach(function (item) {
-            let errorType = item.constructor.name;
-            let pretty = item.getPretty();
-            messageBuilder.push(errorType + ":");
-            messageBuilder.push(pretty + ";");
-        });
-
-        let message = messageBuilder.join("\n");
-        let channels = ["default"];
-
-        if (chain.some((item: any) => item instanceof MyExecError)) {
-            channels.push("exec");
-        }
-
-        if (chain.some((item: any) => item instanceof MyHttpError)) {
-            channels.push("http");
-        }
-
-        Feedback.error(message, channels);
+export function caughtTopLevel(error: any) {
+    if (error instanceof Error) {
+        Feedback.error(error.message);
+        return;
     }
+
+    let chain: MyError[] = [];
+    chain.push(error);
+
+    while (error.Inner) {
+        error = error.Inner;
+        chain.push(error);
+    }
+
+    let messageBuilder: string[] = [];
+
+    chain.forEach(function (item) {
+        let errorType = item.constructor.name;
+        let pretty = item.getPretty();
+        messageBuilder.push(errorType + ":");
+        messageBuilder.push(pretty + ";");
+    });
+
+    let message = messageBuilder.join("\n");
+    let channels = ["default"];
+
+    if (chain.some((item: any) => item instanceof MyExecError)) {
+        channels.push("exec");
+    }
+
+    if (chain.some((item: any) => item instanceof MyHttpError)) {
+        channels.push("http");
+    }
+
+    Feedback.error(message, channels);
 }
