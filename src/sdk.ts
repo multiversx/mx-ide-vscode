@@ -22,17 +22,27 @@ export async function ensureInstalled() {
 }
 
 async function ensureErdpy() {
+    if (isErdpyInstalled()) {
+        return;
+    }
+
+    let answer = await presenter.askInstallErdpy();
+    if (answer) {
+        await reinstallErdpy();
+    }
+}
+
+async function isErdpyInstalled(): Promise<boolean> {
     try {
         await ProcessFacade.execute({
             program: "erdpy",
             args: ["--version"],
             channels: ["erdpy"]
         });
+
+        return true;
     } catch (e) {
-        let answer = await presenter.askInstallErdpy();
-        if (answer) {
-            await reinstallErdpy();
-        }
+        return false;
     }
 }
 
@@ -45,6 +55,15 @@ export async function reinstallErdpy() {
 
     let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b5`;
     await runInTerminal(erdpyUpCommand, Environment.old);
+
+    Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
+
+    do {
+        Feedback.debug("Waiting for the installer to finish.");
+        await sleep(5000);
+    } while ((!await isErdpyInstalled()));
+
+    Feedback.infoModal("erdpy has been installed.");
 }
 
 export async function fetchTemplates(cacheFile: string) {
@@ -81,5 +100,8 @@ async function runInTerminal(command: string, env: any) {
     let terminal = window.createTerminal({ name: "elrond-sdk", env: env });
     terminal.sendText(command);
     terminal.show(false);
-    // TODO, resolve here only when erdpy is available.
+}
+
+async function sleep(milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }

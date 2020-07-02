@@ -34,7 +34,7 @@ export function deactivate() {
 async function initialize() {
 	Environment.set();
 	await workspace.setup();
-	sdk.ensureInstalled();
+	await sdk.ensureInstalled();
 
 	//initializeWorkspaceWatcher();
 }
