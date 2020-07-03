@@ -7,6 +7,10 @@ export class MySettings {
         return folder.replace("~", os.homedir);
     }
 
+    public static getElrondSdkRelativeToHome(): string {
+        return MySettings.getElrondSdk().replace(os.homedir, "");
+    }
+
     private static getConfigurationValue(key: string) {
         let configuration = vscode.workspace.getConfiguration("elrond");
         let value = configuration.get(key);

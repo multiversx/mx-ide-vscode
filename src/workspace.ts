@@ -45,7 +45,7 @@ async function patchSettings(): Promise<boolean> {
 
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     let settings = JSON.parse(json);
-    let sdkPath = MySettings.getElrondSdk();
+    let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
     let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
     let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
     let rustFolder = path.join(sdkPath, "vendor-rust");
@@ -112,9 +112,9 @@ export async function patchLaunchAndTasks() {
     let tasksPath = path.join(getPath(), ".vscode", "tasks.json");
     if (!fs.existsSync(tasksPath)) {
         fs.writeFileSync(tasksPath, `{
-            "version": "2.0.0",
-            "tasks": []
-        }`);
+    "version": "2.0.0",
+    "tasks": []
+}`);
     }
 
     let launchObject = JSON.parse(fs.readFileSync(launchPath, { encoding: "utf8" }));

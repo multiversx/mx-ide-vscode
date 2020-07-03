@@ -18,11 +18,11 @@ export async function reinstall() {
 }
 
 export async function ensureInstalled() {
-    ensureErdpy();
+    await ensureErdpy();
 }
 
 async function ensureErdpy() {
-    if (isErdpyInstalled()) {
+    if (await isErdpyInstalled()) {
         return;
     }
 
