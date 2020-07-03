@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Root } from './root';
 import { Feedback } from './feedback';
-import { SmartContractsCollection } from './smartContract';
 import _ = require('underscore');
 import * as sdk from "./sdk";
 import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
@@ -97,8 +96,8 @@ function buildContract() {
 		}
 
 		let filePath = presenter.getActiveFilePath();
-		let smartContract = SmartContractsCollection.getBySourceFile(filePath);
-		smartContract.build();
+		//let smartContract = SmartContractsCollection.getBySourceFile(filePath);
+		//smartContract.build();
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
