@@ -35,6 +35,7 @@ async function initialize() {
 	Environment.set();
 	await workspace.setup();
 	await sdk.ensureInstalled();
+	await workspace.patchLaunchAndTasks();
 
 	//initializeWorkspaceWatcher();
 }
@@ -82,7 +83,7 @@ async function newFromTemplate(template: ContractTemplate) {
 		let contractName = await presenter.askContractName();
 
 		await sdk.newFromTemplate(parentFolder, templateName, contractName);
-		workspace.patchLaunchAndTasks();
+		await workspace.patchLaunchAndTasks();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
 		errors.caughtTopLevel(error);

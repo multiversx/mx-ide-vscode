@@ -46,11 +46,17 @@ async function patchSettings(): Promise<boolean> {
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     let settings = JSON.parse(json);
     let sdkPath = MySettings.getElrondSdk();
+    let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
+    let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+    let rustFolder = path.join(sdkPath, "vendor-rust");
+    let rustBinFolder = path.join(rustFolder, "bin");
 
     let env: any = {
         "PYTHONHOME": null,
-        "PATH": path.join(sdkPath, "erdpy-venv", "bin") + ":" + "${env:PATH}",
-        "VIRTUAL_ENV": path.join(sdkPath, "erdpy-venv")
+        "PATH": rustBinFolder + ":" + erdpyBinFolder + ":" + "${env:PATH}",
+        "VIRTUAL_ENV": erdpyEnvFolder,
+        "RUSTUP_HOME": rustFolder,
+        "CARGO_HOME": rustFolder
     };
 
     let patch = {
@@ -94,22 +100,29 @@ export function guardIsOpen(): boolean {
     return true;
 }
 
-export function patchLaunchAndTasks() {
-    patchLaunch();
-    patchTasks();
-}
-
-export function patchLaunch() {
-    let filePath = path.join(getPath(), ".vscode", "launch.json");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, `{
+export async function patchLaunchAndTasks() {
+    let launchPath = path.join(getPath(), ".vscode", "launch.json");
+    if (!fs.existsSync(launchPath)) {
+        fs.writeFileSync(launchPath, `{
     "version": "0.2.0",
     "configurations": []
 }`);
     }
 
-    let json = fs.readFileSync(filePath, { encoding: "utf8" });
-    let launchObject = JSON.parse(json);
+    let tasksPath = path.join(getPath(), ".vscode", "tasks.json");
+    if (!fs.existsSync(tasksPath)) {
+        fs.writeFileSync(tasksPath, `{
+            "version": "2.0.0",
+            "tasks": []
+        }`);
+    }
+
+    let launchObject = JSON.parse(fs.readFileSync(launchPath, { encoding: "utf8" }));
+    let tasksObject = JSON.parse(fs.readFileSync(tasksPath, { encoding: "utf8" }));
+    let launchItems: any[] = launchObject["configurations"];
+    let tasksItems: any[] = tasksObject["tasks"];
+    let patched = false;
+
     let projects = getProjects();
 
     projects.forEach(project => {
@@ -122,67 +135,42 @@ export function patchLaunch() {
                 "preLaunchTask": `${project}-debug-build`,
                 "program": "${workspaceFolder}/" + `${project}/debug/target/debug/${project}-debug`,
                 "args": [],
-                "cwd": "${workspaceFolder}",
-                // TODO: In erdpy, add symbolic links to /rust/bin, /arwentools/test etc.
-                // TODO: That is, create symbolic links to skip the tags.
-                // "env": {
-                //     "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                //     "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                //     "CARGO_HOME": "{{CARGO_HOME}}"
-                // }
+                "cwd": "${workspaceFolder}"
             };
 
-            // TODO: Check if not exists.
-            launchObject["configurations"].push(debugProject);
-        }
-    });
-
-    // TODO: Ask for permission.
-    let content = JSON.stringify(launchObject, null, 4);
-    fs.writeFileSync(filePath, content);
-    Feedback.info("Updated launch.json.");
-}
-
-export function patchTasks() {
-    let filePath = path.join(getPath(), ".vscode", "tasks.json");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, `{
-            "version": "2.0.0",
-            "tasks": []
-        }`);
-    }
-
-    let json = fs.readFileSync(filePath, { encoding: "utf8" });
-    let tasksObject = JSON.parse(json);
-    let projects = getProjects();
-
-    projects.forEach(project => {
-        let language = getLanguage(project);
-        if (language == "rust") {
             let buildTask: any = {
                 "label": `${project}-debug-build`,
                 "command": "cargo",
                 "args": ["build"],
                 "options": {
-                    "cwd": "${workspaceFolder}/" + `${project}/debug`,
-                    // "env": {
-                    //     "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                    //     "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                    //     "CARGO_HOME": "{{CARGO_HOME}}"
-                    // }
+                    "cwd": "${workspaceFolder}/" + `${project}/debug`
                 },
                 "type": "shell"
             };
 
-            // TODO: Check if not exists already.
-            tasksObject["tasks"].push(buildTask);
+            let debugProjectExists = launchItems.find(item => item.name == debugProject.name) ? true : false;
+            let buildTaskExists = tasksItems.find(item => item.label == buildTask.label) ? true : false;
+
+            if (!debugProjectExists || !buildTaskExists) {
+                launchItems.push(debugProject);
+                tasksObject["tasks"].push(buildTask);
+                patched = true;
+            }
         }
     });
 
-    // TODO: Ask for permission.
-    let content = JSON.stringify(tasksObject, null, 4);
-    fs.writeFileSync(filePath, content);
-    Feedback.info("Updated tasks.json.");
+    if (!patched) {
+        return false;
+    }
+
+    let allow = await presenter.askModifyLaunchAndTasks();
+    if (!allow) {
+        return false;
+    }
+
+    fs.writeFileSync(launchPath, JSON.stringify(launchObject, null, 4));
+    fs.writeFileSync(tasksPath, JSON.stringify(tasksObject, null, 4));
+    Feedback.info("Updated launch.json and tasks.json.");
 }
 
 export function getProjects(): string[] {
@@ -201,55 +189,3 @@ function getMetadata(project: string) {
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     return JSON.parse(json);
 }
-
-// TODO: Adjust launch.json and tasks.json for each project (smart contract) in the workspace.
-/*
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug {{PROJECT_NAME}}",
-            "preLaunchTask": "{{PROJECT_NAME}}-debug-build",
-            "program": "${workspaceFolder}/debug/target/debug/{{PROJECT_NAME}}-debug",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                "CARGO_HOME": "{{CARGO_HOME}}"
-            }
-        }
-    ]
-}
-
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "{{PROJECT_NAME}}-debug-build",
-            "command": "cargo",
-            "args": ["build"],
-            "options": {
-                "cwd": "${workspaceFolder}/debug",
-                "env": {
-                    "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                    "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                    "CARGO_HOME": "{{CARGO_HOME}}"
-                }
-            },
-            "type": "shell"
-        }
-    ]
-}
-
-self._replace_in_files(
-            [launch_path, tasks_path],
-            [
-                ("{{PROJECT_NAME}}", self.project_name),
-                ("{{PATH_RUST_BIN}}", self.rust_bin_directory),
-                ("{{RUSTUP_HOME}}", self.rust_directory),
-                ("{{CARGO_HOME}}", self.rust_directory)
-            ])
-*/
