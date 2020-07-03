@@ -26,20 +26,26 @@ export async function askContractName() {
 }
 
 export async function askModifySettings(): Promise<boolean> {
-    let answer = askYesNo(`Allow Elrond IDE to modify this workspace's "settings.json"?
+    let answer = await askYesNo(`Allow Elrond IDE to modify this workspace's "settings.json"?
 The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
 For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`);
     return answer;
 }
 
 export async function askModifyLaunchAndTasks(): Promise<boolean> {
-    let answer = askYesNo(`Allow Elrond IDE to modify this workspace's "launch.json" and "tasks.json"?\n
+    let answer = await askYesNo(`Allow Elrond IDE to modify this workspace's "launch.json" and "tasks.json"?\n
 For a better experience when debugging Smart Contracts, we recommed allowing this change.`);
     return answer;
 }
 
 export async function askInstallErdpy(): Promise<boolean> {
-    let answer = askYesNo(`Elrond IDE requires "erdpy" (part of Elrond SDK), which isn't available in your environment.
+    let answer = await askYesNo(`Elrond IDE requires "erdpy" (part of Elrond SDK), which isn't available in your environment.
+Do you agree to install it?`);
+    return answer;
+}
+
+export async function askInstallErdpyGroup(group: string): Promise<boolean> {
+    let answer = await askYesNo(`It seems that your workspace requires the dependency group [${group}], which isn't available in your erdpy environment.
 Do you agree to install it?`);
     return answer;
 }

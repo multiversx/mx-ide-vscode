@@ -30,12 +30,12 @@ export class Feedback {
         vscode.window.showInformationMessage(message);
     }
 
-    public static infoModal(message: string, channels: string[] = ["default"]) {
+    public static async infoModal(message: string, channels: string[] = ["default"]) {
         channels.forEach(function (tag) {
             Feedback.getChannel(tag).appendLine(`INFO: ${message}`);
         });
 
-        vscode.window.showInformationMessage(message, { modal: true });
+        await vscode.window.showInformationMessage(message, { modal: true });
     }
 
     public static error(summary: string, detailed?: string, channels: string[] = ["default"]) {

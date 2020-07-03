@@ -53,7 +53,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b5`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b6`;
     await runInTerminal(erdpyUpCommand, Environment.old);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
@@ -63,7 +63,7 @@ export async function reinstallErdpy() {
         await sleep(5000);
     } while ((!await isErdpyInstalled()));
 
-    Feedback.infoModal("erdpy has been installed.");
+    await Feedback.infoModal("erdpy has been installed.");
 }
 
 export async function fetchTemplates(cacheFile: string) {
@@ -107,11 +107,44 @@ async function sleep(milliseconds: number) {
 }
 
 export async function ensureInstalledBuildchains(languages: string[]) {
-    languages.forEach(async language => {
-        
-    });
+    for (let i = 0; i < languages.length; i++) {
+        await ensureInstalledErdpyGroup(languages[i]);
+    }
 }
 
-async function ensureInstalledErdpyDependency(dependency: string) {
+async function ensureInstalledErdpyGroup(group: string) {
+    if (await isErdpyGroupInstalled(group)) {
+        return;
+    }
 
+    let answer = await presenter.askInstallErdpyGroup(group);
+    if (answer) {
+        await reinstallErdpyGroup(group);
+    }
+}
+
+async function isErdpyGroupInstalled(group: string): Promise<boolean> {
+    try {
+        await ProcessFacade.execute({
+            program: "erdpy",
+            args: ["deps", "check", group],
+            channels: ["erdpy"]
+        });
+
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function reinstallErdpyGroup(group: string) {
+    Feedback.info(`Installation of [${group}] has been started. Please wait for installation to finish.`);
+
+    await ProcessFacade.execute({
+        program: "erdpy",
+        args: ["--verbose", "deps", "install", group],
+        channels: ["erdpy"]
+    });
+
+    await Feedback.infoModal(`[${group}] has been installed.`);
 }
