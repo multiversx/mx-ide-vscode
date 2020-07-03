@@ -105,3 +105,13 @@ async function runInTerminal(command: string, env: any) {
 async function sleep(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
+
+export async function ensureInstalledBuildchains(languages: string[]) {
+    languages.forEach(async language => {
+        
+    });
+}
+
+async function ensureInstalledErdpyDependency(dependency: string) {
+
+}

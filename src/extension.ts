@@ -35,28 +35,7 @@ async function initialize() {
 	await workspace.setup();
 	await sdk.ensureInstalled();
 	await workspace.patchLaunchAndTasks();
-
-	//initializeWorkspaceWatcher();
-}
-
-function initializeWorkspaceWatcher() {
-	if (!workspace.guardIsOpen()) {
-		return;
-	}
-
-	Root.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*");
-
-	var onWatcherEventThrottled = _.throttle(onWatcherEvent, 1000);
-
-	function onWatcherEvent() {
-		//SmartContractsCollection.syncWithWorkspace();
-	}
-
-	Root.FileSystemWatcher.onDidChange(onWatcherEventThrottled);
-	Root.FileSystemWatcher.onDidCreate(onWatcherEventThrottled);
-	Root.FileSystemWatcher.onDidDelete(onWatcherEventThrottled);
-
-	//SmartContractsCollection.syncWithWorkspace();
+	await ensureInstalledBuildchains();
 }
 
 async function installSdk() {
@@ -83,6 +62,7 @@ async function newFromTemplate(template: ContractTemplate) {
 
 		await sdk.newFromTemplate(parentFolder, templateName, contractName);
 		await workspace.patchLaunchAndTasks();
+		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
 		errors.caughtTopLevel(error);
@@ -101,4 +81,9 @@ function buildContract() {
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
+}
+
+async function ensureInstalledBuildchains() {
+	let languages = workspace.getLanguages();
+	await sdk.ensureInstalledBuildchains(languages);
 }

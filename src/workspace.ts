@@ -189,3 +189,9 @@ function getMetadata(project: string) {
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     return JSON.parse(json);
 }
+
+export function getLanguages() {
+    let languages = getProjects().map(item => getLanguage(item));
+    languages = _.uniq(languages);
+    return languages;
+}
