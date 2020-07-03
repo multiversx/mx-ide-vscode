@@ -53,11 +53,15 @@ export class ContractTemplate {
     getTreeItem(): vscode.TreeItem {
         let item = new vscode.TreeItem(this.name);
         item.contextValue = "template";
-        item.iconPath = {
-            light: path.join(__filename, "..", "..", "content", "light", "folder.svg"),
-            dark: path.join(__filename, "..", "..", "content", "dark", "folder.svg"),
-        };
-
+        item.iconPath = this.getIcons();
         return item;
+    }
+
+    private getIcons() {
+        let contentPath = path.join(__filename, "..", "..", "content");
+        return {
+            light: path.join(contentPath, "light", `lang-${this.language}.png`),
+            dark: path.join(contentPath, "dark", `lang-${this.language}.png`)
+        };
     }
 }

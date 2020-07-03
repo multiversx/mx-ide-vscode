@@ -1,0 +1,3 @@
+Icons:
+ - https://github.com/microsoft/vscode-extension-samples
+ - https://github.com/rust-lang/rls-vscode
