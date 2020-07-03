@@ -9,7 +9,7 @@ export class Environment {
             Environment.saveOld();
         }
 
-        let sdkPath = MySettings.getElrondSdkRelativeToHome();
+        let sdkPath = MySettings.getElrondSdk();
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
         let rustFolder = path.join(sdkPath, "vendor-rust");
