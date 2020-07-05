@@ -6,15 +6,6 @@ import { MySettings } from "./settings";
 import _ = require('underscore');
 import * as presenter from "./presenter";
 
-export async function setup() {
-    if (!isOpen()) {
-        return;
-    }
-
-    ensureFolder(".vscode");
-    await patchSettings();
-}
-
 export function isOpen(): boolean {
     return getPath() ? true : false;
 }
@@ -28,6 +19,13 @@ export function getPath() {
     }
 }
 
+export async function setup() {
+    ensureFolder(".vscode");
+    ensureWorkspaceDefinitionFile();
+    await patchSettings();
+}
+
+
 function ensureFolder(folderName: string) {
     let folderPath = path.join(getPath(), folderName);
     if (fs.existsSync(folderPath)) {
@@ -35,6 +33,13 @@ function ensureFolder(folderName: string) {
     }
 
     fs.mkdirSync(folderPath);
+}
+
+function ensureWorkspaceDefinitionFile() {
+    let filePath = path.join(getPath(), "elrond.workspace.json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, "{}");
+    }
 }
 
 async function patchSettings(): Promise<boolean> {
@@ -93,7 +98,7 @@ async function patchSettings(): Promise<boolean> {
 
 export function guardIsOpen(): boolean {
     if (!isOpen()) {
-        Feedback.info("No folder open in your workspace. Please open a folder.");
+        Feedback.infoModal("No folder open in your workspace. Please open a folder.");
         return false;
     }
 

@@ -18,19 +18,26 @@ export async function activate(context: vscode.ExtensionContext) {
 	let templatesViewModel = new TemplatesViewModel();
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
 
+	// Phony command, used to activate the extension
+	vscode.commands.registerCommand("elrond.initWorkspace", () => {});
+	
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshTemplates(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 
-	await initialize();
+	initWorkspace();
 }
 
 export function deactivate() {
 	Feedback.debug("ElrondIDE.deactivate()");
 }
 
-async function initialize() {
+async function initWorkspace() {
+	if (!workspace.guardIsOpen()) {
+		return;
+	}
+
 	Environment.set();
 	await workspace.setup();
 	await sdk.ensureInstalled();

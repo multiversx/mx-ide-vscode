@@ -19,13 +19,16 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"onCommand:elrond.installSdk",
-		"workspaceContains:**/elrond.json",
-		"onView:contractTemplates"
+		"onCommand:elrond.initWorkspace",
+		"workspaceContains:**/elrond.workspace.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
+			{
+				"command": "elrond.initWorkspace",
+				"title": "Elrond: Initialize Workspace"
+			},
 			{
 				"command": "elrond.installSdk",
 				"title": "Elrond: Install (Update) SDK"
