@@ -8,6 +8,7 @@ import * as workspace from "./workspace";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
+import { SmartContractsViewModel } from './contracts';
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -17,14 +18,17 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	let templatesViewModel = new TemplatesViewModel();
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
+	let contractsViewModel = new SmartContractsViewModel();
+	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
 
 	// Phony command, used to activate the extension
 	vscode.commands.registerCommand("elrond.initWorkspace", () => {});
 	
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
-	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshTemplates(templatesViewModel));
+	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
+	vscode.commands.registerCommand("elrond.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
 	initWorkspace();
 }
@@ -53,7 +57,7 @@ async function installSdk() {
 	}
 }
 
-async function refreshTemplates(viewModel: TemplatesViewModel) {
+async function refreshViewModel(viewModel: any) {
 	try {
 		await viewModel.refresh();
 	} catch (error) {

@@ -27,15 +27,18 @@
 		"commands": [
 			{
 				"command": "elrond.initWorkspace",
-				"title": "Elrond: Initialize Workspace"
+				"title": "Initialize Workspace",
+				"category": "Elrond"
 			},
 			{
 				"command": "elrond.installSdk",
-				"title": "Elrond: Install (Update) SDK"
+				"title": "Install Elrond SDK",
+				"category": "Elrond"
 			},
 			{
 				"command": "elrond.refreshTemplates",
 				"title": "Refresh",
+				"category": "Elrond",
 				"icon": {
 					"light": "content/light/refresh.svg",
 					"dark": "content/dark/refresh.svg"
@@ -43,29 +46,74 @@
 			},
 			{
 				"command": "elrond.newFromTemplate",
-				"title": "New Contract"
+				"title": "New Contract",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.refreshContracts",
+				"title": "Refresh",
+				"category": "Elrond",
+				"icon": {
+					"light": "content/light/refresh.svg",
+					"dark": "content/dark/refresh.svg"
+				}
 			},
 			{
 				"command": "elrond.buildContract",
-				"title": "Elrond: Build Contract"
+				"title": "Build Contract",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.runMandosTests",
+				"title": "Run Tests - Mandos",
+				"category": "Elrond"
 			}
 		],
 		"menus": {
-			"editor/context": [
+			"commandPalette": [
+				{
+					"command": "elrond.refreshContracts",
+					"when": "false"
+				},
+				{
+					"command": "elrond.refreshTemplates",
+					"when": "false"
+				},
+				{
+					"command": "elrond.newFromTemplate",
+					"when": "false"
+				},
 				{
 					"command": "elrond.buildContract",
-					"group": "buildGroup",
-					"when": "resourceExtname == .c || resourceExtname == .cpp || resourceExtname == .rs"
+					"when": "false"
+				},
+				{
+					"command": "elrond.runMandosTests",
+					"when": "false"
 				}
 			],
+			"editor/context": [],
 			"view/title": [
 				{
 					"command": "elrond.refreshTemplates",
 					"when": "view == contractTemplates",
 					"group": "navigation"
+				},
+				{
+					"command": "elrond.refreshContracts",
+					"when": "view == smartContracts",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
+				{
+					"command": "elrond.buildContract",
+					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.runMandosTests",
+					"when": "view == smartContracts && viewItem == contract"
+				},
 				{
 					"command": "elrond.newFromTemplate",
 					"when": "view == contractTemplates",
@@ -94,8 +142,8 @@
 		"views": {
 			"elrond": [
 				{
-					"id": "contracts",
-					"name": "Contracts",
+					"id": "smartContracts",
+					"name": "Smart Contracts",
 					"contextualTitle": "Smart Contracts in Workspace"
 				},
 				{
@@ -109,6 +157,10 @@
 			{
 				"view": "contractTemplates",
 				"contents": "Hit the refresh button to fetch or update the available Smart Contract templates."
+			},
+			{
+				"view": "smartContracts",
+				"contents": "Hit the refresh button to update the list of Smart Contracts within your workspace."
 			}
 		]
 	},

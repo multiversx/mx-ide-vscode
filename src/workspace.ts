@@ -189,7 +189,7 @@ function getLanguage(project: string) {
     return getMetadata(project).language;
 }
 
-function getMetadata(project: string) {
+export function getMetadata(project: string) {
     let filePath = path.join(getPath(), project, "elrond.json");
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     return JSON.parse(json);
