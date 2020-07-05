@@ -39,13 +39,13 @@ For a better experience when debugging Smart Contracts, we recommed allowing thi
 }
 
 export async function askInstallErdpy(): Promise<boolean> {
-    let answer = await askYesNo(`Elrond IDE requires "erdpy" (part of Elrond SDK), which isn't available in your environment.
+    let answer = await askYesNo(`Elrond IDE requires erdpy (part of Elrond SDK), which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }
 
 export async function askInstallErdpyGroup(group: string): Promise<boolean> {
-    let answer = await askYesNo(`It seems that your workspace requires the dependency group [${group}], which isn't available in your erdpy environment.
+    let answer = await askYesNo(`It seems that your workspace requires the dependency group "${group}", which isn't available in your erdpy environment.
 Do you agree to install it?`);
     return answer;
 }

@@ -138,7 +138,7 @@ async function isErdpyGroupInstalled(group: string): Promise<boolean> {
 }
 
 async function reinstallErdpyGroup(group: string) {
-    Feedback.info(`Installation of [${group}] has been started. Please wait for installation to finish.`);
+    Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
 
     await ProcessFacade.execute({
         program: "erdpy",
@@ -146,5 +146,5 @@ async function reinstallErdpyGroup(group: string) {
         channels: ["erdpy"]
     });
 
-    await Feedback.infoModal(`[${group}] has been installed.`);
+    await Feedback.infoModal(`${group} has been installed.`);
 }
