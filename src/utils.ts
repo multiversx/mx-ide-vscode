@@ -23,7 +23,7 @@ export class ProcessFacade {
         let args = options.args;
         let environment = options.environment;
         let eventTag = options.eventTag;
-        let channels = options.channels || ["exec"];
+        let channels = options.channels || ["default"];
         let stdoutToFile = options.stdoutToFile;
         let doNotDumpStdout = options.doNotDumpStdout;
 

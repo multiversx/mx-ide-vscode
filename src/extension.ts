@@ -110,7 +110,7 @@ function getContractFolder(contract: any) {
 		return workspace.getProjectPathByUri((contract as Uri));
 	}
 
-	return (contract as SmartContract).getMetadataPath();
+	return (contract as SmartContract).getPath();
 }
 
 async function runMandosTests(contract: SmartContract) {

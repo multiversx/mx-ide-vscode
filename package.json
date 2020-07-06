@@ -227,6 +227,7 @@
 		"underscore": "^1.10.2"
 	},
 	"extensionDependencies": [
+		"rust-lang.rust",
 		"vadimcn.vscode-lldb"
 	]
 }

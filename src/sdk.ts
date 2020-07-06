@@ -33,11 +33,14 @@ async function ensureErdpy() {
 }
 
 async function isErdpyInstalled(): Promise<boolean> {
+    return canRun("erdpy", ["--version"]);
+}
+
+async function canRun(program: string, args: string[]) {
     try {
         await ProcessFacade.execute({
-            program: "erdpy",
-            args: ["--version"],
-            channels: ["erdpy"]
+            program: program,
+            args: args
         });
 
         return true;
@@ -53,8 +56,8 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b8`;
-    await runInTerminal(erdpyUpCommand, Environment.old);
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.3b1`;
+    await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
 
@@ -71,7 +74,6 @@ export async function fetchTemplates(cacheFile: string) {
         await ProcessFacade.execute({
             program: "erdpy",
             args: ["contract", "templates", "--json"],
-            channels: ["erdpy"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
         });
@@ -87,7 +89,6 @@ export async function newFromTemplate(folder: string, template: string, name: st
         await ProcessFacade.execute({
             program: "erdpy",
             args: ["contract", "new", "--directory", folder, "--template", template, name],
-            channels: ["erdpy"]
         });
 
         Feedback.info(`Smart Contract [${name}] created, based on template [${template}].`);
@@ -96,10 +97,28 @@ export async function newFromTemplate(folder: string, template: string, name: st
     }
 }
 
-async function runInTerminal(command: string, env: any) {
-    let terminal = window.createTerminal({ name: "elrond-sdk", env: env });
+async function runInTerminal(terminalName: string, command: string, env: any, renew: boolean = false) {
+    let terminal = getOrCreateTerminal(terminalName, env, renew);
     terminal.sendText(command);
     terminal.show(false);
+}
+
+function getOrCreateTerminal(name: string, env: any, renew: boolean) {
+    name = `Elrond: ${name}`;
+
+    let terminal = window.terminals.find(item => item.name == name);
+
+    if (terminal && renew) {
+        terminal.hide();
+        terminal.dispose();
+        terminal = null;
+    }
+
+    if (!terminal) {
+        terminal = window.createTerminal({ name: name, env: env });
+    }
+
+    return terminal;
 }
 
 async function sleep(milliseconds: number) {
@@ -124,42 +143,24 @@ async function ensureInstalledErdpyGroup(group: string) {
 }
 
 async function isErdpyGroupInstalled(group: string): Promise<boolean> {
-    try {
-        await ProcessFacade.execute({
-            program: "erdpy",
-            args: ["deps", "check", group],
-            channels: ["erdpy"]
-        });
-
-        return true;
-    } catch (e) {
-        return false;
-    }
+    return canRun("erdpy", ["deps", "check", group]);
 }
 
 async function reinstallErdpyGroup(group: string) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
+    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite`, null, true);
 
-    await ProcessFacade.execute({
-        program: "erdpy",
-        args: ["--verbose", "deps", "install", group],
-        channels: ["erdpy"]
-    });
+    do {
+        Feedback.debug("Waiting for the installer to finish.");
+        await sleep(5000);
+    } while ((!await isErdpyGroupInstalled(group)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
 
 export async function buildContract(folder: string) {
     try {
-        Feedback.reveal("build");
-
-        await ProcessFacade.execute({
-            program: "erdpy",
-            args: ["--verbose", "contract", "build", folder],
-            channels: ["build"]
-        });
-
-        Feedback.info(`Smart Contract built.`);
+        await runInTerminal("build", `erdpy --verbose contract build ${folder}`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -167,17 +168,7 @@ export async function buildContract(folder: string) {
 
 export async function runMandosTests(folder: string) {
     try {
-        await ensureInstalledErdpyGroup("arwentools");
-
-        Feedback.reveal("mandos");
-
-        await ProcessFacade.execute({
-            program: "erdpy",
-            args: ["--verbose", "contract", "test", folder],
-            channels: ["mandos"]
-        });
-
-        Feedback.info(`Tests ran. See Output Channel.`);
+        await runInTerminal("mandos", `erdpy --verbose contract test ${folder}`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }

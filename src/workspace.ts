@@ -185,6 +185,11 @@ export function getProjects(): string[] {
         .map(folder => folder.name);
 }
 
+export function getProjectPath(project: string) {
+    let filePath = path.join(getPath(), project);
+    return filePath;
+}
+
 export function getProjectPathByUri(uri: vscode.Uri): string {
     let project = getProjectByUri(uri);
     return path.join(getPath(), project);

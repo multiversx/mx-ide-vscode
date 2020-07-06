@@ -40,6 +40,10 @@ export class SmartContract {
         this.language = metadata.language;
     }
 
+    getPath(): string {
+        return workspace.getProjectPath(this.name);
+    }
+
     getMetadataPath(): string {
         return workspace.getMetadataPath(this.name);
     }
