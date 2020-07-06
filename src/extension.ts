@@ -10,6 +10,7 @@ import { Environment } from './environment';
 import * as errors from './errors';
 import { SmartContractsViewModel, SmartContract } from './contracts';
 import { Uri } from 'vscode';
+import path = require("path");
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -94,17 +95,27 @@ async function gotoContract(contract: SmartContract) {
 	}
 }
 
-async function buildContract(contract: SmartContract) {
+async function buildContract(contract: any) {
 	try {
-		await sdk.buildContract(contract.getFolder());
+		let folder = getContractFolder(contract);
+		await sdk.buildContract(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
 }
 
+function getContractFolder(contract: any) {
+	if (contract instanceof Uri) {
+		return workspace.getProjectPathByUri((contract as Uri));
+	}
+
+	return (contract as SmartContract).getFolder();
+}
+
 async function runMandosTests(contract: SmartContract) {
 	try {
-		await sdk.runMandosTests(contract.getFolder());
+		let folder = getContractFolder(contract);
+		await sdk.runMandosTests(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

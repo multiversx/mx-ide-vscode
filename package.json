@@ -80,6 +80,18 @@
 			}
 		],
 		"menus": {
+			"explorer/context": [
+				{
+					"command": "elrond.buildContract",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runMandosTests",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				}
+			],
 			"commandPalette": [
 				{
 					"command": "elrond.refreshContracts",
