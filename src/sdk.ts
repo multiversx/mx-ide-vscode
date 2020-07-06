@@ -53,7 +53,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b6`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.2b8`;
     await runInTerminal(erdpyUpCommand, Environment.old);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
@@ -63,7 +63,7 @@ export async function reinstallErdpy() {
         await sleep(5000);
     } while ((!await isErdpyInstalled()));
 
-    await Feedback.infoModal("erdpy has been installed.");
+    await Feedback.infoModal("erdpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
 }
 
 export async function fetchTemplates(cacheFile: string) {
