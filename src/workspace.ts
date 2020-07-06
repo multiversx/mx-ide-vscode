@@ -6,6 +6,7 @@ import { MySettings } from "./settings";
 import _ = require('underscore');
 import * as presenter from "./presenter";
 
+
 export function isOpen(): boolean {
     return getPath() ? true : false;
 }
@@ -181,7 +182,7 @@ export async function patchLaunchAndTasks() {
 export function getProjects(): string[] {
     return fs.readdirSync(getPath(), { withFileTypes: true })
         .filter(item => item.isDirectory())
-        .filter(folder => folder.name != ".vscode")
+        .filter(folder => fs.existsSync(getMetadataPath(folder.name)))
         .map(folder => folder.name);
 }
 
