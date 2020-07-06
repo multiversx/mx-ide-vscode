@@ -88,8 +88,9 @@ async function newFromTemplate(template: ContractTemplate) {
 
 async function gotoContract(contract: SmartContract) {
 	try {
-		let uri = Uri.file(contract.getFolder());
+		let uri = Uri.file(contract.getMetadataPath());
 		await vscode.commands.executeCommand("vscode.open", uri);
+		await vscode.commands.executeCommand("workbench.files.action.focusFilesExplorer");
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
@@ -109,7 +110,7 @@ function getContractFolder(contract: any) {
 		return workspace.getProjectPathByUri((contract as Uri));
 	}
 
-	return (contract as SmartContract).getFolder();
+	return (contract as SmartContract).getMetadataPath();
 }
 
 async function runMandosTests(contract: SmartContract) {

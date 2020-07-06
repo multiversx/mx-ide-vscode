@@ -40,8 +40,8 @@ export class SmartContract {
         this.language = metadata.language;
     }
 
-    getFolder(): string {
-        return path.join(workspace.getPath(), this.name);
+    getMetadataPath(): string {
+        return workspace.getMetadataPath(this.name);
     }
 
     getTreeItem(): vscode.TreeItem {
