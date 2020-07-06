@@ -9,6 +9,7 @@ import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
 import { SmartContractsViewModel, SmartContract } from './contracts';
+import { Uri } from 'vscode';
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -22,9 +23,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
 
 	// Phony command, used to activate the extension
-	vscode.commands.registerCommand("elrond.initWorkspace", () => {});
-	
+	vscode.commands.registerCommand("elrond.initWorkspace", () => { });
+
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
+	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
@@ -75,6 +77,15 @@ async function newFromTemplate(template: ContractTemplate) {
 		await workspace.patchLaunchAndTasks();
 		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function gotoContract(contract: SmartContract) {
+	try {
+		let uri = Uri.file(contract.getFolder());
+		await vscode.commands.executeCommand("vscode.open", uri);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

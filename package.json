@@ -67,6 +67,11 @@
 				"command": "elrond.runMandosTests",
 				"title": "Run Tests - Mandos",
 				"category": "Elrond"
+			},
+			{
+				"command": "elrond.gotoContract",
+				"title": "Show in Explorer",
+				"category": "Elrond"
 			}
 		],
 		"menus": {
@@ -90,6 +95,10 @@
 				{
 					"command": "elrond.runMandosTests",
 					"when": "false"
+				},
+				{
+					"command": "elrond.gotoContract",
+					"when": "false"
 				}
 			],
 			"editor/context": [],
@@ -112,6 +121,10 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
+					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.gotoContract",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
