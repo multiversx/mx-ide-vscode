@@ -64,6 +64,11 @@
 				"category": "Elrond"
 			},
 			{
+				"command": "elrond.cleanContract",
+				"title": "Clean Contract",
+				"category": "Elrond"
+			},
+			{
 				"command": "elrond.runMandosTests",
 				"title": "Run Tests - Mandos",
 				"category": "Elrond"
@@ -93,6 +98,10 @@
 					"when": "false"
 				},
 				{
+					"command": "elrond.cleanContract",
+					"when": "false"
+				},
+				{
 					"command": "elrond.runMandosTests",
 					"when": "false"
 				},
@@ -117,6 +126,10 @@
 			"view/item/context": [
 				{
 					"command": "elrond.buildContract",
+					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.cleanContract",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
