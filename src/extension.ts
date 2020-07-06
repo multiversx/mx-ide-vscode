@@ -30,6 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
+	vscode.commands.registerCommand("elrond.runArwenDebugTests", runArwenDebugTests);
 
 	vscode.commands.registerCommand("elrond.cleanContract", cleanContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
@@ -122,9 +123,19 @@ async function runMandosTests(contract: SmartContract) {
 	}
 }
 
+async function runArwenDebugTests(contract: SmartContract) {
+	try {
+		let folder = getContractFolder(contract);
+		await sdk.runArwenDebugTests(folder);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
 async function cleanContract(contract: SmartContract) {
 	try {
-		Feedback.infoModal("Not yet implemented.");
+		let folder = getContractFolder(contract);
+		await sdk.cleanContract(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

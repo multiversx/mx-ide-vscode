@@ -70,7 +70,12 @@
 			},
 			{
 				"command": "elrond.runMandosTests",
-				"title": "Run Tests - Mandos",
+				"title": "Run Mandos Tests",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.runArwenDebugTests",
+				"title": "Run Arwen Debug Tests",
 				"category": "Elrond"
 			},
 			{
@@ -87,7 +92,17 @@
 					"group": "Elrond"
 				},
 				{
+					"command": "elrond.cleanContract",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				},
+				{
 					"command": "elrond.runMandosTests",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runArwenDebugTests",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
 					"group": "Elrond"
 				}
@@ -115,6 +130,10 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
+					"when": "false"
+				},
+				{
+					"command": "elrond.runArwenDebugTests",
 					"when": "false"
 				},
 				{
@@ -146,6 +165,10 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
+					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.runArwenDebugTests",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{

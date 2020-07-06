@@ -56,7 +56,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.3b1`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.3b2`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
@@ -166,9 +166,25 @@ export async function buildContract(folder: string) {
     }
 }
 
+export async function cleanContract(folder: string) {
+    try {
+        await runInTerminal("build", `erdpy --verbose contract clean ${folder}`, null);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
+    }
+}
+
 export async function runMandosTests(folder: string) {
     try {
         await runInTerminal("mandos", `erdpy --verbose contract test ${folder}`, null);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
+    }
+}
+
+export async function runArwenDebugTests(folder: string) {
+    try {
+        Feedback.infoModal("Not yet implemented.");
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
