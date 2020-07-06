@@ -8,7 +8,7 @@ import * as workspace from "./workspace";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
-import { SmartContractsViewModel } from './contracts';
+import { SmartContractsViewModel, SmartContract } from './contracts';
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -80,15 +80,9 @@ async function newFromTemplate(template: ContractTemplate) {
 	}
 }
 
-function buildContract() {
+async function buildContract(contract: SmartContract) {
 	try {
-		if (!workspace.guardIsOpen()) {
-			return;
-		}
-
-		let filePath = presenter.getActiveFilePath();
-		//let smartContract = SmartContractsCollection.getBySourceFile(filePath);
-		//smartContract.build();
+		await sdk.buildContract(contract.getFolder());
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

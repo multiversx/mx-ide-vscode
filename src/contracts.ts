@@ -40,6 +40,10 @@ export class SmartContract {
         this.language = metadata.language;
     }
 
+    getFolder(): string {
+        return path.join(workspace.getPath(), this.name);
+    }
+
     getTreeItem(): vscode.TreeItem {
         let item = new vscode.TreeItem(this.name);
         item.contextValue = "contract";

@@ -57,4 +57,9 @@ export class Feedback {
 
         return Feedback.OutputChannels[channelName];
     }
+
+    public static reveal(tag: string) {
+        let channel = Feedback.getChannel(tag);
+        channel.show(true);
+    }
 }

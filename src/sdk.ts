@@ -148,3 +148,19 @@ async function reinstallErdpyGroup(group: string) {
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
+
+export async function buildContract(folder: string) {
+    try {
+        Feedback.reveal("erdpy");
+
+        await ProcessFacade.execute({
+            program: "erdpy",
+            args: ["--verbose", "contract", "build", folder],
+            channels: ["erdpy"]
+        });
+
+        Feedback.info(`Smart Contract built.`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
+    }
+}
