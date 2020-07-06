@@ -9,7 +9,7 @@
 		"url": "https://github.com/ElrondNetwork/elrond-ide-vscode.git"
 	},
 	"engines": {
-		"vscode": "^1.38.0"
+		"vscode": "^1.46.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -210,7 +210,6 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.2",
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.17.26",
 		"@types/request": "^2.48.5",
@@ -222,7 +221,6 @@
 		"vscode-test": "^1.4.0"
 	},
 	"dependencies": {
-		"glob": "^7.1.6",
 		"request": "^2.88.2",
 		"underscore": "^1.10.2"
 	},
