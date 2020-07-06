@@ -28,6 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
+	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
+
 	vscode.commands.registerCommand("elrond.cleanContract", cleanContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
@@ -95,6 +97,14 @@ async function gotoContract(contract: SmartContract) {
 async function buildContract(contract: SmartContract) {
 	try {
 		await sdk.buildContract(contract.getFolder());
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function runMandosTests(contract: SmartContract) {
+	try {
+		await sdk.runMandosTests(contract.getFolder());
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

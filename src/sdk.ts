@@ -151,16 +151,34 @@ async function reinstallErdpyGroup(group: string) {
 
 export async function buildContract(folder: string) {
     try {
-        Feedback.reveal("erdpy");
+        Feedback.reveal("build");
 
         await ProcessFacade.execute({
             program: "erdpy",
             args: ["--verbose", "contract", "build", folder],
-            channels: ["erdpy"]
+            channels: ["build"]
         });
 
         Feedback.info(`Smart Contract built.`);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
+    }
+}
+
+export async function runMandosTests(folder: string) {
+    try {
+        await ensureInstalledErdpyGroup("arwentools");
+
+        Feedback.reveal("mandos");
+
+        await ProcessFacade.execute({
+            program: "erdpy",
+            args: ["--verbose", "contract", "test", folder],
+            channels: ["mandos"]
+        });
+
+        Feedback.info(`Tests ran. See Output Channel.`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
 }
