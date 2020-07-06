@@ -54,12 +54,13 @@ async function patchSettings(): Promise<boolean> {
     let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
     let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
     let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+    let arwentoolsFolder = path.join(sdkPath, "arwentools");
     let rustFolder = path.join(sdkPath, "vendor-rust");
     let rustBinFolder = path.join(rustFolder, "bin");
 
     let env: any = {
         "PYTHONHOME": null,
-        "PATH": rustBinFolder + ":" + erdpyBinFolder + ":" + "${env:PATH}",
+        "PATH": rustBinFolder + ":" + erdpyBinFolder + ":" + arwentoolsFolder + ":" + "${env:PATH}",
         "VIRTUAL_ENV": erdpyEnvFolder,
         "RUSTUP_HOME": rustFolder,
         "CARGO_HOME": rustFolder

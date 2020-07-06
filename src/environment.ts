@@ -12,11 +12,12 @@ export class Environment {
         let sdkPath = MySettings.getElrondSdk();
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let arwentoolsFolder = path.join(sdkPath, "arwentools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
 
         delete process.env["PYTHONHOME"];
-        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${process.env["PATH"]}`;
+        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${process.env["PATH"]}`;
         process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
         process.env["RUSTUP_HOME"] = rustFolder;
         process.env["CARGO_HOME"] = rustFolder;
