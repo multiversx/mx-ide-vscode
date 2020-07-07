@@ -112,9 +112,23 @@ async function buildContract(contract: any) {
 	}
 }
 
-function getContractFolder(contract: any) {
+async function cleanContract(contract: any) {
+	try {
+		let folder = getContractFolder(contract);
+		await sdk.cleanContract(folder);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
-		return workspace.getProjectPathByUri((contract as Uri));
+		let fsPath = (contract as Uri).fsPath;
+		if (fsPath.includes("elrond.json")) {
+			return path.dirname(fsPath);
+		} else {
+			return fsPath;
+		}
 	}
 
 	return (contract as SmartContract).getPath();
@@ -136,15 +150,6 @@ async function runArwenDebugTests(contract: SmartContract) {
 	try {
 		let folder = getContractFolder(contract);
 		await sdk.runArwenDebugTests(folder);
-	} catch (error) {
-		errors.caughtTopLevel(error);
-	}
-}
-
-async function cleanContract(contract: SmartContract) {
-	try {
-		let folder = getContractFolder(contract);
-		await sdk.cleanContract(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
