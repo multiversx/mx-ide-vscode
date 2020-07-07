@@ -5,6 +5,8 @@ import { Feedback } from "./feedback";
 import { MySettings } from "./settings";
 import _ = require('underscore');
 import * as presenter from "./presenter";
+import * as errors from './errors';
+import glob = require("glob");
 
 
 export function isOpen(): boolean {
@@ -17,6 +19,8 @@ export function getPath() {
 
     if (workspaceFolder) {
         return workspaceFolder.uri.fsPath;
+    } else {
+        throw new errors.MyError({ Message: "Workspace not available." });
     }
 }
 
@@ -130,17 +134,19 @@ export async function patchLaunchAndTasks() {
     let tasksItems: any[] = tasksObject["tasks"];
     let patched = false;
 
-    let projects = getProjects();
+    let metadataObjects = getMetadataObjects();
 
-    projects.forEach(project => {
-        let language = getLanguage(project);
+    metadataObjects.forEach(metadata => {
+        let project = metadata.ProjectName;
+        let projectPath = metadata.ProjectPathInWorkspace;
+        let language = metadata.Language;
         if (language == "rust") {
             let debugProject: any = {
                 "type": "lldb",
                 "request": "launch",
                 "name": `Debug ${project}`,
                 "preLaunchTask": `${project}-debug-build`,
-                "program": "${workspaceFolder}/" + `${project}/debug/target/debug/${project}-debug`,
+                "program": "${workspaceFolder}/" + `${projectPath}/debug/target/debug/${project}-debug`,
                 "args": [],
                 "cwd": "${workspaceFolder}"
             };
@@ -150,7 +156,7 @@ export async function patchLaunchAndTasks() {
                 "command": "cargo",
                 "args": ["build"],
                 "options": {
-                    "cwd": "${workspaceFolder}/" + `${project}/debug`
+                    "cwd": "${workspaceFolder}/" + `${projectPath}/debug`
                 },
                 "type": "shell"
             };
@@ -180,18 +186,6 @@ export async function patchLaunchAndTasks() {
     Feedback.info("Updated launch.json and tasks.json.");
 }
 
-export function getProjects(): string[] {
-    return fs.readdirSync(getPath(), { withFileTypes: true })
-        .filter(item => item.isDirectory())
-        .filter(folder => fs.existsSync(getMetadataPath(folder.name)))
-        .map(folder => folder.name);
-}
-
-export function getProjectPath(project: string) {
-    let filePath = path.join(getPath(), project);
-    return filePath;
-}
-
 export function getProjectPathByUri(uri: vscode.Uri): string {
     let project = getProjectByUri(uri);
     return path.join(getPath(), project);
@@ -204,23 +198,44 @@ export function getProjectByUri(uri: vscode.Uri): string {
     return project;
 }
 
-function getLanguage(project: string) {
-    return getMetadata(project).language;
-}
-
-export function getMetadata(project: string) {
-    let filePath = getMetadataPath(project);
-    let json = fs.readFileSync(filePath, { encoding: "utf8" });
-    return JSON.parse(json);
-}
-
-export function getMetadataPath(project: string) {
-    let filePath = path.join(getPath(), project, "elrond.json");
-    return filePath;
-}
-
 export function getLanguages() {
-    let languages = getProjects().map(item => getLanguage(item));
+    let metadataObjects = getMetadataObjects();
+    let languages = metadataObjects.map(item => item.Language);
     languages = _.uniq(languages);
     return languages;
+}
+
+export function getMetadataObjects(): ProjectMetadata[] {
+    let pattern = `${getPath()}/**/elrond.json`;
+    let paths = glob.sync(pattern, {});
+    let result: ProjectMetadata[] = [];
+
+    paths.forEach(item => {
+        try {
+            result.push(new ProjectMetadata(item));
+        } catch {
+            Feedback.error(`Could not read metadata for ${item}.`);
+        }
+    });
+
+    return result;
+}
+
+export class ProjectMetadata {
+    Path: string;
+    ProjectPath: string;
+    ProjectPathInWorkspace: string;
+    ProjectName: string;
+    Language: string;
+
+    constructor(metadataFile: string) {
+        let json = fs.readFileSync(metadataFile, { encoding: "utf8" });
+        let parsed = JSON.parse(json);
+
+        this.Path = metadataFile;
+        this.Language = parsed.language;
+        this.ProjectPath = path.dirname(metadataFile);
+        this.ProjectPathInWorkspace = this.ProjectPath.replace(getPath(), "");
+        this.ProjectName = path.basename(this.ProjectPath);
+    }
 }
