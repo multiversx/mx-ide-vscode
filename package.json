@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -99,6 +99,11 @@
 				{
 					"command": "elrond.cleanContract",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runMandosTests",
+					"when": "resourceFilename =~ /.scen.json/",
 					"group": "Elrond"
 				},
 				{

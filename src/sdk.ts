@@ -183,10 +183,10 @@ export async function cleanContract(folder: string) {
     }
 }
 
-export async function runMandosTests(folder: string) {
+export async function runMandosTests(path: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
-        await runInTerminal("mandos", `mandos-test ${folder}`, null);
+        await runInTerminal("mandos", `mandos-test ${path}`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }

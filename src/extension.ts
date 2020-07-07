@@ -123,10 +123,13 @@ function getContractFolder(contract: any) {
 	return (contract as SmartContract).getPath();
 }
 
-async function runMandosTests(contract: SmartContract) {
+async function runMandosTests(item: any) {
 	try {
-		let folder = getContractFolder(contract);
-		await sdk.runMandosTests(folder);
+		if (item instanceof Uri) {
+			await sdk.runMandosTests((item as Uri).fsPath);
+		} else {
+			await sdk.runMandosTests((item as SmartContract).getPath());
+		}
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
