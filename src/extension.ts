@@ -23,9 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	let contractsViewModel = new SmartContractsViewModel();
 	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
 
-	// Phony command, used to activate the extension
-	vscode.commands.registerCommand("elrond.initWorkspace", () => { });
-
+	vscode.commands.registerCommand("elrond.setupWorkspace", setupWorkspace);
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.installSdkModule", installSdkModule);
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
@@ -37,15 +35,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("elrond.refreshContracts", async () => await refreshViewModel(contractsViewModel));
-
-	initWorkspace();
 }
 
 export function deactivate() {
 	Feedback.debug("ElrondIDE.deactivate()");
 }
 
-async function initWorkspace() {
+async function setupWorkspace() {
 	if (!workspace.guardIsOpen()) {
 		return;
 	}
@@ -55,6 +51,7 @@ async function initWorkspace() {
 	await sdk.ensureInstalled();
 	await workspace.patchLaunchAndTasks();
 	await ensureInstalledBuildchains();
+	await Feedback.infoModal("Workspace has been set up.");
 }
 
 async function installSdk() {

@@ -19,15 +19,15 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"onCommand:elrond.initWorkspace",
+		"onCommand:elrond.setupWorkspace",
 		"workspaceContains:**/elrond.workspace.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "elrond.initWorkspace",
-				"title": "Initialize Workspace",
+				"command": "elrond.setupWorkspace",
+				"title": "Setup Workspace",
 				"category": "Elrond"
 			},
 			{
