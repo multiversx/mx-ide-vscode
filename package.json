@@ -32,7 +32,12 @@
 			},
 			{
 				"command": "elrond.installSdk",
-				"title": "Install Elrond SDK",
+				"title": "Install SDK",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.installSdkModule",
+				"title": "Install Module or Dependency",
 				"category": "Elrond"
 			},
 			{

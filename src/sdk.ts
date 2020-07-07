@@ -150,6 +150,11 @@ async function isErdpyGroupInstalled(group: string): Promise<boolean> {
     return ok;
 }
 
+export async function reinstallModule(): Promise<void> {
+    let module = await presenter.askChooseSdkModule(["arwentools", "rust", "clang", "cpp"]);
+    await reinstallErdpyGroup(module);
+}
+
 async function reinstallErdpyGroup(group: string) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite`, null, true);

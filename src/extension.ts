@@ -27,6 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.initWorkspace", () => { });
 
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
+	vscode.commands.registerCommand("elrond.installSdkModule", installSdkModule);
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
@@ -59,6 +60,14 @@ async function initWorkspace() {
 async function installSdk() {
 	try {
 		await sdk.reinstall();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function installSdkModule() {
+	try {
+		await sdk.reinstallModule();
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
