@@ -176,7 +176,8 @@ export async function cleanContract(folder: string) {
 
 export async function runMandosTests(folder: string) {
     try {
-        await runInTerminal("mandos", `mandos ${folder}`, null);
+        await ensureInstalledErdpyGroup("arwentools");
+        await runInTerminal("mandos", `mandos-test ${folder}`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
@@ -184,6 +185,7 @@ export async function runMandosTests(folder: string) {
 
 export async function runArwenDebugTests(folder: string) {
     try {
+        await ensureInstalledErdpyGroup("arwentools");
         Feedback.infoModal("Not yet implemented.");
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
