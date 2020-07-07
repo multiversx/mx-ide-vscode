@@ -38,8 +38,8 @@ For a better experience when debugging Smart Contracts, we recommed allowing thi
     return answer;
 }
 
-export async function askInstallErdpy(): Promise<boolean> {
-    let answer = await askYesNo(`Elrond IDE requires erdpy (part of Elrond SDK), which isn't available in your environment.
+export async function askInstallErdpy(requiredVersion: string): Promise<boolean> {
+    let answer = await askYesNo(`Elrond IDE requires erdpy ${requiredVersion} (part of Elrond SDK), which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }

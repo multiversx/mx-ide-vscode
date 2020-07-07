@@ -9,6 +9,8 @@ import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
+const RequiredErdpyVersion = "0.5.3b4";
+
 export function getPath() {
     return MySettings.getElrondSdk();
 }
@@ -26,26 +28,27 @@ async function ensureErdpy() {
         return;
     }
 
-    let answer = await presenter.askInstallErdpy();
+    let answer = await presenter.askInstallErdpy(RequiredErdpyVersion);
     if (answer) {
         await reinstallErdpy();
     }
 }
 
 async function isErdpyInstalled(): Promise<boolean> {
-    return canRun("erdpy", ["--version"]);
+    let [version, ok] = await getOneLineStdout("erdpy", ["--version"]);
+    return ok && version.includes(RequiredErdpyVersion);
 }
 
-async function canRun(program: string, args: string[]) {
+async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
     try {
-        await ProcessFacade.execute({
+        let result = await ProcessFacade.execute({
             program: program,
             args: args
         });
 
-        return true;
+        return [result.stdOut, true];
     } catch (e) {
-        return false;
+        return ["", false];
     }
 }
 
@@ -56,7 +59,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=0.5.3b3`;
+    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=${RequiredErdpyVersion}`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
@@ -143,7 +146,8 @@ async function ensureInstalledErdpyGroup(group: string) {
 }
 
 async function isErdpyGroupInstalled(group: string): Promise<boolean> {
-    return canRun("erdpy", ["deps", "check", group]);
+    let [version, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
+    return ok;
 }
 
 async function reinstallErdpyGroup(group: string) {
