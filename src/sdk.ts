@@ -9,7 +9,7 @@ import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
-const RequiredErdpyVersion = "0.5.3b4";
+const RequiredErdpyVersion = "0.5.3b5";
 
 export function getPath() {
     return MySettings.getElrondSdk();
