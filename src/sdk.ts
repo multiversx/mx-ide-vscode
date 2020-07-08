@@ -59,7 +59,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 ${erdpyUp} --no-modify-path --exact-version=${RequiredErdpyVersion}`;
+    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${RequiredErdpyVersion}`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
