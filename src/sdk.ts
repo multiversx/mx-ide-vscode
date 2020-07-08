@@ -169,7 +169,7 @@ async function reinstallErdpyGroup(group: string) {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract build ${folder}`, null);
+        await runInTerminal("build", `erdpy --verbose contract build "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -177,7 +177,7 @@ export async function buildContract(folder: string) {
 
 export async function cleanContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract clean ${folder}`, null);
+        await runInTerminal("build", `erdpy --verbose contract clean "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
@@ -186,7 +186,7 @@ export async function cleanContract(folder: string) {
 export async function runMandosTests(path: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
-        await runInTerminal("mandos", `mandos-test ${path}`, null);
+        await runInTerminal("mandos", `mandos-test "${path}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
