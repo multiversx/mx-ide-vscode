@@ -44,6 +44,20 @@ Do you agree to install it?`);
     return answer;
 }
 
+export async function askErdpyVersion(defaultVersion: string) {
+    const result = await vscode.window.showInputBox({
+        prompt: "Enter the erdpy version to install",
+        value: defaultVersion,
+        ignoreFocusOut: true,
+        placeHolder: "For example: 1.0.0",
+        validateInput: text => {
+            return text.length > 0 ? null : "Should not be empty.";
+        }
+    });
+
+    return result;
+}
+
 export async function askInstallErdpyGroup(group: string): Promise<boolean> {
     let answer = await askYesNo(`It seems that your workspace requires the dependency group "${group}", which isn't available in your erdpy environment.
 Do you agree to install it?`);

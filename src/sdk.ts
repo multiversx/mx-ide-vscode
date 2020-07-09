@@ -16,7 +16,8 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    await reinstallErdpy();
+    let version = await presenter.askErdpyVersion(MinErdpyVersion);
+    await reinstallErdpy(version);
 }
 
 export async function ensureInstalled() {
@@ -30,7 +31,7 @@ async function ensureErdpy() {
 
     let answer = await presenter.askInstallErdpy(MinErdpyVersion);
     if (answer) {
-        await reinstallErdpy();
+        await reinstallErdpy(MinErdpyVersion);
     }
 }
 
@@ -53,14 +54,14 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
     }
 }
 
-export async function reinstallErdpy() {
+export async function reinstallErdpy(version: string) {
     let erdpyUp = storage.getPathTo("erdpy-up.py");
     await RestFacade.download({
         url: "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py",
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${MinErdpyVersion}`;
+    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${version}`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
