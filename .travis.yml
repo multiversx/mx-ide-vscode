@@ -1,21 +1,17 @@
-arch:
-  - amd64
 
-matrix:
-  include:
-    - language: generic
-      os: linux
-      dist: bionic
-      before_install:
-        - nvm install node
-        - node --version
-      install:
-        - npm install
-      before_script:
-      script:
-        - npm run compile
-      after_script:
-        - npm run deploy
+language: generic
+os: linux
+dist: bionic
+before_install:
+- nvm install node
+- node --version
+install:
+- npm install
+before_script:
+script:
+- npm run compile
+after_script:
+- npm run deploy
 
 stages:
 - name: after_script
