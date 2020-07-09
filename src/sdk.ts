@@ -9,7 +9,7 @@ import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
-const RequiredErdpyVersion = "0.5.3b5";
+const MinErdpyVersion = "0.5.3b8";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -28,7 +28,7 @@ async function ensureErdpy() {
         return;
     }
 
-    let answer = await presenter.askInstallErdpy(RequiredErdpyVersion);
+    let answer = await presenter.askInstallErdpy(MinErdpyVersion);
     if (answer) {
         await reinstallErdpy();
     }
@@ -36,7 +36,8 @@ async function ensureErdpy() {
 
 async function isErdpyInstalled(): Promise<boolean> {
     let [version, ok] = await getOneLineStdout("erdpy", ["--version"]);
-    return ok && version.includes(RequiredErdpyVersion);
+    let isNewer = version >= `erdpy ${MinErdpyVersion}`;
+    return ok && isNewer;
 }
 
 async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
@@ -59,7 +60,7 @@ export async function reinstallErdpy() {
         destination: erdpyUp
     });
 
-    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${RequiredErdpyVersion}`;
+    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${MinErdpyVersion}`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
