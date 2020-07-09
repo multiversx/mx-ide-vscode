@@ -1,12 +1,13 @@
 import path = require("path");
 import fs = require("fs");
 import * as presenter from './presenter';
-import { Feedback } from "./feedback";
+import * as workspace from './workspace';
 import { window } from 'vscode';
 import * as errors from './errors';
 
 
 export async function runContractSnippet(folder: string) {
+    let metadata = workspace.getMetadataObjectByFolder(folder);
     let snippetsFile = path.join(folder, "snippets.sh");
 
     if (!fs.existsSync(snippetsFile)) {
@@ -15,7 +16,9 @@ export async function runContractSnippet(folder: string) {
 
     let snippets = getSnippetsNames(snippetsFile);
     let choice = await presenter.askChoice(snippets);
-    await runInTerminal("snippets", `source ${snippetsFile} && ${choice}`);
+    let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
+    let command = `source ${snippetsFile} && ${choice}`;
+    await runInTerminal(terminalName, command, folder);
 }
 
 function getSnippetsNames(file: string): string[] {
@@ -24,19 +27,13 @@ function getSnippetsNames(file: string): string[] {
     return found;
 }
 
-async function runInTerminal(terminalName: string, command: string) {
-    let terminal = getOrCreateTerminal(terminalName);
-    terminal.sendText(command);
-    terminal.show(false);
-}
-
-function getOrCreateTerminal(name: string) {
-    name = `Elrond: ${name}`;
-
-    let terminal = window.terminals.find(item => item.name == name);
+async function runInTerminal(terminalName: string, command: string, contractFolder: string) {
+    let terminal = window.terminals.find(item => item.name == terminalName);
     if (!terminal) {
-        terminal = window.createTerminal({ name: name });
+        let env = { CONTRACT_FOLDER: contractFolder };
+        terminal = window.createTerminal({ name: terminalName, env: env });
     }
 
-    return terminal;
+    terminal.sendText(command);
+    terminal.show(false);
 }

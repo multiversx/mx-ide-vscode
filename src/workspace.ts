@@ -209,6 +209,11 @@ export function getMetadataObjects(): ProjectMetadata[] {
     return result;
 }
 
+export function getMetadataObjectByFolder(folder: string): ProjectMetadata {
+    let metadataPath = path.join(folder, "elrond.json");
+    return new ProjectMetadata(metadataPath);
+}
+
 export class ProjectMetadata {
     Path: string;
     ProjectPath: string;
