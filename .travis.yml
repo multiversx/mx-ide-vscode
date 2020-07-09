@@ -1,0 +1,22 @@
+arch:
+  - amd64
+
+matrix:
+  include:
+    - language: generic
+      os: linux
+      dist: bionic
+      before_install:
+        - nvm install node
+        - node --version
+      install:
+        - npm install
+      before_script:
+      script:
+        - npm run compile
+      after_script:
+        - vsce publish
+
+stages:
+- name: after_script
+  if: env(TRAVIS_TAG) =~ ^v

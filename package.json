@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.5.6",
+	"version": "0.5.8",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -247,6 +247,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
+		"deploy": "vsce publish",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile",
@@ -262,6 +263,7 @@
 		"mocha": "^6.1.4",
 		"tslint": "^5.20.1",
 		"typescript": "^3.9.5",
+		"vsce": "^1.77.0",
 		"vscode-test": "^1.4.0"
 	},
 	"dependencies": {
