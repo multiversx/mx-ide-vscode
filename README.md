@@ -1,5 +1,7 @@
 # Elrond IDE for Visual Studio Code
 
+[![Build Status](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode.svg?branch=master)](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode)
+
 **This Visual Studio Code extension is under development: [CHANGELOG](https://github.com/ElrondNetwork/elrond-ide-vscode/releases)**
 
 ## What is it?
