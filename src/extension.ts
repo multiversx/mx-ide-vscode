@@ -8,6 +8,7 @@ import * as workspace from "./workspace";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
+import * as snippets from './snippets';
 import { SmartContractsViewModel, SmartContract } from './contracts';
 import { Uri } from 'vscode';
 import path = require("path");
@@ -28,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.installSdkModule", installSdkModule);
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
+	vscode.commands.registerCommand("elrond.runContractSnippet", runContractSnippet);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
 	vscode.commands.registerCommand("elrond.runArwenDebugTests", runArwenDebugTests);
 
@@ -123,10 +125,21 @@ async function cleanContract(contract: any) {
 	}
 }
 
+async function runContractSnippet(contract: any) {
+	try {
+		let folder = getContractFolder(contract);
+		await snippets.runContractSnippet(folder);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
 function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
 		let fsPath = (contract as Uri).fsPath;
 		if (fsPath.includes("elrond.json")) {
+			return path.dirname(fsPath);
+		} else if (fsPath.includes("snippets.sh")) {
 			return path.dirname(fsPath);
 		} else {
 			return fsPath;

@@ -74,6 +74,11 @@
 				"category": "Elrond"
 			},
 			{
+				"command": "elrond.runContractSnippet",
+				"title": "Run Contract Snippet",
+				"category": "Elrond"
+			},
+			{
 				"command": "elrond.runMandosTests",
 				"title": "Run Mandos Tests",
 				"category": "Elrond"
@@ -109,6 +114,16 @@
 				{
 					"command": "elrond.cleanContract",
 					"when": "resourceFilename == elrond.json",
+					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runContractSnippet",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runContractSnippet",
+					"when": "resourceFilename == elrond.json || resourceFilename == snippets.sh",
 					"group": "Elrond"
 				},
 				{
@@ -149,6 +164,10 @@
 					"when": "false"
 				},
 				{
+					"command": "elrond.runContractSnippet",
+					"when": "false"
+				},
+				{
 					"command": "elrond.runMandosTests",
 					"when": "false"
 				},
@@ -181,6 +200,10 @@
 				},
 				{
 					"command": "elrond.cleanContract",
+					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.runContractSnippet",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
