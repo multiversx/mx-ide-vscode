@@ -1,4 +1,3 @@
-if: tag IS present
 language: generic
 os: linux
 dist: bionic
