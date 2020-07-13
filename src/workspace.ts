@@ -8,6 +8,7 @@ import * as presenter from "./presenter";
 import * as errors from './errors';
 import glob = require("glob");
 
+let languages = ["cpp", "clang", "rust"];
 
 export function isOpen(): boolean {
     return getPath() ? true : false;
@@ -201,8 +202,8 @@ export function getMetadataObjects(): ProjectMetadata[] {
     paths.forEach(item => {
         try {
             result.push(new ProjectMetadata(item));
-        } catch {
-            Feedback.error(`Could not read metadata for ${item}.`);
+        } catch (error) {
+            errors.caughtTopLevel(error);
         }
     });
 
@@ -230,5 +231,9 @@ export class ProjectMetadata {
         this.ProjectPath = path.dirname(metadataFile);
         this.ProjectPathInWorkspace = this.ProjectPath.replace(getPath(), "");
         this.ProjectName = path.basename(this.ProjectPath);
+
+        if (!languages.includes(this.Language)) {
+            throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}` });
+        }
     }
 }
