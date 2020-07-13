@@ -1,14 +1,65 @@
-# Change Log
+# Changelog
 
-All notable changes to the extension will be documented in this file.
+## New erdpy, fixes (13/07/2020)
+ - Reference new erdpy
+ - Handle `elrond.json` project files with missing language. 
+---
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## Fixes (09/07/2020)
+ - Pass `CONTRACT_FOLDER` as env variable to snippets.
+ - Reference new erdpy.
+---
 
-## [Unreleased]
+## Fixes and new features (09/07/2020)
+ - Add Travis integration (to release to Visual Studio Code Marketplace)
+ - Feature: run contract snippets (deploy, call, query)
+ - Allow reinstall of precise, specified erdpy version (user is asked for input)
+ - Reference new erdpy.
+---
 
-- Initial release
+## Bugfixes (09/07/2020)
+- Bugfix: quote path (didn't work on MacOS).
+---
 
-## [0.3.8]
+## New erdpy (09/07/2020)
+ - Reference new erdpy beta.
+---
+
+## Fixes, shortcuts, clean project (09/07/2020)
+- Bugfix - ignore folders without metadata.
+- Extra shortcuts. Clean project.
+- Run mandos directly, without "erdpy test".
+---
+
+## Re-written Elrond IDE (09/07/2020)
+ - Dropped the deprecated form-based playground
+ - Added erdpy as a backend
+ - Added functionality to setup developer workspace (auto-managing `settings.json`, `launch.json`, `tasks.json`)
+ - Auto-download dependencies via `erdpy-up` and `erdpy`.
+ - Added shortcuts to compile, run tests.
+ - Added templates view (with shortcut to create contract based on template)
+ - Added contracts view (with shortcuts to build, run tests etc.).
+---
+
+## Fixes and new features (09/07/2020)
+ - Feature: run mandos tests individually as well.
+ - Fix: allow user to trigger "Setup (initialize) workspace".
+ - Fix: enable support for non-multi-project workspaces.
+ - Feature: allow one to clean & build with right click on elrond.json as well
+---
+
+## Bugfixes & a feature (09/07/2020)
+Bugfixes & a feature:
+ - install "arwentools" if missing (since mandos is called without the erdpy intermediary since latest version).
+ - require precise / exact version of erdpy to be present.
+ - allow user to explicitly reinstall sdk module if desired
+---
+
+## Fixes (06/07/2020)
+ - Fix path-with-spaces issues.
+---
+
+## Using erdpy as a backend, other fixes (14/02/2020)
 
 - Added **[erdpy](https://github.com/ElrondNetwork/erdpy)** as a required dependency.
 
@@ -28,7 +79,97 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Remove commands to start and stop **nodedebug**. They were a bit problematic and also redundant. One can use `erdpy nodedebug` and `erdpy nodedebug --stop` commands.
 
+---
 
-## [Upcoming (TODO)]
+## Layout fixes (03/02/2020)
+Layout fix - more narrow menu / navigation bar.
+---
 
-- Only allow one project per workspace (otherwise Rust / Cargo build issues).
+## Extra samples and improved UX (16/01/2020)
+Extra samples (templates / prototypes).
+Improved error feedback.
+Improved display of VM output.
+---
+
+## Testnet integration (15/01/2020)
+Deploy contract and run function on testnet.
+Query watched variables (improvements).
+UX improvements.
+---
+
+## Preview (20/12/2019)
+Updated logo.
+---
+
+## Preview (20/12/2019)
+Updated description.
+Bug fix for workspace not open (display info to open a folder).
+---
+
+## Preview (20/12/2019)
+Logo and categories.
+---
+
+## Preview (20/12/2019)
+Minor fixes, prepare manifest for publishing.
+---
+
+## Preview (17/12/2019)
+Updated theme. Fixed, improved, simplified layout. Improved UX overall. 
+
+Temporarily disabled some features (deploy & debug & query Testnet). Will be enabled back again very soon, after some more testing.
+---
+
+## Preview (29/11/2019)
+Improve layout. Less clutter.
+Download buildchain for Solidity (SOLL compiler) as well.
+---
+
+## Preview (28/11/2019)
+Added support for Solidity, via https://github.com/second-state/soll compiler.
+---
+
+## Preview (11/11/2019)
+Added support for RUST.
+Allow customization of build (exported functions for C, for now).
+Added support for watching smart contract variables.
+Added support for "debug" variables (placeholders for deploy and run).
+UX fixes, removed bootswatch theme - we'll use a prettier theme soon. 
+---
+
+## Preview for SF (31/10/2019)
+Fix gas price defaults.
+---
+
+## Preview for SF (31/10/2019)
+Due to a DOM bug, the Environment tab was missing. Fixed.
+---
+
+## Preview for SF (31/10/2019)
+New feature - query testnet.
+---
+
+## Preview for SF (31/10/2019)
+MacOS fix - Add exec rights to debugWithRestApi.
+Update snippets - add new erc20 implementation.
+Improve "create from template (prototype)" command / feature.
+---
+
+## Preview for SF (30/10/2019)
+Fix LD_LIBRARY_PATH - point to folder of node-debug.
+Fix kill process by port for macos.
+Download and install node-debug as binary - bypass build step.
+Use other defaults for running a function.
+---
+
+## Preview for SF (30/10/2019)
+Pass gas price, gas limit, value.
+---
+
+## Preview for SF (30/10/2019)
+ Fix encoding of parameters. Add description. "0x" prefix mandatory for "user-encoded" args.
+---
+
+## First preview (30/10/2019)
+Create .hex and .hex.arwen files at build time (after building .wasm).
+Improve error detection, throwing, handling (http dialogue, mostly).
