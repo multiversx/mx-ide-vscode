@@ -2,14 +2,13 @@ import { Feedback } from './feedback';
 import { ProcessFacade, RestFacade } from "./utils";
 import { window } from 'vscode';
 import { MySettings } from './settings';
-import path = require("path");
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
-let MinErdpyVersion = "0.7.2";
+let MinErdpyVersion = "0.8.5";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -78,7 +77,7 @@ export async function fetchTemplates(cacheFile: string) {
     try {
         await ProcessFacade.execute({
             program: "erdpy",
-            args: ["contract", "templates", "--json"],
+            args: ["contract", "templates"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
         });
@@ -147,24 +146,26 @@ async function ensureInstalledErdpyGroup(group: string) {
     }
 }
 
-async function isErdpyGroupInstalled(group: string): Promise<boolean> {
-    let [version, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
+async function isErdpyGroupInstalled(group: string, version: string = ""): Promise<boolean> {
+    let [_, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
     return ok;
 }
 
 export async function reinstallModule(): Promise<void> {
     let module = await presenter.askChooseSdkModule(["arwentools", "rust", "clang", "cpp"]);
-    await reinstallErdpyGroup(module);
+    let version = await presenter.askModuleVersion();
+    await reinstallErdpyGroup(module, version);
 }
 
-async function reinstallErdpyGroup(group: string) {
+async function reinstallErdpyGroup(group: string, version: string = "") {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
-    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite`, null, true);
+    let tagArgument = version ? `--tag=${version}` : "";
+    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite ${tagArgument}`, null, true);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyGroupInstalled(group)));
+    } while ((!await isErdpyGroupInstalled(group, version)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
@@ -185,10 +186,10 @@ export async function cleanContract(folder: string) {
     }
 }
 
-export async function runMandosTests(path: string) {
+export async function runMandosTests(folder: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
-        await runInTerminal("mandos", `mandos-test "${path}"`, null);
+        await runInTerminal("mandos", `mandos-test "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }

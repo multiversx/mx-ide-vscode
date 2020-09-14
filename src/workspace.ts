@@ -189,9 +189,9 @@ export async function patchLaunchAndTasks() {
 
 export function getLanguages() {
     let metadataObjects = getMetadataObjects();
-    let languages = metadataObjects.map(item => item.Language);
-    languages = _.uniq(languages);
-    return languages;
+    let languagesInProject = metadataObjects.map(item => item.Language);
+    languagesInProject = _.uniq(languagesInProject);
+    return languagesInProject;
 }
 
 export function getMetadataObjects(): ProjectMetadata[] {

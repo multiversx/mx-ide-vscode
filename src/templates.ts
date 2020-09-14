@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import fs = require("fs");
-import { Feedback } from './feedback';
 import path = require("path");
 import * as sdk from "./sdk";
 import * as storage from "./storage";

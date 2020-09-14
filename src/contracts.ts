@@ -1,6 +1,4 @@
-import * as vscode from 'vscode';
-import fs = require("fs");
-import { Feedback } from './feedback';
+import * as vscode from "vscode";
 import path = require("path");
 import * as workspace from "./workspace";
 

@@ -8,7 +8,7 @@ export class MyEventBus extends EventEmitter {
 
         let eventNamespace = event.toString().split(":")[0];
         if (eventNamespace) {
-            let argsClone = Object.assign([], args);
+            argsClone = Object.assign([], args);
             // Last argument will be the precise event identifier
             argsClone.push(event);
             // Emit for "wildcard observers".
