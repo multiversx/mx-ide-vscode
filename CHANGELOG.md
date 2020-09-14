@@ -1,5 +1,12 @@
 # Changelog
 
+## Latest erdpy, minor fixes (14/09/2020)
+ - Update reference to erdpy, fix some linting warnings
+ - Fix listing of templates
+ - Ask precise version of erdpy deps to install.
+
+---
+
 ## New erdpy, fixes (13/07/2020)
  - Reference new erdpy
  - Handle `elrond.json` project files with missing language. 
@@ -168,8 +175,3 @@ Pass gas price, gas limit, value.
 
 ## Preview for SF (30/10/2019)
  Fix encoding of parameters. Add description. "0x" prefix mandatory for "user-encoded" args.
----
-
-## First preview (30/10/2019)
-Create .hex and .hex.arwen files at build time (after building .wasm).
-Improve error detection, throwing, handling (http dialogue, mostly).
