@@ -1,0 +1,2 @@
+changelog:
+	gren changelog --override
