@@ -44,7 +44,7 @@ Do you agree to install it?`);
     return answer;
 }
 
-export async function askErdpyVersion(defaultVersion: string) {
+export async function askErdpyVersion(defaultVersion: string): Promise<string> {
     const result = await vscode.window.showInputBox({
         prompt: "Enter the erdpy version to install",
         value: defaultVersion,
@@ -66,6 +66,17 @@ Do you agree to install it?`);
 
 export async function askChooseSdkModule(modules: string[]): Promise<string> {
     return await askChoice(modules);
+}
+
+export async function askModuleVersion(): Promise<string> {
+    const result = await vscode.window.showInputBox({
+        prompt: "Enter the module version to install (leave blank for default)",
+        value: "",
+        ignoreFocusOut: true,
+        placeHolder: "For example: v1.2.3"
+    });
+
+    return result;
 }
 
 export async function askYesNo(question: string): Promise<boolean> {

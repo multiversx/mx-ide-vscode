@@ -146,24 +146,26 @@ async function ensureInstalledErdpyGroup(group: string) {
     }
 }
 
-async function isErdpyGroupInstalled(group: string): Promise<boolean> {
+async function isErdpyGroupInstalled(group: string, version: string = ""): Promise<boolean> {
     let [_, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
     return ok;
 }
 
 export async function reinstallModule(): Promise<void> {
     let module = await presenter.askChooseSdkModule(["arwentools", "rust", "clang", "cpp"]);
-    await reinstallErdpyGroup(module);
+    let version = await presenter.askModuleVersion();
+    await reinstallErdpyGroup(module, version);
 }
 
-async function reinstallErdpyGroup(group: string) {
+async function reinstallErdpyGroup(group: string, version: string = "") {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
-    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite`, null, true);
+    let tagArgument = version ? `--tag=${version}` : "";
+    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite ${tagArgument}`, null, true);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyGroupInstalled(group)));
+    } while ((!await isErdpyGroupInstalled(group, version)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
