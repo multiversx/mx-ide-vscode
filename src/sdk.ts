@@ -2,14 +2,13 @@ import { Feedback } from './feedback';
 import { ProcessFacade, RestFacade } from "./utils";
 import { window } from 'vscode';
 import { MySettings } from './settings';
-import path = require("path");
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
-let MinErdpyVersion = "0.7.2";
+let MinErdpyVersion = "0.8.5";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -148,7 +147,7 @@ async function ensureInstalledErdpyGroup(group: string) {
 }
 
 async function isErdpyGroupInstalled(group: string): Promise<boolean> {
-    let [version, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
+    let [_, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
     return ok;
 }
 
@@ -185,10 +184,10 @@ export async function cleanContract(folder: string) {
     }
 }
 
-export async function runMandosTests(path: string) {
+export async function runMandosTests(folder: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
-        await runInTerminal("mandos", `mandos-test "${path}"`, null);
+        await runInTerminal("mandos", `mandos-test "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
