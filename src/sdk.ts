@@ -77,7 +77,7 @@ export async function fetchTemplates(cacheFile: string) {
     try {
         await ProcessFacade.execute({
             program: "erdpy",
-            args: ["contract", "templates", "--json"],
+            args: ["contract", "templates"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
         });
