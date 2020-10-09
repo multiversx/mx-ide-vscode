@@ -1,5 +1,9 @@
 # Changelog
 
+## Reference newest erdpy (09/10/2020)
+ - Reference newest erdpy.
+---
+
 ## Latest erdpy, minor fixes (14/09/2020)
  - Update reference to erdpy, fix some linting warnings
  - Fix listing of templates
@@ -171,7 +175,3 @@ Use other defaults for running a function.
 
 ## Preview for SF (30/10/2019)
 Pass gas price, gas limit, value.
----
-
-## Preview for SF (30/10/2019)
- Fix encoding of parameters. Add description. "0x" prefix mandatory for "user-encoded" args.
