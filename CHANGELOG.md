@@ -1,5 +1,14 @@
 # Changelog
 
+## More robust procedure for setting up environment variables (14/10/2020)
+ - Handle particularities of Rust extension (e.g. disable RLS at start-up, expect explicit start).
+ - Pass `env` when running commands in the integrated terminal as well (instead of only relying on the content of `settings.json` - which the user may not accept, when asked).
+ - Add debugging items in `launch.json`, `tasks.json` - dump environment variables; useful for debugging eventual bugs related to env vars.
+ - Refactoring.
+
+PR: https://github.com/ElrondNetwork/elrond-ide-vscode/pull/11
+---
+
 ## Reference newest erdpy (09/10/2020)
  - Reference newest erdpy.
 ---
@@ -171,7 +180,3 @@ Fix LD_LIBRARY_PATH - point to folder of node-debug.
 Fix kill process by port for macos.
 Download and install node-debug as binary - bypass build step.
 Use other defaults for running a function.
----
-
-## Preview for SF (30/10/2019)
-Pass gas price, gas limit, value.
