@@ -69,7 +69,9 @@ async function patchSettings(): Promise<boolean> {
         "terminal.integrated.inheritEnv": true,
         "workbench.dialogs.customEnabled": true,
         "rust-client.rustupPath": path.join(rustBinFolder, "rustup"),
-        "rust-client.rlsPath": path.join(rustBinFolder, "rls")
+        "rust-client.rlsPath": path.join(rustBinFolder, "rls"),
+        "rust-client.disableRustup": true,
+        "rust-client.autoStartRls": false
     };
 
     let patched = false;
