@@ -102,6 +102,10 @@ export async function newFromTemplate(folder: string, template: string, name: st
 }
 
 async function runInTerminal(terminalName: string, command: string, env: any, renew: boolean = false) {
+    if (!env) {
+        env = Environment.getForTerminal();
+    }
+
     let terminal = getOrCreateTerminal(terminalName, env, renew);
     terminal.sendText(command);
     terminal.show(false);

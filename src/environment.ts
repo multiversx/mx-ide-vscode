@@ -16,11 +16,45 @@ export class Environment {
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
 
+        // This is required for other VS Code extensions to work well and use the custom (Rust) environment.
         delete process.env["PYTHONHOME"];
         process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${process.env["PATH"]}`;
         process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
         process.env["RUSTUP_HOME"] = rustFolder;
         process.env["CARGO_HOME"] = rustFolder;
+    }
+
+    static getForVsCodeFiles(): any {
+        let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+        let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
+        let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let arwentoolsFolder = path.join(sdkPath, "arwentools");
+        let rustFolder = path.join(sdkPath, "vendor-rust");
+        let rustBinFolder = path.join(rustFolder, "bin");
+
+        return {
+            "PATH": rustBinFolder + ":" + erdpyBinFolder + ":" + arwentoolsFolder + ":" + "${env:PATH}",
+            "VIRTUAL_ENV": erdpyEnvFolder,
+            "RUSTUP_HOME": rustFolder,
+            "CARGO_HOME": rustFolder
+        };
+    }
+
+    static getForTerminal(): any {
+        let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+        let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
+        let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let arwentoolsFolder = path.join(sdkPath, "arwentools");
+        let rustFolder = path.join(sdkPath, "vendor-rust");
+        let rustBinFolder = path.join(rustFolder, "bin");
+
+        return {
+            "PYTHONHOME": null,
+            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${process.env["PATH"]}`,
+            "VIRTUAL_ENV": erdpyEnvFolder,
+            "RUSTUP_HOME": rustFolder,
+            "CARGO_HOME": rustFolder
+        };
     }
 
     private static saveOld() {
