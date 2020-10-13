@@ -39,19 +39,29 @@ If you experience any issues, please let us know [on Github](https://github.com/
 
 ### Other dependencies
 
-The extension, via `erdpy`, will automatically download its external dependencies, so you do not have to worry much about setting up the development environment. These automatically installed dependencies are:
+The extension, via `erdpy`, will automatically download its external dependencies, so you do not have to worry much about setting up the development environment. These automatically installed dependencies include:
 
-* `LLVM (clang, llc, wasm-ld etc.)`
 * `RUST` buildchain
-
-## Extension Settings
-
-This extension contributes the following settings:
-
-* `...`: ...
+* Arwen Tools (Mandos framework, Arwen Debug)
+* `LLVM (clang, llc, wasm-ld etc.)`
 
 ## Extension Commands
 
 This extension contributes the following commands (`Ctrl+Shift+P`):
 
-* `buildContract`: builds the smart contract to WASM bytecode.
+* `newFromTemplate`
+* `buildContract`
+* `cleanContract`
+* `runMandosTests`
+* `runArwenDebugTests`
+* `runContractSnippet`
+
+## Contributors
+
+### How to publish an update of the extension
+
+1. Bump version in `package.json` and `package-lock.json`
+2. Push to GitHub
+3. Publish release on Github, add release notes
+4. Update changelog via `make changelog`
+5. Publish to VSCode Marketplace via `make publish`
