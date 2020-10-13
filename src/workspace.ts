@@ -7,6 +7,7 @@ import * as presenter from "./presenter";
 import * as errors from './errors';
 import glob = require("glob");
 import { Environment } from "./environment";
+import { MySettings } from "./settings";
 
 let languages = ["cpp", "clang", "rust"];
 
@@ -56,9 +57,19 @@ async function patchSettings(): Promise<boolean> {
 
     let json = fs.readFileSync(filePath, { encoding: "utf8" });
     let settings = JSON.parse(json);
+    let env = Environment.getForVsCodeFiles();
+    let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+    let rustFolder = path.join(sdkPath, "vendor-rust");
+    let rustBinFolder = path.join(rustFolder, "bin");
 
     let patch = {
-        "workbench.dialogs.customEnabled": true
+        "terminal.integrated.env.linux": env,
+        "terminal.integrated.env.osx": env,
+        "terminal.integrated.environmentChangesIndicator": "on",
+        "terminal.integrated.inheritEnv": true,
+        "workbench.dialogs.customEnabled": true,
+        "rust-client.rustupPath": path.join(rustBinFolder, "rustup"),
+        "rust-client.rlsPath": path.join(rustBinFolder, "rls")
     };
 
     let patched = false;
@@ -150,7 +161,7 @@ export async function patchLaunchAndTasks() {
                 "request": "launch",
                 "name": `Debug ${project}`,
                 "preLaunchTask": `${project}-debug-build`,
-                "program": "${workspaceFolder}/" + `${projectPath}/debug/target/debug/${project}-debug`,
+                "program": path.join("${workspaceFolder}", projectPath, "debug", "target", "debug", `${project}-debug`),
                 "args": [],
                 "cwd": "${workspaceFolder}",
                 "env": env
@@ -161,7 +172,7 @@ export async function patchLaunchAndTasks() {
                 "command": "cargo",
                 "args": ["build"],
                 "options": {
-                    "cwd": "${workspaceFolder}/" + `${projectPath}/debug`,
+                    "cwd": path.join("${workspaceFolder}", projectPath, "debug"),
                     "env": env
                 },
                 "type": "shell"
