@@ -16,13 +16,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "npm: watch",
-			"env": {
-				"PATH": "${env:HOME}/elrondsdk/vendor-rust/bin:${env:HOME}/elrondsdk/erdpy-venv/bin:${env:HOME}/elrondsdk/arwentools:${env:PATH}",
-				"VIRTUAL_ENV": "${env:HOME}/elrondsdk/erdpy-venv",
-				"RUSTUP_HOME": "${env:HOME}/elrondsdk/vendor-rust",
-				"CARGO_HOME": "${env:HOME}/elrondsdk/vendor-rust"
-			}
+			"preLaunchTask": "npm: watch"
 		},
 		{
 			"name": "Extension Tests",
