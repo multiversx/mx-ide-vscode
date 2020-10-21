@@ -16,6 +16,10 @@ export async function runContractSnippet(folder: string) {
 
     let snippets = getSnippetsNames(snippetsFile);
     let choice = await presenter.askChoice(snippets);
+    if (!choice) {
+        return;
+    }
+    
     let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
     let command = `source ${snippetsFile} && ${choice}`;
     await runInTerminal(terminalName, command, folder);
