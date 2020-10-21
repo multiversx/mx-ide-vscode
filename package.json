@@ -238,7 +238,7 @@
 			"activitybar": [
 				{
 					"id": "elrond",
-					"title": "Elrond Explorer",
+					"title": "Elrond Workspace Explorer",
 					"icon": "content/logo.png"
 				}
 			]
