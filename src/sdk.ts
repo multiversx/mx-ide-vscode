@@ -37,7 +37,7 @@ async function ensureErdpy() {
 }
 
 async function isErdpyInstalled(): Promise<boolean> {
-    let [version, ok] = await getOneLineStdout("erdpy", ["--version"]);
+    let [version, ok] = await getOneLineStdout(Erdpy, ["--version"]);
     let isNewer = version >= `${Erdpy} ${MinErdpyVersion}`;
     return ok && isNewer;
 }
