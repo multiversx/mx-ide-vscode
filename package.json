@@ -94,8 +94,18 @@
 				"category": "Elrond"
 			},
 			{
-				"command": "elrond.runTestnet",
-				"title": "Run Local Testnet",
+				"command": "elrond.runFreshTestnet",
+				"title": "Start Fresh Testnet",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.resumeExistingTestnet",
+				"title": "Resume Testnet",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.stopTestnet",
+				"title": "Stop Testnet",
 				"category": "Elrond"
 			}
 		],
@@ -147,8 +157,18 @@
 					"group": "Elrond"
 				},
 				{
-					"command": "elrond.runTestnet",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"command": "elrond.runFreshTestnet",
+					"when": "resourceFilename == testnet.toml",
+					"group": "Elrond Testnet"
+				},
+				{
+					"command": "elrond.resumeExistingTestnet",
+					"when": "resourceFilename == testnet.toml",
+					"group": "Elrond Testnet"
+				},
+				{
+					"command": "elrond.stopTestnet",
+					"when": "resourceFilename == testnet.toml",
 					"group": "Elrond Testnet"
 				}
 			],
@@ -190,7 +210,15 @@
 					"when": "false"
 				},
 				{
-					"command": "elrond.runTestnet",
+					"command": "elrond.runFreshTestnet",
+					"when": "false"
+				},
+				{
+					"command": "elrond.resumeExistingTestnet",
+					"when": "false"
+				},
+				{
+					"command": "elrond.stopTestnet",
 					"when": "false"
 				}
 			],
@@ -231,11 +259,6 @@
 				{
 					"command": "elrond.gotoContract",
 					"when": "view == smartContracts && viewItem == contract"
-				},
-				{
-					"command": "elrond.runTestnet",
-					"when": "view == smartContracts && viewItem == contract",
-					"group": "Elrond Testnet"
 				},
 				{
 					"command": "elrond.newFromTemplate",

@@ -1,11 +1,12 @@
 import { Feedback } from './feedback';
 import { ProcessFacade, RestFacade } from "./utils";
-import { Terminal, window } from 'vscode';
+import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
+import path = require("path");
 
 
 let MinErdpyVersion = "0.9.2";
@@ -141,6 +142,15 @@ async function destroyTerminal(name: string) {
     await sleep(500);
 }
 
+async function killRunningInTerminal(name: string) {
+    let terminal = findTerminal(name);
+    if (!terminal) {
+        return;
+    }
+
+    terminal.sendText("\u0003");
+}
+
 async function sleep(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
@@ -221,14 +231,35 @@ export async function runArwenDebugTests(folder: string) {
     }
 }
 
-export async function runTestnet(folder: string) {
+export async function runFreshTestnet(testnetToml: Uri) {
     try {
+        let folder = path.dirname(testnetToml.fsPath);
+
         await ensureInstalledErdpyGroup("golang");
         await destroyTerminal("testnet");
         await runInTerminal("testnet", `${Erdpy} testnet clean`, null, folder);
         await runInTerminal("testnet", `${Erdpy} testnet prerequisites`);
         await runInTerminal("testnet", `${Erdpy} testnet config`);
         await runInTerminal("testnet", `${Erdpy} testnet start`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+    }
+}
+
+export async function resumeExistingTestnet(testnetToml: Uri) {
+    try {
+        let folder = path.dirname(testnetToml.fsPath);
+
+        await destroyTerminal("testnet");
+        await runInTerminal("testnet", `${Erdpy} testnet start`, null, folder);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+    }
+}
+
+export async function stopTestnet(testnetToml: Uri) {
+    try {
+        await killRunningInTerminal("testnet");
     } catch (error) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
