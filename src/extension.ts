@@ -32,6 +32,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.runContractSnippet", runContractSnippet);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
 	vscode.commands.registerCommand("elrond.runArwenDebugTests", runArwenDebugTests);
+	vscode.commands.registerCommand("elrond.runTestnet", runTestnet);
 
 	vscode.commands.registerCommand("elrond.cleanContract", cleanContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
@@ -165,6 +166,15 @@ async function runArwenDebugTests(contract: SmartContract) {
 	try {
 		let folder = getContractFolder(contract);
 		await sdk.runArwenDebugTests(folder);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function runTestnet(contract: SmartContract) {
+	try {
+		let folder = getContractFolder(contract);
+		await sdk.runTestnet(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

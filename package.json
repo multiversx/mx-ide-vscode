@@ -92,6 +92,11 @@
 				"command": "elrond.gotoContract",
 				"title": "Show in Explorer",
 				"category": "Elrond"
+			},
+			{
+				"command": "elrond.runTestnet",
+				"title": "Run Local Testnet",
+				"category": "Elrond"
 			}
 		],
 		"menus": {
@@ -140,6 +145,11 @@
 					"command": "elrond.runArwenDebugTests",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
 					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runTestnet",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"group": "Elrond Testnet"
 				}
 			],
 			"commandPalette": [
@@ -177,6 +187,10 @@
 				},
 				{
 					"command": "elrond.gotoContract",
+					"when": "false"
+				},
+				{
+					"command": "elrond.runTestnet",
 					"when": "false"
 				}
 			],
@@ -217,6 +231,11 @@
 				{
 					"command": "elrond.gotoContract",
 					"when": "view == smartContracts && viewItem == contract"
+				},
+				{
+					"command": "elrond.runTestnet",
+					"when": "view == smartContracts && viewItem == contract",
+					"group": "Elrond Testnet"
 				},
 				{
 					"command": "elrond.newFromTemplate",
