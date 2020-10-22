@@ -90,7 +90,7 @@
 			},
 			{
 				"command": "elrond.gotoContract",
-				"title": "Show in Explorer",
+				"title": "Show in Workspace Explorer",
 				"category": "Elrond"
 			},
 			{
