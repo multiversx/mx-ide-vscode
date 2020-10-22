@@ -8,7 +8,8 @@ import * as presenter from './presenter';
 import { Environment } from './environment';
 
 
-let MinErdpyVersion = "0.8.9";
+let MinErdpyVersion = "0.9.1";
+let Erdpy = "erdpy";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -36,7 +37,7 @@ async function ensureErdpy() {
 
 async function isErdpyInstalled(): Promise<boolean> {
     let [version, ok] = await getOneLineStdout("erdpy", ["--version"]);
-    let isNewer = version >= `erdpy ${MinErdpyVersion}`;
+    let isNewer = version >= `${Erdpy} ${MinErdpyVersion}`;
     return ok && isNewer;
 }
 
@@ -76,7 +77,7 @@ export async function reinstallErdpy(version: string) {
 export async function fetchTemplates(cacheFile: string) {
     try {
         await ProcessFacade.execute({
-            program: "erdpy",
+            program: Erdpy,
             args: ["contract", "templates"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
@@ -91,7 +92,7 @@ export async function fetchTemplates(cacheFile: string) {
 export async function newFromTemplate(folder: string, template: string, name: string) {
     try {
         await ProcessFacade.execute({
-            program: "erdpy",
+            program: Erdpy,
             args: ["contract", "new", "--directory", folder, "--template", template, name],
         });
 
@@ -151,7 +152,7 @@ async function ensureInstalledErdpyGroup(group: string) {
 }
 
 async function isErdpyGroupInstalled(group: string, version: string = ""): Promise<boolean> {
-    let [_, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
+    let [_, ok] = await getOneLineStdout(Erdpy, ["deps", "check", group]);
     return ok;
 }
 
@@ -164,7 +165,7 @@ export async function reinstallModule(): Promise<void> {
 async function reinstallErdpyGroup(group: string, version: string = "") {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version ? `--tag=${version}` : "";
-    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite ${tagArgument}`, null, true);
+    await runInTerminal("installer", `${Erdpy} --verbose deps install ${group} --overwrite ${tagArgument}`, null, true);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
@@ -176,7 +177,7 @@ async function reinstallErdpyGroup(group: string, version: string = "") {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract build "${folder}"`, null);
+        await runInTerminal("build", `${Erdpy} --verbose contract build "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -184,7 +185,7 @@ export async function buildContract(folder: string) {
 
 export async function cleanContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract clean "${folder}"`, null);
+        await runInTerminal("build", `${Erdpy} --verbose contract clean "${folder}"`, null);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
