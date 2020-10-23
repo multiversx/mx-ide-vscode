@@ -30,6 +30,7 @@ export async function setup() {
     ensureFolder(".vscode");
     ensureWorkspaceDefinitionFile();
     await patchSettings();
+    setupGitignore();
 }
 
 
@@ -253,5 +254,15 @@ export class ProjectMetadata {
         if (!languages.includes(this.Language)) {
             throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}` });
         }
+    }
+}
+
+function setupGitignore() {
+    let filePath = path.join(getPath(), ".gitignore");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, `output/**
+testnet/**
+**/workspace.storage.json
+`);
     }
 }
