@@ -24,7 +24,7 @@ export async function runContractSnippet(folder: string) {
 
     let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
     let command = `source ${snippetsFile} && ${choice}`;
-    await runInTerminal(terminalName, command, folder);
+    await runInTerminal(terminalName, command, metadata);
     Feedback.info(`Snippet "${choice}" has been executed. Check output in Terminal.`);
 }
 
@@ -34,20 +34,21 @@ function getSnippetsNames(file: string): string[] {
     return found;
 }
 
-async function runInTerminal(terminalName: string, command: string, contractFolder: string) {
-    let envTestnet = path.join(contractFolder, "testnet");
+async function runInTerminal(terminalName: string, command: string, metadata: workspace.ProjectMetadata) {
+    let envTestnet = path.join(metadata.ProjectPath, "testnet");
     let envWallets = path.join(envTestnet, "wallets");
     let envUsers = path.join(envWallets, "users");
 
     let terminal = window.terminals.find(item => item.name == terminalName);
     if (!terminal) {
         let env = { 
-            PROJECT: contractFolder,
+            PROJECT: metadata.ProjectPath,
+            PROJECT_NAME: metadata.ProjectName,
             TESTNET: envTestnet,
             WALLETS: envWallets,
             USERS: envUsers
         };
-        terminal = window.createTerminal({ name: terminalName, env: env, cwd: contractFolder });
+        terminal = window.createTerminal({ name: terminalName, env: env, cwd: metadata.ProjectPath });
     }
 
     terminal.sendText(command);

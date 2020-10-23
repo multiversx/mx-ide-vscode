@@ -262,7 +262,7 @@ function setupGitignore() {
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, `output/**
 testnet/**
-**/workspace.storage.json
+**/erdpy.data-storage.json
 `);
     }
 }
