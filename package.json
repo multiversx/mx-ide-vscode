@@ -333,6 +333,7 @@
 	},
 	"dependencies": {
 		"glob": "^7.1.6",
+		"ps-list": "^7.2.0",
 		"request": "^2.88.2",
 		"underscore": "^1.10.2"
 	},

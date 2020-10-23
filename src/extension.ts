@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Root } from './root';
 import { Feedback } from './feedback';
-import _ = require('underscore');
 import * as sdk from "./sdk";
 import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
 import * as workspace from "./workspace";

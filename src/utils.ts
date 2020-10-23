@@ -9,6 +9,7 @@ import _ = require('underscore');
 import { Feedback } from './feedback';
 import { MyExecError, MyHttpError, MyError } from './errors';
 import { Terminal } from 'vscode';
+const psList = require('ps-list');
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -432,14 +433,11 @@ export async function waitForProcessInTerminal(terminal: Terminal): Promise<void
         while (true) {
             await sleep(250);
 
-            let result = await ProcessFacade.execute({
-                program: "ps",
-                args: ["--no-headers", "--ppid", pid],
-                collectStdOut: true
-            });
-
+            let result: any[] = await psList({ all: true });
+            let hasChildren = result.some(item => item.ppid == pid);
+            
             // No more child processes running in the Terminal.
-            if (!result.stdout) {
+            if (!hasChildren) {
                 break;
             }
         }
