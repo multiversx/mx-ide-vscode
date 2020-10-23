@@ -8,6 +8,7 @@ import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
 import { MyExecError, MyHttpError, MyError } from './errors';
+import { Terminal } from 'vscode';
 
 export class ProcessFacade {
     public static execute(options: any): Promise<any> {
@@ -26,6 +27,7 @@ export class ProcessFacade {
         let channels = options.channels || ["default"];
         let stdoutToFile = options.stdoutToFile;
         let doNotDumpStdout = options.doNotDumpStdout;
+        let collectStdOut = options.collectStdOut;
 
         let spawnOptions: child_process.SpawnOptions = {
             cwd: workingDirectory,
@@ -50,6 +52,7 @@ export class ProcessFacade {
         });
 
         let latestStdout = "";
+        let collectedStdout = "";
         let latestStderr = "";
         subprocess.stdout.setEncoding('utf8');
         subprocess.stderr.setEncoding('utf8');
@@ -65,6 +68,10 @@ export class ProcessFacade {
 
         subprocess.stdout.on("data", function (data) {
             latestStdout = data;
+
+            if (collectStdOut) {
+                collectedStdout += data;
+            }
 
             if (!doNotDumpStdout) {
                 Feedback.programOutput(programName, data, channels);
@@ -95,8 +102,10 @@ export class ProcessFacade {
         subprocess.on("close", function (code) {
             Feedback.debug(`[${programName}] exists, exit code = ${code}.`, channels);
 
+            let stdout = (collectedStdout || latestStdout).trim();
+
             if (options.onClose) {
-                options.onClose(code, latestStdout.trim());
+                options.onClose(code, stdout);
             }
 
             if (eventTag) {
@@ -104,7 +113,7 @@ export class ProcessFacade {
             }
 
             if (code == 0) {
-                resolve({ code: code, stdOut: latestStdout.trim() });
+                resolve({ code: code, stdout: stdout });
             } else {
                 reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
             }
@@ -414,4 +423,38 @@ export class RestFacade {
 
         return promise;
     }
+}
+
+export async function waitForProcessInTerminal(terminal: Terminal): Promise<void> {
+    let pid = await terminal.processId;
+
+    try {
+        while (true) {
+            await sleep(250);
+
+            let result = await ProcessFacade.execute({
+                program: "ps",
+                args: ["--no-headers", "--ppid", pid],
+                collectStdOut: true
+            });
+
+            // No more child processes running in the Terminal.
+            if (!result.stdout) {
+                break;
+            }
+        }
+    } catch (error) {
+        if (error instanceof MyExecError) {
+            // On empty stdout, an error code might be returned as well.
+            if (error.Message.length == 0 && Number(error.Code) == 1) {
+                return;
+            }
+        }
+
+        throw error;
+    }
+}
+
+export async function sleep(milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }

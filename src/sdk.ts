@@ -1,5 +1,5 @@
 import { Feedback } from './feedback';
-import { ProcessFacade, RestFacade } from "./utils";
+import { ProcessFacade, RestFacade, sleep } from "./utils";
 import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import * as storage from "./storage";
@@ -49,7 +49,7 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
             args: args
         });
 
-        return [result.stdOut, true];
+        return [result.stdout, true];
     } catch (e) {
         return ["", false];
     }
@@ -149,10 +149,6 @@ async function killRunningInTerminal(name: string) {
     }
 
     terminal.sendText("\u0003");
-}
-
-async function sleep(milliseconds: number) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
 export async function ensureInstalledBuildchains(languages: string[]) {

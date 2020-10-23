@@ -4,6 +4,8 @@ import * as presenter from './presenter';
 import * as workspace from './workspace';
 import { window } from 'vscode';
 import * as errors from './errors';
+import { waitForProcessInTerminal } from "./utils";
+import { Feedback } from "./feedback";
 
 
 export async function runContractSnippet(folder: string) {
@@ -23,6 +25,7 @@ export async function runContractSnippet(folder: string) {
     let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
     let command = `source ${snippetsFile} && ${choice}`;
     await runInTerminal(terminalName, command, folder);
+    Feedback.info(`Snippet "${choice}" has been executed. Check output in Terminal.`);
 }
 
 function getSnippetsNames(file: string): string[] {
@@ -49,4 +52,5 @@ async function runInTerminal(terminalName: string, command: string, contractFold
 
     terminal.sendText(command);
     terminal.show(false);
+    await waitForProcessInTerminal(terminal);
 }
