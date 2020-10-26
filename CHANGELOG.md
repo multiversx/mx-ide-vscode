@@ -181,16 +181,3 @@ Due to a DOM bug, the Environment tab was missing. Fixed.
 
 ## Preview for SF (31/10/2019)
 New feature - query testnet.
----
-
-## Preview for SF (31/10/2019)
-MacOS fix - Add exec rights to debugWithRestApi.
-Update snippets - add new erc20 implementation.
-Improve "create from template (prototype)" command / feature.
----
-
-## Preview for SF (30/10/2019)
-Fix LD_LIBRARY_PATH - point to folder of node-debug.
-Fix kill process by port for macos.
-Download and install node-debug as binary - bypass build step.
-Use other defaults for running a function.
