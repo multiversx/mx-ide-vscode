@@ -1,5 +1,15 @@
 # Changelog
 
+## UX Improvements: local testnet, better snippets. Extra minor fixes. (26/10/2020)
+ - Run local testnet (start, stop, start fresh) from contextual menu. Enhance terminals.
+ - Snippets: skip running snippet if none chosen.
+ - Snippets: pass extra (useful) variables into snippets.
+ - Snippets. Integrate with `erdpy data`.
+ - Snippets, wait for process in Terminal to finish.
+ - Setup workspace - add `.gitignore` file if missing.
+ - Reference newest erdpy.
+---
+
 ## More robust procedure for setting up environment variables (14/10/2020)
  - Handle particularities of Rust extension (e.g. disable RLS at start-up, expect explicit start).
  - Pass `env` when running commands in the integrated terminal as well (instead of only relying on the content of `settings.json` - which the user may not accept, when asked).
