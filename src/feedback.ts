@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import _ = require('underscore');
 
 export class Feedback {
     private static OutputChannels: { [id: string]: vscode.OutputChannel; } = {};

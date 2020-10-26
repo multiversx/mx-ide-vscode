@@ -15,10 +15,12 @@ export class Environment {
         let arwentoolsFolder = path.join(sdkPath, "arwentools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
+        let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
+        let nodeJsBinFolder = path.join(nodeJsFolder, "bin");
 
         // This is required for other VS Code extensions to work well and use the custom (Rust) environment.
         delete process.env["PYTHONHOME"];
-        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${process.env["PATH"]}`;
+        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`;
         process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
         process.env["RUSTUP_HOME"] = rustFolder;
         process.env["CARGO_HOME"] = rustFolder;
@@ -31,9 +33,11 @@ export class Environment {
         let arwentoolsFolder = path.join(sdkPath, "arwentools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
+        let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
+        let nodeJsBinFolder = path.join(nodeJsFolder, "bin");
 
         return {
-            "PATH": rustBinFolder + ":" + erdpyBinFolder + ":" + arwentoolsFolder + ":" + "${env:PATH}",
+            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:\${env:PATH}`,
             "VIRTUAL_ENV": erdpyEnvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder
@@ -47,10 +51,12 @@ export class Environment {
         let arwentoolsFolder = path.join(sdkPath, "arwentools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
+        let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
+        let nodeJsBinFolder = path.join(nodeJsFolder, "bin");
 
         return {
             "PYTHONHOME": null,
-            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${process.env["PATH"]}`,
+            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`,
             "VIRTUAL_ENV": erdpyEnvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder

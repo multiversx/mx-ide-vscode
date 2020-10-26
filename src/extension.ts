@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Root } from './root';
 import { Feedback } from './feedback';
-import _ = require('underscore');
 import * as sdk from "./sdk";
 import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
@@ -32,6 +31,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.runContractSnippet", runContractSnippet);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
 	vscode.commands.registerCommand("elrond.runArwenDebugTests", runArwenDebugTests);
+	vscode.commands.registerCommand("elrond.runFreshTestnet", runFreshTestnet);
+	vscode.commands.registerCommand("elrond.resumeExistingTestnet", resumeExistingTestnet);
+	vscode.commands.registerCommand("elrond.stopTestnet", stopTestnet);
 
 	vscode.commands.registerCommand("elrond.cleanContract", cleanContract);
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
@@ -136,7 +138,7 @@ async function runContractSnippet(contract: any) {
 
 function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
-		let fsPath = (contract as Uri).fsPath;
+		let fsPath = contract.fsPath;
 		if (fsPath.includes("elrond.json")) {
 			return path.dirname(fsPath);
 		} else if (fsPath.includes("snippets.sh")) {
@@ -152,7 +154,7 @@ function getContractFolder(contract: any): string {
 async function runMandosTests(item: any) {
 	try {
 		if (item instanceof Uri) {
-			await sdk.runMandosTests((item as Uri).fsPath);
+			await sdk.runMandosTests(item.fsPath);
 		} else {
 			await sdk.runMandosTests((item as SmartContract).getPath());
 		}
@@ -165,6 +167,30 @@ async function runArwenDebugTests(contract: SmartContract) {
 	try {
 		let folder = getContractFolder(contract);
 		await sdk.runArwenDebugTests(folder);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function runFreshTestnet(testnetToml: Uri) {
+	try {
+		await sdk.runFreshTestnet(testnetToml);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function resumeExistingTestnet(testnetToml: Uri) {
+	try {
+		await sdk.resumeExistingTestnet(testnetToml);
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function stopTestnet(testnetToml: Uri) {
+	try {
+		await sdk.stopTestnet(testnetToml);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

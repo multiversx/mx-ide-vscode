@@ -4,6 +4,8 @@ import * as presenter from './presenter';
 import * as workspace from './workspace';
 import { window } from 'vscode';
 import * as errors from './errors';
+import { waitForProcessInTerminal } from "./utils";
+import { Feedback } from "./feedback";
 
 
 export async function runContractSnippet(folder: string) {
@@ -16,9 +18,14 @@ export async function runContractSnippet(folder: string) {
 
     let snippets = getSnippetsNames(snippetsFile);
     let choice = await presenter.askChoice(snippets);
+    if (!choice) {
+        return;
+    }
+
     let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
     let command = `source ${snippetsFile} && ${choice}`;
-    await runInTerminal(terminalName, command, folder);
+    await runInTerminal(terminalName, command, metadata);
+    Feedback.info(`Snippet "${choice}" has been executed. Check output in Terminal.`);
 }
 
 function getSnippetsNames(file: string): string[] {
@@ -27,13 +34,24 @@ function getSnippetsNames(file: string): string[] {
     return found;
 }
 
-async function runInTerminal(terminalName: string, command: string, contractFolder: string) {
+async function runInTerminal(terminalName: string, command: string, metadata: workspace.ProjectMetadata) {
+    let envTestnet = path.join(metadata.ProjectPath, "testnet");
+    let envWallets = path.join(envTestnet, "wallets");
+    let envUsers = path.join(envWallets, "users");
+
     let terminal = window.terminals.find(item => item.name == terminalName);
     if (!terminal) {
-        let env = { CONTRACT_FOLDER: contractFolder };
-        terminal = window.createTerminal({ name: terminalName, env: env });
+        let env = { 
+            PROJECT: metadata.ProjectPath,
+            PROJECT_NAME: metadata.ProjectName,
+            TESTNET: envTestnet,
+            WALLETS: envWallets,
+            USERS: envUsers
+        };
+        terminal = window.createTerminal({ name: terminalName, env: env, cwd: metadata.ProjectPath });
     }
 
     terminal.sendText(command);
     terminal.show(false);
+    await waitForProcessInTerminal(terminal);
 }

@@ -90,7 +90,22 @@
 			},
 			{
 				"command": "elrond.gotoContract",
-				"title": "Show in Explorer",
+				"title": "Show in Workspace Explorer",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.runFreshTestnet",
+				"title": "Start Fresh Testnet",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.resumeExistingTestnet",
+				"title": "Resume Testnet",
+				"category": "Elrond"
+			},
+			{
+				"command": "elrond.stopTestnet",
+				"title": "Stop Testnet",
 				"category": "Elrond"
 			}
 		],
@@ -140,6 +155,21 @@
 					"command": "elrond.runArwenDebugTests",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
 					"group": "Elrond"
+				},
+				{
+					"command": "elrond.runFreshTestnet",
+					"when": "resourceFilename == testnet.toml",
+					"group": "Elrond Testnet"
+				},
+				{
+					"command": "elrond.resumeExistingTestnet",
+					"when": "resourceFilename == testnet.toml",
+					"group": "Elrond Testnet"
+				},
+				{
+					"command": "elrond.stopTestnet",
+					"when": "resourceFilename == testnet.toml",
+					"group": "Elrond Testnet"
 				}
 			],
 			"commandPalette": [
@@ -177,6 +207,18 @@
 				},
 				{
 					"command": "elrond.gotoContract",
+					"when": "false"
+				},
+				{
+					"command": "elrond.runFreshTestnet",
+					"when": "false"
+				},
+				{
+					"command": "elrond.resumeExistingTestnet",
+					"when": "false"
+				},
+				{
+					"command": "elrond.stopTestnet",
 					"when": "false"
 				}
 			],
@@ -238,7 +280,7 @@
 			"activitybar": [
 				{
 					"id": "elrond",
-					"title": "Elrond Explorer",
+					"title": "Elrond Workspace Explorer",
 					"icon": "content/logo.png"
 				}
 			]
@@ -291,6 +333,7 @@
 	},
 	"dependencies": {
 		"glob": "^7.1.6",
+		"ps-list": "^7.2.0",
 		"request": "^2.88.2",
 		"underscore": "^1.10.2"
 	},

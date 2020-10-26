@@ -1,14 +1,16 @@
 import { Feedback } from './feedback';
-import { ProcessFacade, RestFacade } from "./utils";
-import { window } from 'vscode';
+import { ProcessFacade, RestFacade, sleep } from "./utils";
+import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
+import path = require("path");
 
 
-let MinErdpyVersion = "0.8.9";
+let MinErdpyVersion = "0.9.2";
+let Erdpy = "erdpy";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -35,8 +37,8 @@ async function ensureErdpy() {
 }
 
 async function isErdpyInstalled(): Promise<boolean> {
-    let [version, ok] = await getOneLineStdout("erdpy", ["--version"]);
-    let isNewer = version >= `erdpy ${MinErdpyVersion}`;
+    let [version, ok] = await getOneLineStdout(Erdpy, ["--version"]);
+    let isNewer = version >= `${Erdpy} ${MinErdpyVersion}`;
     return ok && isNewer;
 }
 
@@ -47,7 +49,7 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
             args: args
         });
 
-        return [result.stdOut, true];
+        return [result.stdout, true];
     } catch (e) {
         return ["", false];
     }
@@ -61,7 +63,7 @@ export async function reinstallErdpy(version: string) {
     });
 
     let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${version}`;
-    await runInTerminal("installer", erdpyUpCommand, Environment.old, true);
+    await runInTerminal("installer", erdpyUpCommand, Environment.old);
 
     Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
 
@@ -76,7 +78,7 @@ export async function reinstallErdpy(version: string) {
 export async function fetchTemplates(cacheFile: string) {
     try {
         await ProcessFacade.execute({
-            program: "erdpy",
+            program: Erdpy,
             args: ["contract", "templates"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
@@ -91,7 +93,7 @@ export async function fetchTemplates(cacheFile: string) {
 export async function newFromTemplate(folder: string, template: string, name: string) {
     try {
         await ProcessFacade.execute({
-            program: "erdpy",
+            program: Erdpy,
             args: ["contract", "new", "--directory", folder, "--template", template, name],
         });
 
@@ -101,36 +103,52 @@ export async function newFromTemplate(folder: string, template: string, name: st
     }
 }
 
-async function runInTerminal(terminalName: string, command: string, env: any, renew: boolean = false) {
+async function runInTerminal(terminalName: string, command: string, env: any = null, cwd: string = "") {
     if (!env) {
         env = Environment.getForTerminal();
     }
 
-    let terminal = getOrCreateTerminal(terminalName, env, renew);
+    let terminal = await getOrCreateTerminal(terminalName, env, cwd);
     terminal.sendText(command);
     terminal.show(false);
 }
 
-function getOrCreateTerminal(name: string, env: any, renew: boolean) {
-    name = `Elrond: ${name}`;
-
-    let terminal = window.terminals.find(item => item.name == name);
-
-    if (terminal && renew) {
-        terminal.hide();
-        terminal.dispose();
-        terminal = null;
-    }
-
+async function getOrCreateTerminal(name: string, env: any, cwd: string) {
+    let terminal = findTerminal(name);
     if (!terminal) {
-        terminal = window.createTerminal({ name: name, env: env });
+        terminal = window.createTerminal({ name: patchTerminalName(name), env: env, cwd: cwd });
     }
 
     return terminal;
 }
 
-async function sleep(milliseconds: number) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+function findTerminal(name: string): Terminal {
+    let terminal = window.terminals.find(item => item.name == patchTerminalName(name));
+    return terminal;
+}
+
+function patchTerminalName(name: string): string {
+    return `Elrond: ${name}`;
+}
+
+async function destroyTerminal(name: string) {
+    let terminal = findTerminal(name);
+    if (!terminal) {
+        return;
+    }
+
+    terminal.hide();
+    terminal.dispose();
+    await sleep(500);
+}
+
+async function killRunningInTerminal(name: string) {
+    let terminal = findTerminal(name);
+    if (!terminal) {
+        return;
+    }
+
+    terminal.sendText("\u0003");
 }
 
 export async function ensureInstalledBuildchains(languages: string[]) {
@@ -151,7 +169,7 @@ async function ensureInstalledErdpyGroup(group: string) {
 }
 
 async function isErdpyGroupInstalled(group: string, version: string = ""): Promise<boolean> {
-    let [_, ok] = await getOneLineStdout("erdpy", ["deps", "check", group]);
+    let [_, ok] = await getOneLineStdout(Erdpy, ["deps", "check", group]);
     return ok;
 }
 
@@ -164,7 +182,7 @@ export async function reinstallModule(): Promise<void> {
 async function reinstallErdpyGroup(group: string, version: string = "") {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version ? `--tag=${version}` : "";
-    await runInTerminal("installer", `erdpy --verbose deps install ${group} --overwrite ${tagArgument}`, null, true);
+    await runInTerminal("installer", `${Erdpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
@@ -176,7 +194,7 @@ async function reinstallErdpyGroup(group: string, version: string = "") {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract build "${folder}"`, null);
+        await runInTerminal("build", `${Erdpy} --verbose contract build "${folder}"`);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -184,7 +202,7 @@ export async function buildContract(folder: string) {
 
 export async function cleanContract(folder: string) {
     try {
-        await runInTerminal("build", `erdpy --verbose contract clean "${folder}"`, null);
+        await runInTerminal("build", `${Erdpy} --verbose contract clean "${folder}"`);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
@@ -193,7 +211,7 @@ export async function cleanContract(folder: string) {
 export async function runMandosTests(folder: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
-        await runInTerminal("mandos", `mandos-test "${folder}"`, null);
+        await runInTerminal("mandos", `mandos-test "${folder}"`);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
@@ -202,8 +220,43 @@ export async function runMandosTests(folder: string) {
 export async function runArwenDebugTests(folder: string) {
     try {
         await ensureInstalledErdpyGroup("arwentools");
+        await ensureInstalledErdpyGroup("nodejs");
         Feedback.infoModal("Not yet implemented.");
     } catch (error) {
-        throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
+        throw new errors.MyError({ Message: "Could not run ArwenDebug tests.", Inner: error });
+    }
+}
+
+export async function runFreshTestnet(testnetToml: Uri) {
+    try {
+        let folder = path.dirname(testnetToml.fsPath);
+
+        await ensureInstalledErdpyGroup("golang");
+        await destroyTerminal("testnet");
+        await runInTerminal("testnet", `${Erdpy} testnet clean`, null, folder);
+        await runInTerminal("testnet", `${Erdpy} testnet prerequisites`);
+        await runInTerminal("testnet", `${Erdpy} testnet config`);
+        await runInTerminal("testnet", `${Erdpy} testnet start`);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+    }
+}
+
+export async function resumeExistingTestnet(testnetToml: Uri) {
+    try {
+        let folder = path.dirname(testnetToml.fsPath);
+
+        await destroyTerminal("testnet");
+        await runInTerminal("testnet", `${Erdpy} testnet start`, null, folder);
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+    }
+}
+
+export async function stopTestnet(testnetToml: Uri) {
+    try {
+        await killRunningInTerminal("testnet");
+    } catch (error) {
+        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
 }
