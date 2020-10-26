@@ -9,7 +9,7 @@ import { Environment } from './environment';
 import path = require("path");
 
 
-let MinErdpyVersion = "0.9.2";
+let MinErdpyVersion = "0.9.3";
 let Erdpy = "erdpy";
 
 export function getPath() {
