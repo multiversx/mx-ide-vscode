@@ -1,5 +1,9 @@
 # Changelog
 
+## Reference newest erdpy (26/10/2020)
+ - Reference newest erdpy.
+---
+
 ## UX Improvements: local testnet, better snippets. Extra minor fixes. (26/10/2020)
  - Run local testnet (start, stop, start fresh) from contextual menu. Enhance terminals.
  - Snippets: skip running snippet if none chosen.
