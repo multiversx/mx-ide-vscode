@@ -1,5 +1,9 @@
 # Changelog
 
+## Reference newest erdpy (27/10/2020)
+- Reference newest erdpy.
+---
+
 ## Reference newest erdpy (26/10/2020)
  - Reference newest erdpy.
 ---
@@ -177,7 +181,3 @@ Fix gas price defaults.
 
 ## Preview for SF (31/10/2019)
 Due to a DOM bug, the Environment tab was missing. Fixed.
----
-
-## Preview for SF (31/10/2019)
-New feature - query testnet.
