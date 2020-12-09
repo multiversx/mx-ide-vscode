@@ -89,3 +89,7 @@ export async function askYesNo(question: string): Promise<boolean> {
 export async function askChoice(choices: string[]): Promise<string> {
     return await vscode.window.showQuickPick(choices, { ignoreFocusOut: true });
 }
+
+export async function askChoiceTyped<T extends vscode.QuickPickItem>(choices: T[]): Promise<T> {
+    return await vscode.window.showQuickPick<T>(choices, { ignoreFocusOut: true });
+}

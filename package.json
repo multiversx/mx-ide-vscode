@@ -138,7 +138,7 @@
 				},
 				{
 					"command": "elrond.runContractSnippet",
-					"when": "resourceFilename == elrond.json || resourceFilename == snippets.sh",
+					"when": "resourceFilename == elrond.json",
 					"group": "Elrond"
 				},
 				{
