@@ -260,9 +260,17 @@ export class ProjectMetadata {
 function setupGitignore() {
     let filePath = path.join(getPath(), ".gitignore");
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, `output/**
-testnet/**
+        fs.writeFileSync(filePath, `# Elrond IDE
+**/node_modules
+**/output/**
+**/testnet/**
 **/erdpy.data-storage.json
+**/*.interaction.json
 `);
     }
 }
+
+
+
+
+
