@@ -1,5 +1,14 @@
 # Changelog
 
+## Better snippets. Reference new erdpy. (10/12/2020)
+PR #13.
+
+ - Add support for more `snippets.sh` files (the ones with suffix `*.snippets.sh` are recognized).
+ - Do not allow "right-click, run snippets" on `*.snippets.sh` files. Command has to be triggered at contract-level.
+ - Reference newest erdpy (v0.9.8).
+
+---
+
 ## Reference newest erdpy (28/10/2020)
  - Reference newest erdpy.
 ---
@@ -177,7 +186,3 @@ Allow customization of build (exported functions for C, for now).
 Added support for watching smart contract variables.
 Added support for "debug" variables (placeholders for deploy and run).
 UX fixes, removed bootswatch theme - we'll use a prettier theme soon. 
----
-
-## Preview for SF (31/10/2019)
-Fix gas price defaults.
