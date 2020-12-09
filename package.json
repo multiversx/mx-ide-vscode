@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.7.7",
+	"version": "0.7.8",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -138,7 +138,7 @@
 				},
 				{
 					"command": "elrond.runContractSnippet",
-					"when": "resourceFilename == elrond.json || resourceFilename == snippets.sh",
+					"when": "resourceFilename == elrond.json",
 					"group": "Elrond"
 				},
 				{

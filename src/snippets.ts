@@ -2,30 +2,39 @@ import path = require("path");
 import fs = require("fs");
 import * as presenter from './presenter';
 import * as workspace from './workspace';
-import { window } from 'vscode';
+import { QuickPickItem, window } from 'vscode';
 import * as errors from './errors';
 import { waitForProcessInTerminal } from "./utils";
 import { Feedback } from "./feedback";
+import { glob } from "glob";
 
 
 export async function runContractSnippet(folder: string) {
     let metadata = workspace.getMetadataObjectByFolder(folder);
-    let snippetsFile = path.join(folder, "snippets.sh");
+    let pattern = `${folder}/**/*snippets.sh`;
+    let snippetsFiles = glob.sync(pattern, {});
 
-    if (!fs.existsSync(snippetsFile)) {
-        throw new errors.MyError({ Message: `Snippets file is missing: ${snippetsFile}` });
+    if (!snippetsFiles.length) {
+        throw new errors.MyError({ Message: `No *snippets.sh file found.` });
     }
+    
+    let allSnippets: Snippet[] = [];
 
-    let snippets = getSnippetsNames(snippetsFile);
-    let choice = await presenter.askChoice(snippets);
-    if (!choice) {
+    snippetsFiles.forEach(file => {
+        let names = getSnippetsNames(file);
+        let snippets = names.map(name => new Snippet(file, name));
+        allSnippets.push(...snippets);
+    });
+
+    let snippetChoice = await presenter.askChoiceTyped(allSnippets);
+    if (!snippetChoice) {
         return;
     }
 
     let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
-    let command = `source ${snippetsFile} && ${choice}`;
+    let command = `source ${snippetChoice.file} && ${snippetChoice.name}`;
     await runInTerminal(terminalName, command, metadata);
-    Feedback.info(`Snippet "${choice}" has been executed. Check output in Terminal.`);
+    Feedback.info(`Snippet "${snippetChoice}" has been executed. Check output in Terminal.`);
 }
 
 function getSnippetsNames(file: string): string[] {
@@ -54,4 +63,26 @@ async function runInTerminal(terminalName: string, command: string, metadata: wo
     terminal.sendText(command);
     terminal.show(false);
     await waitForProcessInTerminal(terminal);
+}
+
+export class Snippet implements QuickPickItem {
+    readonly file: string;
+    readonly name: string;
+    readonly label: string;
+    readonly description?: string;
+    readonly detail?: string;
+    readonly picked?: boolean;
+    readonly alwaysShow?: boolean;
+    
+    constructor(file: string, name: string) {
+        this.file = file;
+        this.name = name;
+
+        let fileLabel = path.basename(file).replace(".snippets.sh", "");
+        this.label = `${fileLabel}: ${name}`;
+    }
+
+    toString(): string {
+        return this.label;
+    }
 }
