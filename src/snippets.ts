@@ -11,11 +11,11 @@ import { glob } from "glob";
 
 export async function runContractSnippet(folder: string) {
     let metadata = workspace.getMetadataObjectByFolder(folder);
-    let pattern = `${folder}/**/*.snippets.sh`;
+    let pattern = `${folder}/**/*snippets.sh`;
     let snippetsFiles = glob.sync(pattern, {});
 
     if (!snippetsFiles.length) {
-        throw new errors.MyError({ Message: `No *.snippets.sh file found.` });
+        throw new errors.MyError({ Message: `No *snippets.sh file found.` });
     }
     
     let allSnippets: Snippet[] = [];
@@ -77,7 +77,9 @@ export class Snippet implements QuickPickItem {
     constructor(file: string, name: string) {
         this.file = file;
         this.name = name;
-        this.label = `${path.basename(file)}: ${name}`;
+
+        let fileLabel = path.basename(file).replace(".snippets.sh", "");
+        this.label = `${fileLabel}: ${name}`;
     }
 
     toString(): string {
