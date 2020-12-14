@@ -264,6 +264,7 @@ function setupGitignore() {
 **/node_modules
 **/output/**
 **/testnet/**
+**/wallets/**
 **/erdpy.data-storage.json
 **/*.interaction.json
 `);

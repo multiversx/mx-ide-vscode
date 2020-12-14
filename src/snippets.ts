@@ -45,7 +45,7 @@ function getSnippetsNames(file: string): string[] {
 
 async function runInTerminal(terminalName: string, command: string, metadata: workspace.ProjectMetadata) {
     let envTestnet = path.join(metadata.ProjectPath, "testnet");
-    let envWallets = path.join(envTestnet, "wallets");
+    let envWallets = path.join(metadata.ProjectPath, "wallets");
     let envUsers = path.join(envWallets, "users");
 
     let terminal = window.terminals.find(item => item.name == terminalName);
