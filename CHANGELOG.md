@@ -1,5 +1,10 @@
 # Changelog
 
+## Reference newest erdpy, minor fixes (14/12/2020)
+ - Reference new erdpy
+ - Fix `USERS` environment variable (provided to snippets).
+---
+
 ## Better snippets. Reference new erdpy. (10/12/2020)
 PR #13.
 
@@ -178,11 +183,3 @@ Download buildchain for Solidity (SOLL compiler) as well.
 
 ## Preview (28/11/2019)
 Added support for Solidity, via https://github.com/second-state/soll compiler.
----
-
-## Preview (11/11/2019)
-Added support for RUST.
-Allow customization of build (exported functions for C, for now).
-Added support for watching smart contract variables.
-Added support for "debug" variables (placeholders for deploy and run).
-UX fixes, removed bootswatch theme - we'll use a prettier theme soon. 
