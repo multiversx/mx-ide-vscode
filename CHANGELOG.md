@@ -1,5 +1,9 @@
 # Changelog
 
+## Reference newest erdpy (and newest templates) (16/12/2020)
+ - Reference newest erdpy (and newest templates).
+---
+
 ## Reference newest erdpy, minor fixes (14/12/2020)
  - Reference new erdpy
  - Fix `USERS` environment variable (provided to snippets).
@@ -179,7 +183,3 @@ Temporarily disabled some features (deploy & debug & query Testnet). Will be ena
 ## Preview (29/11/2019)
 Improve layout. Less clutter.
 Download buildchain for Solidity (SOLL compiler) as well.
----
-
-## Preview (28/11/2019)
-Added support for Solidity, via https://github.com/second-state/soll compiler.
