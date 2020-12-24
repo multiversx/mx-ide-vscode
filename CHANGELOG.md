@@ -1,5 +1,9 @@
 # Changelog
 
+## Reference newest erdpy (24/12/2020)
+ - Reference newest erdpy.
+---
+
 ## Reference newest erdpy (and newest templates) (16/12/2020)
  - Reference newest erdpy (and newest templates).
 ---
