@@ -158,38 +158,11 @@ export async function patchLaunchAndTasks() {
         let project = metadata.ProjectName;
         let projectPath = metadata.ProjectPathInWorkspace;
         let language = metadata.Language;
-        if (language == "rust") {
-            let debugProject: any = {
-                "type": "lldb",
-                "request": "launch",
-                "name": `Debug ${project}`,
-                "preLaunchTask": `${project}-debug-build`,
-                "program": path.join("${workspaceFolder}", projectPath, "debug", "target", "debug", `${project}-debug`),
-                "args": [],
-                "cwd": "${workspaceFolder}",
-                "env": env
-            };
+        
+        // Patch "launchItems" and "tasksItems", if needed (not needed at this moment).
 
-            let buildTask: any = {
-                "label": `${project}-debug-build`,
-                "command": "cargo",
-                "args": ["build"],
-                "options": {
-                    "cwd": path.join("${workspaceFolder}", projectPath, "debug"),
-                    "env": env
-                },
-                "type": "shell"
-            };
-
-            let debugProjectExists = launchItems.find(item => item.name == debugProject.name) ? true : false;
-            let buildTaskExists = tasksItems.find(item => item.label == buildTask.label) ? true : false;
-
-            if (!debugProjectExists || !buildTaskExists) {
-                launchItems.push(debugProject);
-                tasksObject["tasks"].push(buildTask);
-                patched = true;
-            }
-        }
+        // In the past, we've patched both "launchItems" and "tasks" collections.
+        // Not needed anymore (for the moment).
     });
 
     if (!patched) {
