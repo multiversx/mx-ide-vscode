@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.3 (28/12/2020)
+ - Remove extension dependencies.
+ - Remove debug-related logic (not needed anymore).
+---
+
 ## Reference newest erdpy (and newest templates) (28/12/2020)
 - Reference newest erdpy (and newest templates)
 ---
@@ -176,7 +181,3 @@ Bug fix for workspace not open (display info to open a folder).
 
 ## Preview (20/12/2019)
 Logo and categories.
----
-
-## Preview (20/12/2019)
-Minor fixes, prepare manifest for publishing.
