@@ -160,9 +160,7 @@ export async function patchLaunchAndTasks() {
         let language = metadata.Language;
         
         // Patch "launchItems" and "tasksItems", if needed (not needed at this moment).
-
         // In the past, we've patched both "launchItems" and "tasks" collections.
-        // Not needed anymore (for the moment).
     });
 
     if (!patched) {
