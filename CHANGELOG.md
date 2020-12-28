@@ -1,7 +1,11 @@
 # Changelog
 
-## Reference newest erdpy (24/12/2020)
- - Reference newest erdpy.
+## Reference newest erdpy (and newest templates) (28/12/2020)
+- Reference newest erdpy (and newest templates)
+---
+
+## Reference newest erdpy (and newest templates) (24/12/2020)
+Reference newest erdpy (and newest templates).
 ---
 
 ## Reference newest erdpy (and newest templates) (16/12/2020)
@@ -176,14 +180,3 @@ Logo and categories.
 
 ## Preview (20/12/2019)
 Minor fixes, prepare manifest for publishing.
----
-
-## Preview (17/12/2019)
-Updated theme. Fixed, improved, simplified layout. Improved UX overall. 
-
-Temporarily disabled some features (deploy & debug & query Testnet). Will be enabled back again very soon, after some more testing.
----
-
-## Preview (29/11/2019)
-Improve layout. Less clutter.
-Download buildchain for Solidity (SOLL compiler) as well.
