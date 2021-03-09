@@ -1,15 +1,14 @@
 import { Feedback } from './feedback';
-import { ProcessFacade, RestFacade, sleep } from "./utils";
+import { ProcessFacade, RestFacade, sleep} from "./utils";
 import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
+import {ErdpyVersionChecker} from './erdpyVersionChecker'
 import path = require("path");
 
-
-let MinErdpyVersion = "1.0.3";
 let Erdpy = "erdpy";
 
 export function getPath() {
@@ -17,7 +16,7 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    let version = await presenter.askErdpyVersion(MinErdpyVersion);
+    let version = await presenter.askErdpyVersion(ErdpyVersionChecker.minVersion);
     await reinstallErdpy(version);
 }
 
@@ -30,16 +29,19 @@ async function ensureErdpy() {
         return;
     }
 
-    let answer = await presenter.askInstallErdpy(MinErdpyVersion);
+    let answer = await presenter.askInstallErdpy(ErdpyVersionChecker.minVersion);
     if (answer) {
-        await reinstallErdpy(MinErdpyVersion);
+        await reinstallErdpy(ErdpyVersionChecker.minVersion);
     }
 }
 
 async function isErdpyInstalled(): Promise<boolean> {
     let [version, ok] = await getOneLineStdout(Erdpy, ["--version"]);
-    let isNewer = version >= `${Erdpy} ${MinErdpyVersion}`;
-    return ok && isNewer;
+    if (!ok) {
+        return false
+    }
+
+    return ErdpyVersionChecker.isVersionOk(version);
 }
 
 async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
