@@ -1,5 +1,5 @@
 import { Feedback } from './feedback';
-import { ProcessFacade, RestFacade, sleep} from "./utils";
+import { ProcessFacade, RestFacade, sleep } from "./utils";
 import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import * as storage from "./storage";
