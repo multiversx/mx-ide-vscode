@@ -32,7 +32,7 @@ export class ErdpyVersionChecker {
 
     static async getLatestERDPYVersion(): Promise<string> {
         let tagName = await this.getLatestRelease();
-        
+
         let url = `${this.githubElrondSDK}/${tagName.toString()}/erdpy/_version.py`;
 
         let erdpyVersionResponse = await this.doGetRequest({
@@ -45,9 +45,9 @@ export class ErdpyVersionChecker {
 
         // remove spaces and quotes
         let erdpyVersionMessage: string = erdpyVersionResponse.toString().replace(/\s/g, '').replace(/['"]+/g, '')
-        let erdpyVersionSpitted: string[] = erdpyVersionMessage.split('=');
-        if (erdpyVersionSpitted.length > 1) {
-            return erdpyVersionSpitted[1];
+        let erdpyVersionSplitted: string[] = erdpyVersionMessage.split('=');
+        if (erdpyVersionSplitted.length > 1) {
+            return erdpyVersionSplitted[1];
         }
 
         return this.defaultERDPYVersion;
