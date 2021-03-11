@@ -16,7 +16,9 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    let version = await presenter.askErdpyVersion(ErdpyVersionChecker.minVersion);
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestERDPYVersion()
+
+    let version = await presenter.askErdpyVersion(latestErdpyVersion);
     await reinstallErdpy(version);
 }
 
@@ -25,13 +27,15 @@ export async function ensureInstalled() {
 }
 
 async function ensureErdpy() {
-    if (await isErdpyInstalled()) {
+    let isEdpyInstalled = await isErdpyInstalled()
+    if (isEdpyInstalled) {
         return;
     }
 
-    let answer = await presenter.askInstallErdpy(ErdpyVersionChecker.minVersion);
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestERDPYVersion()
+    let answer = await presenter.askInstallErdpy(latestErdpyVersion);
     if (answer) {
-        await reinstallErdpy(ErdpyVersionChecker.minVersion);
+        await reinstallErdpy(latestErdpyVersion);
     }
 }
 
@@ -41,7 +45,9 @@ async function isErdpyInstalled(): Promise<boolean> {
         return false
     }
 
-    return ErdpyVersionChecker.isVersionOk(version);
+    let isOk = await ErdpyVersionChecker.isVersionOk(version)
+
+    return isOk;
 }
 
 async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
