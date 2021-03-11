@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0 (11/03/2021)
+ - Improve erdpy version checking and instalation
+---
+
 ## v0.8.3 (28/12/2020)
  - Remove extension dependencies.
  - Remove debug-related logic (not needed anymore).
