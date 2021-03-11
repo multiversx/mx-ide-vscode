@@ -32,6 +32,7 @@ export class ErdpyVersionChecker {
 
     static async getLatestERDPYVersion(): Promise<string> {
         let tagName = await this.getLatestRelease();
+        
         let url = `${this.githubElrondSDK}/${tagName.toString()}/erdpy/_version.py`;
 
         let erdpyVersionResponse = await this.doGetRequest({
