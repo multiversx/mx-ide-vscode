@@ -42,7 +42,7 @@ If you experience any issues, please let us know [on Github](https://github.com/
 The extension, via `erdpy`, will automatically download its external dependencies, so you do not have to worry much about setting up the development environment. These automatically installed dependencies include:
 
 * `RUST` buildchain
-* Arwen Tools (Mandos framework, Arwen Debug)
+* `VM Tools` (e.g. Mandos framework)
 * `LLVM (clang, llc, wasm-ld etc.)`
 
 ## Extension Commands
@@ -53,7 +53,6 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 * `buildContract`
 * `cleanContract`
 * `runMandosTests`
-* `runArwenDebugTests`
 * `runContractSnippet`
 
 ## Contributors

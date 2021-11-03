@@ -182,7 +182,7 @@ async function isErdpyGroupInstalled(group: string, version: string = ""): Promi
 }
 
 export async function reinstallModule(): Promise<void> {
-    let module = await presenter.askChooseSdkModule(["arwentools", "rust", "clang", "cpp"]);
+    let module = await presenter.askChooseSdkModule(["vmtools", "rust", "clang", "cpp"]);
     let version = await presenter.askModuleVersion();
     await reinstallErdpyGroup(module, version);
 }
@@ -218,20 +218,20 @@ export async function cleanContract(folder: string) {
 
 export async function runMandosTests(folder: string) {
     try {
-        await ensureInstalledErdpyGroup("arwentools");
+        await ensureInstalledErdpyGroup("vmtools");
         await runInTerminal("mandos", `mandos-test "${folder}"`);
     } catch (error) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
 }
 
-export async function runArwenDebugTests(folder: string) {
+export async function runWasmVMDebugTests(folder: string) {
     try {
-        await ensureInstalledErdpyGroup("arwentools");
+        await ensureInstalledErdpyGroup("vmtools");
         await ensureInstalledErdpyGroup("nodejs");
         Feedback.infoModal("Not yet implemented.");
     } catch (error) {
-        throw new errors.MyError({ Message: "Could not run ArwenDebug tests.", Inner: error });
+        throw new errors.MyError({ Message: "Could not run Wasm VM tests.", Inner: error });
     }
 }
 

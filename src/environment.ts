@@ -12,7 +12,7 @@ export class Environment {
         let sdkPath = MySettings.getElrondSdk();
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
-        let arwentoolsFolder = path.join(sdkPath, "arwentools");
+        let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
         let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
@@ -20,7 +20,7 @@ export class Environment {
 
         // This is required for other VS Code extensions to work well and use the custom (Rust) environment.
         delete process.env["PYTHONHOME"];
-        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`;
+        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`;
         process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
         process.env["RUSTUP_HOME"] = rustFolder;
         process.env["CARGO_HOME"] = rustFolder;
@@ -30,14 +30,14 @@ export class Environment {
         let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
-        let arwentoolsFolder = path.join(sdkPath, "arwentools");
+        let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
         let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
         let nodeJsBinFolder = path.join(nodeJsFolder, "bin");
 
         return {
-            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:\${env:PATH}`,
+            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:\${env:PATH}`,
             "VIRTUAL_ENV": erdpyEnvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder
@@ -48,7 +48,7 @@ export class Environment {
         let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
-        let arwentoolsFolder = path.join(sdkPath, "arwentools");
+        let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
         let nodeJsFolder = path.join(sdkPath, "nodejs", "latest");
@@ -56,7 +56,7 @@ export class Environment {
 
         return {
             "PYTHONHOME": null,
-            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${arwentoolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`,
+            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`,
             "VIRTUAL_ENV": erdpyEnvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder
