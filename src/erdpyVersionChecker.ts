@@ -3,7 +3,7 @@ import request = require('request');
 export class ErdpyVersionChecker {
     static githubURLLastestRelease: string = "https://api.github.com/repos/ElrondNetwork/elrond-sdk/releases/latest"
     static githubElrondSDK: string = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk"
-    static defaultERDPYVersion: string = "v1.0.10"
+    static defaultERDPYVersion: string = "v1.0.21"
 
     static async isVersionOk(versionWithSuffix: string): Promise<boolean> {
         let spittedLocal = versionWithSuffix.split(' ');
