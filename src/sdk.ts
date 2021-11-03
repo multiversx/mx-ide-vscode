@@ -93,7 +93,7 @@ export async function fetchTemplates(cacheFile: string) {
         });
 
         Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not fetch templates", Inner: error });
     }
 }
@@ -106,7 +106,7 @@ export async function newFromTemplate(folder: string, template: string, name: st
         });
 
         Feedback.info(`Smart Contract [${name}] created, based on template [${template}].`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not create Smart Contract", Inner: error });
     }
 }
@@ -203,7 +203,7 @@ async function reinstallErdpyGroup(group: string, version: string = "") {
 export async function buildContract(folder: string) {
     try {
         await runInTerminal("build", `${Erdpy} --verbose contract build "${folder}"`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
 }
@@ -211,7 +211,7 @@ export async function buildContract(folder: string) {
 export async function cleanContract(folder: string) {
     try {
         await runInTerminal("build", `${Erdpy} --verbose contract clean "${folder}"`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
 }
@@ -220,7 +220,7 @@ export async function runMandosTests(folder: string) {
     try {
         await ensureInstalledErdpyGroup("vmtools");
         await runInTerminal("mandos", `mandos-test "${folder}"`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
     }
 }
@@ -230,7 +230,7 @@ export async function runWasmVMDebugTests(folder: string) {
         await ensureInstalledErdpyGroup("vmtools");
         await ensureInstalledErdpyGroup("nodejs");
         Feedback.infoModal("Not yet implemented.");
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not run Wasm VM tests.", Inner: error });
     }
 }
@@ -245,7 +245,7 @@ export async function runFreshTestnet(testnetToml: Uri) {
         await runInTerminal("testnet", `${Erdpy} testnet prerequisites`);
         await runInTerminal("testnet", `${Erdpy} testnet config`);
         await runInTerminal("testnet", `${Erdpy} testnet start`);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
 }
@@ -256,7 +256,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
 
         await destroyTerminal("testnet");
         await runInTerminal("testnet", `${Erdpy} testnet start`, null, folder);
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
 }
@@ -264,7 +264,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
 export async function stopTestnet(testnetToml: Uri) {
     try {
         await killRunningInTerminal("testnet");
-    } catch (error) {
+    } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
 }
