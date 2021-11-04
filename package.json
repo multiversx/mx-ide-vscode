@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.9.0",
+	"version": "0.10.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -84,8 +84,8 @@
 				"category": "Elrond"
 			},
 			{
-				"command": "elrond.runArwenDebugTests",
-				"title": "Run Arwen Debug Tests",
+				"command": "elrond.runWasmVMDebugTests",
+				"title": "Run Wasm VM Debug Tests (not yet implemented)",
 				"category": "Elrond"
 			},
 			{
@@ -152,7 +152,7 @@
 					"group": "Elrond"
 				},
 				{
-					"command": "elrond.runArwenDebugTests",
+					"command": "elrond.runWasmVMDebugTests",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
 					"group": "Elrond"
 				},
@@ -202,7 +202,7 @@
 					"when": "false"
 				},
 				{
-					"command": "elrond.runArwenDebugTests",
+					"command": "elrond.runWasmVMDebugTests",
 					"when": "false"
 				},
 				{
@@ -253,7 +253,7 @@
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.runArwenDebugTests",
+					"command": "elrond.runWasmVMDebugTests",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
