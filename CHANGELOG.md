@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.10.0 (04/11/2021)
+ - Fixes after renaming Arwen -> Wasm VM #32 .
+ - Fix default erdpy version (and repository URL) #32.
+
+---
+
 ## v0.9.0 (11/03/2021)
  - Improve erdpy version checking and installation
 ---
@@ -176,12 +182,3 @@ UX improvements.
 
 ## Preview (20/12/2019)
 Updated logo.
----
-
-## Preview (20/12/2019)
-Updated description.
-Bug fix for workspace not open (display info to open a folder).
----
-
-## Preview (20/12/2019)
-Logo and categories.
