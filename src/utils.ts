@@ -255,7 +255,7 @@ export class FsFacade {
             const curDir = path.resolve(baseDir, parentDir, childDir);
             try {
                 fs.mkdirSync(curDir);
-            } catch (err) {
+            } catch (err: any) {
                 if (err.code === 'EEXIST') { // curDir already exists!
                     return curDir;
                 }
