@@ -33,9 +33,9 @@ Elrond IDE can be installed from the Visual Studio Code Marketplace.
 
 If you experience any issues, please let us know [on Github](https://github.com/ElrondNetwork/elrond-ide-vscode/issues) or [on Telegram](https://t.me/ElrondDevelopers).
 
-### [erdpy](https://github.com/ElrondNetwork/erdpy)
+### [erdpy](https://github.com/ElrondNetwork/elrond-sdk-erdpy)
 
-**erdpy** is the backend of the Visual Studio Code extension. **erdpy** is **required** by the Elrond IDE. In order to install it, please follow [these steps](https://github.com/ElrondNetwork/erdpy).
+**erdpy** is the backend of the Visual Studio Code extension. **erdpy** is **required** by the Elrond IDE. In order to install it, please follow [these steps](https://docs.elrond.com/sdk-and-tools/erdpy/installing-erdpy).
 
 ### Other dependencies
 
