@@ -164,12 +164,12 @@ export async function patchLaunchAndTasks() {
     });
 
     if (!patched) {
-        return false;
+        return;
     }
 
     let allow = await presenter.askModifyLaunchAndTasks();
     if (!allow) {
-        return false;
+        return;
     }
 
     fs.writeFileSync(launchPath, JSON.stringify(launchObject, null, 4));
