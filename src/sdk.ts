@@ -8,6 +8,7 @@ import * as presenter from './presenter';
 import { Environment } from './environment';
 import {ErdpyVersionChecker} from './erdpyVersionChecker'
 import path = require("path");
+import { Version } from './version';
 
 let Erdpy = "erdpy";
 
@@ -16,8 +17,7 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestERDPYVersion()
-
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease()
     let version = await presenter.askErdpyVersion(latestErdpyVersion);
     await reinstallErdpy(version);
 }
@@ -32,7 +32,7 @@ async function ensureErdpy() {
         return;
     }
 
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestERDPYVersion()
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease()
     let answer = await presenter.askInstallErdpy(latestErdpyVersion);
     if (answer) {
         await reinstallErdpy(latestErdpyVersion);
@@ -46,7 +46,6 @@ async function isErdpyInstalled(): Promise<boolean> {
     }
 
     let isOk = await ErdpyVersionChecker.isVersionOk(version)
-
     return isOk;
 }
 
@@ -63,7 +62,7 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
     }
 }
 
-export async function reinstallErdpy(version: string) {
+export async function reinstallErdpy(version: Version) {
     let erdpyUp = storage.getPathTo("erdpy-up.py");
     await RestFacade.download({
         url: "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py",
@@ -176,7 +175,7 @@ async function ensureInstalledErdpyGroup(group: string) {
     }
 }
 
-async function isErdpyGroupInstalled(group: string, version: string = ""): Promise<boolean> {
+async function isErdpyGroupInstalled(group: string): Promise<boolean> {
     let [_, ok] = await getOneLineStdout(Erdpy, ["deps", "check", group]);
     return ok;
 }
@@ -187,7 +186,7 @@ export async function reinstallModule(): Promise<void> {
     await reinstallErdpyGroup(module, version);
 }
 
-async function reinstallErdpyGroup(group: string, version: string = "") {
+async function reinstallErdpyGroup(group: string, version?: Version) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version ? `--tag=${version}` : "";
     await runInTerminal("installer", `${Erdpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
@@ -195,7 +194,7 @@ async function reinstallErdpyGroup(group: string, version: string = "") {
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyGroupInstalled(group, version)));
+    } while ((!await isErdpyGroupInstalled(group)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
@@ -225,7 +224,7 @@ export async function runMandosTests(folder: string) {
     }
 }
 
-export async function runWasmVMDebugTests(folder: string) {
+export async function runWasmVMDebugTests(_folder: string) {
     try {
         await ensureInstalledErdpyGroup("vmtools");
         await ensureInstalledErdpyGroup("nodejs");
@@ -261,7 +260,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
     }
 }
 
-export async function stopTestnet(testnetToml: Uri) {
+export async function stopTestnet(_testnetToml: Uri) {
     try {
         await killRunningInTerminal("testnet");
     } catch (error: any) {
