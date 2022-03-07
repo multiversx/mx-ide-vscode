@@ -1,14 +1,12 @@
 import child_process = require('child_process');
 import fs = require('fs');
-import os = require('os');
 import path = require('path');
-import { Root } from './root';
 import eventBus from './eventBus';
-import request = require('request');
 import _ = require('underscore');
 import { Feedback } from './feedback';
 import { MyExecError, MyHttpError, MyError } from './errors';
 import { Terminal } from 'vscode';
+import axios from "axios";
 const psList = require('ps-list');
 
 export class ProcessFacade {
@@ -125,38 +123,8 @@ export class ProcessFacade {
 }
 
 export class FsFacade {
-    public static createTempFile(fileName: string, content: string) {
-        let filePath = path.join(os.tmpdir(), fileName);
-        fs.writeFileSync(filePath, content);
-        return filePath;
-    }
-
-    public static removeExtension(filePath: string) {
-        let parsedPath = path.parse(filePath);
-        let withoutExtension = path.join(parsedPath.dir, parsedPath.name);
-        return withoutExtension;
-    }
-
-    public static getExtension(filePath: string) {
-        return path.extname(filePath);
-    }
-
-    public static getTopmostFolder(filePath: string) {
-        let parts = filePath.split(path.sep).filter(item => item.length > 0);
-        return parts[0];
-    }
-
     public static getFilename(filePath: string) {
         return path.basename(filePath);
-    }
-
-    public static getFilenameWithoutExtension(filePath: string) {
-        let fileName = path.basename(filePath);
-        return FsFacade.removeExtension(fileName);
-    }
-
-    public static getFolder(filePath: string) {
-        return path.dirname(filePath);
     }
 
     public static readFile(filePath: string) {
@@ -168,21 +136,6 @@ export class FsFacade {
         return text;
     }
 
-    public static readBinaryFile(filePath: string) {
-        let buffer: Buffer = fs.readFileSync(filePath);
-        return buffer;
-    }
-
-    public static readFileInContent(filePath: string) {
-        filePath = path.join(FsFacade.getPathToContent(), filePath);
-        return FsFacade.readFile(filePath);
-    }
-
-    public static getPathToContent() {
-        let extensionPath = Root.ExtensionContext.extensionPath;
-        return path.join(extensionPath, "content");
-    }
-
     public static writeFile(filePath: string, content: string) {
         fs.writeFileSync(filePath, content);
     }
@@ -190,239 +143,18 @@ export class FsFacade {
     public static fileExists(filePath: string): boolean {
         return fs.existsSync(filePath);
     }
-
-    public static readLatestFileInFolder(...pathParts: string[]): string {
-        let latest = FsFacade.getLatestFileInFolder(...pathParts);
-        let content = FsFacade.readFile(latest);
-        return content;
-    }
-
-    public static getLatestFileInFolder(...pathParts: string[]): string {
-        let folder = path.join(...pathParts);
-        let files = fs.readdirSync(folder);
-        let latest = _.max(files, function (fileName) {
-            let fullpath = path.join(folder, fileName);
-            return fs.statSync(fullpath).mtime;
-        });
-
-        let fullpath = path.join(folder, latest);
-        return fullpath;
-    }
-
-    public static markAsExecutable(filePath: string) {
-        Feedback.debug(`markAsExecutable(${filePath})`);
-        fs.chmodSync(filePath, "755");
-    }
-
-    public static unzip(archivePath: string, destinationFolder: string): Promise<any> {
-        Feedback.debug(`unzip ${archivePath} to ${destinationFolder}.`);
-
-        return ProcessFacade.execute({
-            program: "unzip",
-            args: ["-o", archivePath, "-d", destinationFolder]
-        });
-    }
-
-    public static untar(archivePath: string, destinationFolder: string): Promise<any> {
-        Feedback.debug(`untar ${archivePath} to ${destinationFolder}.`);
-
-        return ProcessFacade.execute({
-            program: "tar",
-            args: ["-C", destinationFolder, "-xzf", archivePath]
-        });
-    }
-
-    public static createFolderIfNotExists(folderPath: string) {
-        let parentFolder = path.dirname(folderPath);
-
-        if (!fs.existsSync(parentFolder)) {
-            throw new Error(`Parent folder ${parentFolder} does not exist.`);
-        }
-
-        if (!fs.existsSync(folderPath)) {
-            Feedback.debug(`Creating folder: ${folderPath}`);
-            fs.mkdirSync(folderPath);
-        }
-    }
-
-    // https://stackoverflow.com/a/40686853/1475331
-    public static mkDirByPathSync(targetDir: string) {
-        const sep = path.sep;
-        const initDir = path.isAbsolute(targetDir) ? sep : '';
-        const baseDir = '.';
-
-        return targetDir.split(sep).reduce((parentDir, childDir) => {
-            const curDir = path.resolve(baseDir, parentDir, childDir);
-            try {
-                fs.mkdirSync(curDir);
-            } catch (err: any) {
-                if (err.code === 'EEXIST') { // curDir already exists!
-                    return curDir;
-                }
-
-                // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
-                if (err.code === 'ENOENT') { // Throw the original parentDir error on curDir `ENOENT` failure.
-                    throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
-                }
-
-                const caughtErr = ['EACCES', 'EPERM', 'EISDIR'].indexOf(err.code) > -1;
-                if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
-                    throw err; // Throw if it's just the last created dir.
-                }
-            }
-
-            return curDir;
-        }, initDir);
-    }
-
-    public static copyFile(source: string, destination: string) {
-        Feedback.debug(`copy: ${source} TO ${destination}`);
-        fs.copyFileSync(source, destination);
-    }
-
-    public static copyFolder(sourceFolder: string, destinationFolder: string) {
-        child_process.execSync(`cp -r ${sourceFolder}/* ${destinationFolder}`);
-    }
-
-
-    public static listFolder(parentFolder: string): string[] {
-        let folders = fs.readdirSync(parentFolder).filter(child => fs.statSync(path.join(parentFolder, child)).isDirectory());
-        return folders;
-    }
 }
 
 export class RestFacade {
-    public static post(options: any): Promise<any> {
-        var resolve: any, reject: any;
-        let promise = new Promise((_resolve, _reject) => {
-            resolve = _resolve;
-            reject = _reject;
-        });
-
-        let url = options.url;
-        let data = options.data;
-        let eventTag = options.eventTag;
-        let channels = options.channels || ["http"];
-        let requestOptions: any = {
-            json: data
-        };
-
-        if (eventTag) {
-            eventBus.emit(`${eventTag}:request`, { url: url, data: data });
-        }
-
-        Feedback.debug(`http post, ${url}`, channels);
-        Feedback.debug(JSON.stringify(options, null, 4), channels);
-
-        request.post(url, requestOptions, function (error: any, response: any, body: any) {
-            let statusCode = response ? response.statusCode : null;
-            let isErrorneous = error || statusCode == 500;
-
-            if (isErrorneous) {
-                eventBus.emit(`${eventTag}:error`, { url: url, data: error });
-                reject(new MyHttpError({ Url: url, RequestError: error }));
-            } else {
-                eventBus.emit(`${eventTag}:response`, { url: url, data: body });
-                Feedback.debug(`http post, status=${statusCode}, response:`, channels);
-                Feedback.debug(JSON.stringify(body, null, 4), channels);
-
-                if (statusCode != 200) {
-                    Feedback.error("Errorneous HTTP response, please check.");
-                }
-
-                resolve(body);
-            }
-        });
-
-        return promise;
-    }
-
-    public static download(options: any): Promise<any> {
-        const waitBeforeCloseStream = 500;
-
-        var resolve: any, reject: any;
-        let promise = new Promise((_resolve, _reject) => {
-            resolve = _resolve;
-            reject = _reject;
-        });
-
+    public static async download(options: any): Promise<any> {
         let url = options.url;
         let destination = options.destination;
-        let writeStream: fs.WriteStream = fs.createWriteStream(destination);
 
         Feedback.debug(`Downloading: ${url}`);
         Feedback.debug(`Destination: ${destination}`);
 
-        let contentLength = Number.MAX_SAFE_INTEGER;
-        let downloaded = 0;
-        let progress = 0;
-        let percentage = 0;
-        let previousPercentage = -1;
-
-        request.get(url)
-            .on("response", function (response) {
-                contentLength = parseInt(response.headers['content-length']);
-            })
-            .on("data", function (chunk) {
-                downloaded += chunk.length;
-                progress = downloaded / contentLength;
-                percentage = Math.round(progress * 100);
-
-                if (percentage != previousPercentage) {
-                    eventBus.emit("download", {
-                        url: url,
-                        file: destination,
-                        progress: progress,
-                        percentage: percentage,
-                        downloaded: downloaded,
-                        length: contentLength
-                    });
-                }
-
-                previousPercentage = percentage;
-            })
-            .on("error", function (error) {
-                writeStream.close();
-                reject(new MyHttpError({ Url: url, RequestError: error }));
-            })
-            .on("complete", function (response) {
-                let statusCode = response.statusCode;
-                let statusMessage = response.statusMessage;
-
-                if (statusCode == 200) {
-                    setTimeout(function () {
-                        writeStream.close();
-                        Feedback.debug(`Downloaded: ${destination}.`);
-                        resolve();
-                    }, waitBeforeCloseStream);
-
-                    eventBus.emit("download", {
-                        url: url,
-                        file: destination,
-                        progress: 1.0,
-                        percentage: 100,
-                        downloaded: downloaded,
-                        length: contentLength
-                    });
-                } else {
-                    setTimeout(function () {
-                        writeStream.close();
-                        reject(new MyHttpError({ Url: url, Message: statusMessage, Code: statusCode.toString() }));
-                    }, waitBeforeCloseStream);
-
-                    eventBus.emit("download", {
-                        url: url,
-                        file: destination,
-                        progress: 0.0,
-                        percentage: 0,
-                        downloaded: 0,
-                        length: contentLength
-                    });
-                }
-            })
-            .pipe(writeStream);
-
-        return promise;
+        let response = await axios.get(url);
+        fs.writeFileSync(destination, response.data);
     }
 }
 
@@ -435,7 +167,7 @@ export async function waitForProcessInTerminal(terminal: Terminal): Promise<void
 
             let result: any[] = await psList({ all: true });
             let hasChildren = result.some(item => item.ppid == pid);
-            
+
             // No more child processes running in the Terminal.
             if (!hasChildren) {
                 break;
