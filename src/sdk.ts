@@ -71,7 +71,7 @@ async function isErdpyInstalled(exactVersion?: Version): Promise<boolean> {
         return installedVersion.isSameAs(exactVersion);
     }
 
-    // No exact version specified (desired), let's fetch latest known version (or fallback to the IDE-configured default version, if the fetch fails)
+    // No exact version specified (desired).
     let latestKnownVersion = await getLatestKnownErdpyVersion();
     return installedVersion.isNewerOrSameAs(latestKnownVersion);
 }

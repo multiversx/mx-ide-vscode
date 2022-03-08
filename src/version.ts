@@ -1,5 +1,3 @@
-import { CannotParseVersionError } from "./errors";
-
 /**
  * Utility class, useful for representing and manipulating version strings (e.g. of IDE dependencies).
  */
@@ -30,8 +28,7 @@ export class Version {
             throw new CannotParseVersionError(versionString);
         }
 
-        let version = new Version(majorNumber, minorNumber, patchNumber);
-        return version;
+        return new Version(majorNumber, minorNumber, patchNumber);
     }
 
     isNewerOrSameAs(other: Version) {
@@ -88,5 +85,13 @@ export class FreeTextVersion {
 
     toString(): string {
         return this.value;
+    }
+}
+
+// Workaround: currently, we cannot move this to "errors.ts" (since that file imports "vscode", and this would cause the unit tests to fail).
+// TODO: Improve / refactor "errors.ts".
+export class CannotParseVersionError extends Error {
+    public constructor(version: string) {
+        super(`Cannot parse version: ${version}`);
     }
 }

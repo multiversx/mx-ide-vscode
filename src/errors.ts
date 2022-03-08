@@ -27,19 +27,6 @@ export class MyExecError extends MyError {
     }
 }
 
-export class CannotParseVersionError extends MyError {
-    public version: string;
-
-    public constructor(version: string) {
-        super();
-        this.version = version;
-    }
-
-    public getPretty(): string {
-        return `Cannot parse version: ${this.version}`;
-    }
-}
-
 export function caughtTopLevel(originalError: any) {
     if (originalError instanceof Error) {
         Feedback.error(originalError.message);
