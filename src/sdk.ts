@@ -2,24 +2,36 @@ import { Feedback } from './feedback';
 import { ProcessFacade, RestFacade, sleep } from "./utils";
 import { Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
+import axios from "axios";
 import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
-import { ErdpyVersionChecker } from './erdpyVersionChecker';
 import path = require("path");
 import { Version } from './version';
 
-let Erdpy = "erdpy";
+const Erdpy = "erdpy";
+const DefaultErdpyVersion = new Version(1, 1, 0);
+const LatestErdpyReleaseUrl = "https://api.github.com/repos/ElrondNetwork/elrond-sdk-erdpy/releases/latest";
 
 export function getPath() {
     return MySettings.getElrondSdk();
 }
 
 export async function reinstall() {
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease();
+    let latestErdpyVersion = await getLatestErdpyRelease();
     let version = await presenter.askErdpyVersion(latestErdpyVersion);
     await reinstallErdpy(version);
+}
+
+async function getLatestErdpyRelease(): Promise<Version> {
+    try {
+        let response = await axios.get(LatestErdpyReleaseUrl);
+        let payload = JSON.parse(response.data);
+        return Version.parse(payload.tag_name);
+    } catch {
+        return DefaultErdpyVersion;
+    }
 }
 
 export async function ensureInstalled() {
@@ -32,7 +44,7 @@ async function ensureErdpy() {
         return;
     }
 
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease();
+    let latestErdpyVersion = await getLatestErdpyRelease();
     let answer = await presenter.askInstallErdpy(latestErdpyVersion);
     if (answer) {
         await reinstallErdpy(latestErdpyVersion);
@@ -45,8 +57,18 @@ async function isErdpyInstalled(): Promise<boolean> {
         return false;
     }
 
-    let isOk = await ErdpyVersionChecker.isVersionOk(version);
+    let isOk = await isErdpyVersionRecentEnough(version);
     return isOk;
+}
+
+async function isErdpyVersionRecentEnough(cliVersionString: string): Promise<boolean> {
+    try {
+        let cliVersion = Version.parse(cliVersionString);
+        let latestVersion = await getLatestErdpyRelease();
+        return cliVersion.isNewerOrSameAs(latestVersion);
+    } catch {
+        return false;
+    }
 }
 
 async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
