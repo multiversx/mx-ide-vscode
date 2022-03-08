@@ -317,7 +317,8 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile",
 		"test": "node ./out/test/runTest.js",
-		"unit-tests": "mocha $(find . -name '*.spec.ts')"
+		"unit-tests": "mocha",
+		"lint": "tslint --project ."
 	},
 	"devDependencies": {
 		"@types/chai": "4.2.11",

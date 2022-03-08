@@ -6,7 +6,7 @@ import * as storage from "./storage";
 import * as errors from './errors';
 import * as presenter from './presenter';
 import { Environment } from './environment';
-import {ErdpyVersionChecker} from './erdpyVersionChecker'
+import { ErdpyVersionChecker } from './erdpyVersionChecker';
 import path = require("path");
 import { Version } from './version';
 
@@ -17,7 +17,7 @@ export function getPath() {
 }
 
 export async function reinstall() {
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease()
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease();
     let version = await presenter.askErdpyVersion(latestErdpyVersion);
     await reinstallErdpy(version);
 }
@@ -27,12 +27,12 @@ export async function ensureInstalled() {
 }
 
 async function ensureErdpy() {
-    let isEdpyInstalled = await isErdpyInstalled()
+    let isEdpyInstalled = await isErdpyInstalled();
     if (isEdpyInstalled) {
         return;
     }
 
-    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease()
+    let latestErdpyVersion = await ErdpyVersionChecker.getLatestGithubRelease();
     let answer = await presenter.askInstallErdpy(latestErdpyVersion);
     if (answer) {
         await reinstallErdpy(latestErdpyVersion);
@@ -42,10 +42,10 @@ async function ensureErdpy() {
 async function isErdpyInstalled(): Promise<boolean> {
     let [version, ok] = await getOneLineStdout(Erdpy, ["--version"]);
     if (!ok) {
-        return false
+        return false;
     }
 
-    let isOk = await ErdpyVersionChecker.isVersionOk(version)
+    let isOk = await ErdpyVersionChecker.isVersionOk(version);
     return isOk;
 }
 
