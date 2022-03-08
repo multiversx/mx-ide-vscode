@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { FreeTextVersion, Version } from './version';
 
 export function getActiveFilePath() {
     let activeTextEditor = vscode.window.activeTextEditor;
@@ -38,16 +39,16 @@ For a better experience when debugging Smart Contracts, we recommed allowing thi
     return answer;
 }
 
-export async function askInstallErdpy(requiredVersion: string): Promise<boolean> {
+export async function askInstallErdpy(requiredVersion: Version): Promise<boolean> {
     let answer = await askYesNo(`Elrond IDE requires erdpy ${requiredVersion} (part of Elrond SDK), which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }
 
-export async function askErdpyVersion(defaultVersion: string): Promise<string> {
+export async function askErdpyVersion(defaultVersion: Version): Promise<Version> {
     const result = await vscode.window.showInputBox({
         prompt: "Enter the erdpy version to install",
-        value: defaultVersion,
+        value: defaultVersion.toString(),
         ignoreFocusOut: true,
         placeHolder: "For example: 1.0.0",
         validateInput: text => {
@@ -55,7 +56,11 @@ export async function askErdpyVersion(defaultVersion: string): Promise<string> {
         }
     });
 
-    return result;
+    if (result === undefined) {
+        return null;
+    }
+
+    return Version.parse(result);
 }
 
 export async function askInstallErdpyGroup(group: string): Promise<boolean> {
@@ -68,7 +73,7 @@ export async function askChooseSdkModule(modules: string[]): Promise<string> {
     return await askChoice(modules);
 }
 
-export async function askModuleVersion(): Promise<string> {
+export async function askModuleVersion(): Promise<FreeTextVersion> {
     const result = await vscode.window.showInputBox({
         prompt: "Enter the module version to install (leave blank for default)",
         value: "",
@@ -76,7 +81,14 @@ export async function askModuleVersion(): Promise<string> {
         placeHolder: "For example: v1.2.3"
     });
 
-    return result;
+    if (result === undefined) {
+        return null;
+    }
+    if (result == "") {
+        return FreeTextVersion.unspecified();
+    }
+
+    return new FreeTextVersion(result);
 }
 
 export async function askYesNo(question: string): Promise<boolean> {

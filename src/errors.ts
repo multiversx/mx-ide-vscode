@@ -27,24 +27,6 @@ export class MyExecError extends MyError {
     }
 }
 
-export class MyHttpError extends MyError {
-    public Url: string;
-    public RequestError: Error;
-
-    public constructor(init?: Partial<MyHttpError>) {
-        super();
-        Object.assign(this, init);
-    }
-
-    public getPretty(): string {
-        let requestErrorPretty = this.RequestError ? this.RequestError.message : "";
-        return `${this.Url}, code = ${this.Code}, ${this.Message}, ${requestErrorPretty}`;
-    }
-}
-
-export class MySetupError extends MyError {
-}
-
 export function caughtTopLevel(originalError: any) {
     if (originalError instanceof Error) {
         Feedback.error(originalError.message);
