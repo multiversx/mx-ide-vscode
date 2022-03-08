@@ -32,11 +32,17 @@ export class Version {
     }
 
     isNewerOrSameAs(other: Version) {
-        return this.major >= other.major && this.minor >= other.minor && this.patch >= other.patch;
+        return this.isNewerThan(other) || this.isSameAs(other);
     }
 
     isNewerThan(other: Version) {
-        return this.isNewerOrSameAs(other) && !this.isSameAs(other);
+        let firstNonZeroPart = [
+            this.major - other.major,
+            this.minor - other.minor,
+            this.patch - other.patch
+        ].find(e => e != 0);
+        
+        return firstNonZeroPart > 0;
     }
 
     isOlderThan(other: Version) {
