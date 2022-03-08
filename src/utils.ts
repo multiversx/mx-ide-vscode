@@ -4,9 +4,8 @@ import path = require('path');
 import eventBus from './eventBus';
 import _ = require('underscore');
 import { Feedback } from './feedback';
-import { MyExecError, MyHttpError, MyError } from './errors';
+import { MyExecError, MyError } from './errors';
 import { Terminal } from 'vscode';
-import axios from "axios";
 const psList = require('ps-list');
 
 export class ProcessFacade {
@@ -142,19 +141,6 @@ export class FsFacade {
 
     public static fileExists(filePath: string): boolean {
         return fs.existsSync(filePath);
-    }
-}
-
-export class RestFacade {
-    public static async download(options: any): Promise<any> {
-        let url = options.url;
-        let destination = options.destination;
-
-        Feedback.debug(`Downloading: ${url}`);
-        Feedback.debug(`Destination: ${destination}`);
-
-        let response = await axios.get(url);
-        fs.writeFileSync(destination, response.data);
     }
 }
 

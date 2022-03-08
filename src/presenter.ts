@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Version } from './version';
+import { FreeTextVersion, Version } from './version';
 
 export function getActiveFilePath() {
     let activeTextEditor = vscode.window.activeTextEditor;
@@ -56,6 +56,10 @@ export async function askErdpyVersion(defaultVersion: Version): Promise<Version>
         }
     });
 
+    if (result === undefined) {
+        return null;
+    }
+
     return Version.parse(result);
 }
 
@@ -69,7 +73,7 @@ export async function askChooseSdkModule(modules: string[]): Promise<string> {
     return await askChoice(modules);
 }
 
-export async function askModuleVersion(): Promise<Version> {
+export async function askModuleVersion(): Promise<FreeTextVersion> {
     const result = await vscode.window.showInputBox({
         prompt: "Enter the module version to install (leave blank for default)",
         value: "",
@@ -77,7 +81,14 @@ export async function askModuleVersion(): Promise<Version> {
         placeHolder: "For example: v1.2.3"
     });
 
-    return Version.parse(result);
+    if (result === undefined) {
+        return null;
+    }
+    if (result == "") {
+        return FreeTextVersion.unspecified();
+    }
+
+    return new FreeTextVersion(result);
 }
 
 export async function askYesNo(question: string): Promise<boolean> {

@@ -27,22 +27,17 @@ export class MyExecError extends MyError {
     }
 }
 
-export class MyHttpError extends MyError {
-    public Url: string;
-    public RequestError: Error;
+export class CannotParseVersionError extends MyError {
+    public version: string;
 
-    public constructor(init?: Partial<MyHttpError>) {
+    public constructor(version: string) {
         super();
-        Object.assign(this, init);
+        this.version = version;
     }
 
     public getPretty(): string {
-        let requestErrorPretty = this.RequestError ? this.RequestError.message : "";
-        return `${this.Url}, code = ${this.Code}, ${this.Message}, ${requestErrorPretty}`;
+        return `Cannot parse version: ${this.version}`;
     }
-}
-
-export class MySetupError extends MyError {
 }
 
 export function caughtTopLevel(originalError: any) {

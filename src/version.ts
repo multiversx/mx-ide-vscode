@@ -1,3 +1,5 @@
+import { CannotParseVersionError } from "./errors";
+
 /**
  * Utility class, useful for representing and manipulating version strings (e.g. of IDE dependencies).
  */
@@ -12,11 +14,23 @@ export class Version {
         this.patch = patch;
     }
 
+    static unspecified(): Version {
+        return new Version(0, 0, 0);
+    }
+
     static parse(versionString: string) {
         // Only keep numbers and dots.
-        versionString = versionString.replace(/[^\d.]/g, "");
-        let [major, minor, patch] = versionString.split(".");
-        let version = new Version(parseInt(major), parseInt(minor), parseInt(patch));
+        let normalizedVersionString = versionString.replace(/[^\d.]/g, "");
+        let [major, minor, patch] = normalizedVersionString.split(".");
+        let majorNumber = parseInt(major);
+        let minorNumber = parseInt(minor);
+        let patchNumber = parseInt(patch);
+
+        if (isNaN(majorNumber) || isNaN(minorNumber) || isNaN(patchNumber)) {
+            throw new CannotParseVersionError(versionString);
+        }
+
+        let version = new Version(majorNumber, minorNumber, patchNumber);
         return version;
     }
 
@@ -42,5 +56,37 @@ export class Version {
 
     toStringWithPrefix(): string {
         return `v${this.toString()}`;
+    }
+
+    isSpecified(): boolean {
+        return !this.isUnspecified();
+    }
+
+    isUnspecified(): boolean {
+        return this.major == 0 && this.minor == 0 && this.patch == 0;
+    }
+}
+
+export class FreeTextVersion {
+    readonly value: string;
+
+    constructor(value: string) {
+        this.value = value;
+    }
+
+    static unspecified(): FreeTextVersion {
+        return new FreeTextVersion("");
+    }
+
+    isSpecified(): boolean {
+        return !this.isUnspecified();
+    }
+
+    isUnspecified(): boolean {
+        return this.value.length == 0;
+    }
+
+    toString(): string {
+        return this.value;
     }
 }
