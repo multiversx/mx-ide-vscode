@@ -60,7 +60,6 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 ### How to publish an update of the extension
 
 1. Bump version in `package.json` and `package-lock.json`
-2. Push to GitHub
-3. Publish release on Github, add release notes
-4. Update changelog via `make changelog`, commit & push (message = "Update changelog."). Make sure [gren](https://github.com/github-tools/github-release-notes#installation) is installed beforehand.
-5. Publish to VSCode Marketplace via `make publish`
+2. Update changelog
+3. Create release on Github
+4. Publish to VSCode Marketplace via `make publish`

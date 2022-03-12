@@ -14,7 +14,7 @@ import fs = require('fs');
 const Erdpy = "erdpy";
 const DefaultErdpyVersion = new Version(1, 1, 0);
 const LatestErdpyReleaseUrl = "https://api.github.com/repos/ElrondNetwork/elrond-sdk-erdpy/releases/latest";
-const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py";
+const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk-erdpy/main/erdpy-up.py";
 
 export function getPath() {
     return MySettings.getElrondSdk();

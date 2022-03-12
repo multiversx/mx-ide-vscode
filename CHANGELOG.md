@@ -1,5 +1,11 @@
 # Changelog
 
+## Not released
+ - TBD
+
+## v0.11.0 
+ - [Upgrade packages, Typescript. General cleanup and refactoring](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/34)
+
 ## v0.10.0 (04/11/2021)
  - Fixes after renaming Arwen -> Wasm VM #32 .
  - Fix default erdpy version (and repository URL) #32.
