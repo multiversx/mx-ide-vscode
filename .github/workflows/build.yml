@@ -21,3 +21,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run unit-tests
+
+    - name: Test workflow: save VSIX file
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        npm run package
+        gh release upload vTestWorkflow $(find . -type f -name "*.vsix")
