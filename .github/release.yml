@@ -1,0 +1,37 @@
+name: Build and Test
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      # TODO: change to "released" after a first test on "main" branch
+      - prereleased
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+
+    - name: Save VSIX file
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        npm run package
+        gh release upload ${GITHUB_REF_NAME} $(find . -type f -name "*.vsix")
+
+    # TODO: Uncomment after a first test on "main" branch
+    # - name: Publish on Marketplace
+    #   env:
+    #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    #   run: npm run deploy

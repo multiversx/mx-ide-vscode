@@ -312,6 +312,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
+		"package": "vsce package",
 		"deploy": "vsce publish",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
