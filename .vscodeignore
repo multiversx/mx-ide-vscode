@@ -1,9 +1,10 @@
+.github/**
 .vscode/**
 out/test/**
 src/**
 .gitignore
-vsc-extension-quickstart.md
 **/tsconfig.json
 **/tslint.json
+**/.mocharc.json
 **/*.map
 **/*.ts
