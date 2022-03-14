@@ -60,5 +60,5 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 ### How to publish an update of the extension
 
 1. Within a PR, bump version in `package.json` and `package-lock.json`, and update changelog.
-2. Open and merge the PR against the `main` branch.
+2. Open and merge the PR against the `main` (`master`) branch.
 3. Create release on Github. This will trigger the publish on Visual Studio Marketplace, as well.
