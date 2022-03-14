@@ -22,7 +22,7 @@ jobs:
     - run: npm ci
     - run: npm run unit-tests
 
-    - name: Test workflow: save VSIX file
+    - name: Test workflow - save VSIX file
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
