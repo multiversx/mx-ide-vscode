@@ -31,6 +31,7 @@ export async function setup() {
     ensureWorkspaceDefinitionFile();
     await patchSettings();
     setupGitignore();
+    setupErdjsSnippets();
 }
 
 
@@ -64,6 +65,7 @@ async function patchSettings(): Promise<boolean> {
     let rustBinFolder = path.join(rustFolder, "bin");
 
     let patch = {
+        "mochaExplorer.files": "**/*.spec.ts",
         "terminal.integrated.env.linux": env,
         "terminal.integrated.env.osx": env,
         "terminal.integrated.environmentChangesIndicator": "on",
@@ -87,6 +89,8 @@ async function patchSettings(): Promise<boolean> {
         return false;
     }
 
+    // Patch has been applied in-memory, and now we have to update the file (settings.json).
+    // Ask for permission.
     let allow = await presenter.askModifySettings();
     if (!allow) {
         return false;
@@ -113,8 +117,7 @@ export async function patchLaunchAndTasks() {
     let envJson = JSON.stringify(env);
 
     let launchPath = path.join(getPath(), ".vscode", "launch.json");
-    if (!fs.existsSync(launchPath)) {
-        fs.writeFileSync(launchPath, `{
+    writeFileIfMissing(launchPath, `{
     "version": "0.2.0",
     "configurations": [
         {
@@ -126,11 +129,9 @@ export async function patchLaunchAndTasks() {
         }
     ]
 }`);
-    }
 
     let tasksPath = path.join(getPath(), ".vscode", "tasks.json");
-    if (!fs.existsSync(tasksPath)) {
-        fs.writeFileSync(tasksPath, `{
+    writeFileIfMissing(tasksPath, `{
     "version": "2.0.0",
     "tasks": [
         {
@@ -144,7 +145,6 @@ export async function patchLaunchAndTasks() {
         }
     ]
 }`);
-    }
 
     let launchObject = JSON.parse(fs.readFileSync(launchPath, { encoding: "utf8" }));
     let tasksObject = JSON.parse(fs.readFileSync(tasksPath, { encoding: "utf8" }));
@@ -158,7 +158,7 @@ export async function patchLaunchAndTasks() {
         let project = metadata.ProjectName;
         let projectPath = metadata.ProjectPathInWorkspace;
         let language = metadata.Language;
-        
+
         // Patch "launchItems" and "tasksItems", if needed (not needed at this moment).
         // In the past, we've patched both "launchItems" and "tasks" collections.
     });
@@ -229,9 +229,9 @@ export class ProjectMetadata {
 }
 
 function setupGitignore() {
-    let filePath = path.join(getPath(), ".gitignore");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, `# Elrond IDE
+    let gitignore = path.join(getPath(), ".gitignore");
+    
+    writeFileIfMissing(gitignore, `# Elrond IDE
 **/node_modules
 **/output/**
 **/testnet/**
@@ -239,10 +239,84 @@ function setupGitignore() {
 **/erdpy.data-storage.json
 **/*.interaction.json
 `);
-    }
 }
 
+function setupErdjsSnippets() {
+    const erdjsVersion = "9.2.0";
+    const erdjsSnippetsVersion = "1.0.0";
 
+    ensureFolder("erdjs-snippets");
 
+    let npmrcPath = path.join(getPath(), "erdjs-snippets", ".npmrc");
+    let packageJsonPath = path.join(getPath(), "erdjs-snippets", "package.json");
+    let tsconfigPath = path.join(getPath(), "erdjs-snippets", "tsconfig.json");
 
+    writeFileIfMissing(npmrcPath, `package-lock=false`);
 
+    writeFileIfMissing(packageJsonPath, `{
+    "name": "your-snippets",
+    "files": [
+        "out/**/*"
+    ],
+    "scripts": {
+        "compile": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "@elrondnetwork/erdjs": "${erdjsVersion}",
+        "bignumber.js": "9.0.2"
+    },
+    "devDependencies": {
+        "@types/assert": "1.4.6",
+        "@types/chai": "4.2.11",
+        "@types/mocha": "9.1.0",
+        "@types/node": "13.13.2",
+        "typescript": "4.1.2",
+        "chai": "4.2.0",
+        "mocha": "9.2.1",
+        "ts-node": "9.1.1"
+    },
+    "mocha": {
+        "extension": [
+        "ts"
+        ],
+        "require": "ts-node/register"
+    }
+}`);
+
+    writeFileIfMissing(tsconfigPath, `{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "es2015",
+        "outDir": "out",
+        "lib": [
+            "ES2015"
+        ],
+        "sourceMap": true,
+        "allowJs": true,
+        "strict": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
+    },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "out"
+    ]
+}`);
+}
+
+function writeFileIfMissing(filePath: string, content: string) {
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, content);
+    }
+}
