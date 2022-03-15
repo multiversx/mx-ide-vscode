@@ -1,7 +1,6 @@
 import child_process = require('child_process');
 import fs = require('fs');
 import path = require('path');
-import eventBus from './eventBus';
 import _ = require('underscore');
 import { Feedback } from './feedback';
 import { MyExecError, MyError } from './errors';
@@ -21,7 +20,6 @@ export class ProcessFacade {
         let workingDirectory = options.workingDirectory;
         let args = options.args;
         let environment = options.environment;
-        let eventTag = options.eventTag;
         let channels = options.channels || ["default"];
         let stdoutToFile = options.stdoutToFile;
         let doNotDumpStdout = options.doNotDumpStdout;
@@ -60,10 +58,6 @@ export class ProcessFacade {
             subprocess.stdout.pipe(writeStream);
         }
 
-        if (eventTag) {
-            eventBus.emit(`${eventTag}:started`, { program: program, args: args });
-        }
-
         subprocess.stdout.on("data", function (data) {
             latestStdout = data;
 
@@ -78,10 +72,6 @@ export class ProcessFacade {
             if (options.onOutput) {
                 options.onOutput(data);
             }
-
-            if (eventTag) {
-                eventBus.emit(`${eventTag}:output`, data);
-            }
         });
 
         subprocess.stderr.on("data", function (data) {
@@ -90,10 +80,6 @@ export class ProcessFacade {
 
             if (options.onError) {
                 options.onError(data);
-            }
-
-            if (eventTag) {
-                eventBus.emit(`${eventTag}:error`, data);
             }
         });
 
@@ -104,10 +90,6 @@ export class ProcessFacade {
 
             if (options.onClose) {
                 options.onClose(code, stdout);
-            }
-
-            if (eventTag) {
-                eventBus.emit(`${eventTag}:close`, code);
             }
 
             if (code == 0) {
