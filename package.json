@@ -84,11 +84,6 @@
 				"category": "Elrond"
 			},
 			{
-				"command": "elrond.runWasmVMDebugTests",
-				"title": "Run Wasm VM Debug Tests (not yet implemented)",
-				"category": "Elrond"
-			},
-			{
 				"command": "elrond.gotoContract",
 				"title": "Show in Workspace Explorer",
 				"category": "Elrond"
@@ -152,11 +147,6 @@
 					"group": "Elrond"
 				},
 				{
-					"command": "elrond.runWasmVMDebugTests",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
-					"group": "Elrond"
-				},
-				{
 					"command": "elrond.runFreshTestnet",
 					"when": "resourceFilename == testnet.toml",
 					"group": "Elrond Testnet"
@@ -199,10 +189,6 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
-					"when": "false"
-				},
-				{
-					"command": "elrond.runWasmVMDebugTests",
 					"when": "false"
 				},
 				{
@@ -250,10 +236,6 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
-					"when": "view == smartContracts && viewItem == contract"
-				},
-				{
-					"command": "elrond.runWasmVMDebugTests",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{

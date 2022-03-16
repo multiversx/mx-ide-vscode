@@ -258,16 +258,6 @@ export async function runMandosTests(folder: string) {
     }
 }
 
-export async function runWasmVMDebugTests(_folder: string) {
-    try {
-        await ensureInstalledErdpyGroup("vmtools");
-        await ensureInstalledErdpyGroup("nodejs");
-        Feedback.infoModal("Not yet implemented.");
-    } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run Wasm VM tests.", Inner: error });
-    }
-}
-
 export async function runFreshTestnet(testnetToml: Uri) {
     try {
         let folder = path.dirname(testnetToml.fsPath);
