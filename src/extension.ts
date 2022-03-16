@@ -4,6 +4,7 @@ import { Feedback } from './feedback';
 import * as sdk from "./sdk";
 import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
+import * as erdjsSnippets from "./erdjsSnippets";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
@@ -56,6 +57,7 @@ async function setupWorkspace() {
 	await sdk.ensureInstalled();
 	await workspace.patchLaunchAndTasks();
 	await ensureInstalledBuildchains();
+	await erdjsSnippets.setup();
 	await Feedback.infoModal("Workspace has been set up.");
 }
 
