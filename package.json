@@ -108,7 +108,7 @@
 			"explorer/context": [
 				{
 					"command": "elrond.buildContract",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
@@ -118,7 +118,7 @@
 				},
 				{
 					"command": "elrond.cleanContract",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
@@ -128,7 +128,7 @@
 				},
 				{
 					"command": "elrond.runContractSnippet",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets",
 					"group": "Elrond"
 				},
 				{
@@ -143,7 +143,7 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
