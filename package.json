@@ -102,6 +102,11 @@
 				"command": "elrond.stopTestnet",
 				"title": "Stop Testnet",
 				"category": "Elrond"
+			},
+			{
+				"command": "elrond.setupErdjsSnippets",
+				"title": "Setup erdjs-snippets",
+				"category": "Elrond"
 			}
 		],
 		"menus": {

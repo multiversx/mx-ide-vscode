@@ -27,20 +27,17 @@ export function getPath() {
 }
 
 export async function setup() {
-    ensureFolder(".vscode");
+    ensureFolder(path.join(getPath(), ".vscode"));
     ensureWorkspaceDefinitionFile();
-    await patchSettings();
+    await patchSettingsForElrondSdk();
     setupGitignore();
 }
 
 
-export function ensureFolder(folderName: string) {
-    let folderPath = path.join(getPath(), folderName);
-    if (fs.existsSync(folderPath)) {
-        return;
+export function ensureFolder(folderPath: string) {
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
     }
-
-    fs.mkdirSync(folderPath);
 }
 
 function ensureWorkspaceDefinitionFile() {
@@ -50,21 +47,13 @@ function ensureWorkspaceDefinitionFile() {
     }
 }
 
-async function patchSettings(): Promise<boolean> {
-    let filePath = path.join(getPath(), ".vscode", "settings.json");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "{}");
-    }
-
-    let json = fs.readFileSync(filePath, { encoding: "utf8" });
-    let settings = JSON.parse(json);
+async function patchSettingsForElrondSdk(): Promise<boolean> {
     let env = Environment.getForVsCodeFiles();
     let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
     let rustFolder = path.join(sdkPath, "vendor-rust");
     let rustBinFolder = path.join(rustFolder, "bin");
 
     let patch = {
-        "mochaExplorer.files": "**/*.spec.ts",
         "terminal.integrated.env.linux": env,
         "terminal.integrated.env.osx": env,
         "terminal.integrated.environmentChangesIndicator": "on",
@@ -75,6 +64,22 @@ async function patchSettings(): Promise<boolean> {
         "rust-client.disableRustup": true,
         "rust-client.autoStartRls": false
     };
+
+    let askText = `Allow Elrond IDE to modify this workspace's "settings.json"?
+The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
+For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
+
+    return await patchSettings(patch, askText);
+}
+
+export async function patchSettings(patch: any, askText: string): Promise<boolean> {
+    let filePath = path.join(getPath(), ".vscode", "settings.json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, "{}");
+    }
+
+    let settingsJson = fs.readFileSync(filePath, { encoding: "utf8" });
+    let settings = JSON.parse(settingsJson);
 
     let patched = false;
     for (const [key, value] of Object.entries(patch)) {
@@ -90,7 +95,7 @@ async function patchSettings(): Promise<boolean> {
 
     // Patch has been applied in-memory, and now we have to update the file (settings.json).
     // Ask for permission.
-    let allow = await presenter.askModifySettings();
+    let allow = await presenter.askYesNo(askText);
     if (!allow) {
         return false;
     }
@@ -237,7 +242,6 @@ function setupGitignore() {
 **/wallets/**
 **/erdpy.data-storage.json
 **/*.interaction.json
-**/*.session.sqlite
 `);
 }
 

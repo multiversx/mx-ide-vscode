@@ -40,6 +40,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("elrond.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
+	vscode.commands.registerCommand("elrond.setupErdjsSnippets", setupErdjsSnippets);
+
 	Environment.set();
 }
 
@@ -57,7 +59,6 @@ async function setupWorkspace() {
 	await sdk.ensureInstalled();
 	await workspace.patchLaunchAndTasks();
 	await ensureInstalledBuildchains();
-	await erdjsSnippets.setup();
 	await Feedback.infoModal("Workspace has been set up.");
 }
 
@@ -191,4 +192,11 @@ async function stopTestnet(testnetToml: Uri) {
 async function ensureInstalledBuildchains() {
 	let languages = workspace.getLanguages();
 	await sdk.ensureInstalledBuildchains(languages);
+}
+
+async function setupErdjsSnippets() {
+	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "erdjs-snippets":`);
+	if (destinationFolder) {
+		await erdjsSnippets.setup(destinationFolder);
+	}
 }

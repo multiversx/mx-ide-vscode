@@ -1,21 +1,22 @@
 import path = require("path");
 import _ = require('underscore');
 import glob = require("glob");
-import { ensureFolder, getPath, writeFileIfMissing } from "./workspace";
+import { ensureFolder, patchSettings, writeFileIfMissing } from "./workspace";
+import { Feedback } from "./feedback";
 
-export async function setup() {
+export async function setup(destinationFolder: string) {
     const erdjsVersion = "^9.2.0";
     const erdjsSnippetsVersion = "^1.0.0";
 
-    ensureFolder("erdjs-snippets");
+    let erdjsSnippetsFolder = path.join(destinationFolder, "erdjs-snippets");
 
-    let npmrcPath = path.join(getPath(), "erdjs-snippets", ".npmrc");
-    let packageJsonPath = path.join(getPath(), "erdjs-snippets", "package.json");
-    let tsconfigPath = path.join(getPath(), "erdjs-snippets", "tsconfig.json");
-    let localnetSessionPath = path.join(getPath(), "erdjs-snippets", "localnet.session.json");
-    let devnetSessionPath = path.join(getPath(), "erdjs-snippets", "devnet.session.json");
+    ensureFolder(erdjsSnippetsFolder);
 
-    writeFileIfMissing(npmrcPath, `package-lock=false`);
+    let packageJsonPath = path.join(erdjsSnippetsFolder, "package.json");
+    let tsconfigPath = path.join(erdjsSnippetsFolder, "tsconfig.json");
+    let localnetSessionPath = path.join(erdjsSnippetsFolder, "localnet.session.json");
+    let devnetSessionPath = path.join(erdjsSnippetsFolder, "devnet.session.json");
+    let gitignorePath = path.join(erdjsSnippetsFolder, ".gitignore");
 
     writeFileIfMissing(packageJsonPath, `{
     "name": "your-snippets",
@@ -41,10 +42,9 @@ export async function setup() {
         "ts-node": "9.1.1"
     },
     "mocha": {
-        "extension": [
-        "ts"
-        ],
-        "require": "ts-node/register"
+        "extension": ["ts"],
+        "require": "ts-node/register",
+        "spec": "**/*.spec.ts"
     }
 }`);
 
@@ -71,7 +71,7 @@ export async function setup() {
         "experimentalDecorators": true
     },
     "include": [
-        "**/*"
+        "**/*.ts"
     ],
     "exclude": [
         "node_modules",
@@ -88,4 +88,22 @@ export async function setup() {
     "proxyUrl": "https://devnet-gateway.elrond.com",
     "whalePem": "~/elrondsdk/testwallets/alice.pem"
 }`);
+    
+    writeFileIfMissing(gitignorePath, `**/node_modules
+package-lock.json
+**/*.session.sqlite
+out
+`);
+
+    let patch = {
+        "mochaExplorer.cwd": erdjsSnippetsFolder,
+        "mochaExplorer.mochaPath": path.join(erdjsSnippetsFolder, "node_modules", "mocha")
+    };
+
+    let askText = `Allow Elrond IDE to modify this workspace's "settings.json"?
+The changes include setting up the Mocha Test Explorer (and the mocha runner).\n
+For a better experience when using erdjs-snippets Smart Contracts, we recommed allowing this change.`;
+    await patchSettings(patch, askText);
+
+    Feedback.info(`"erdjs-snippets" have been set up at the following location: ${erdjsSnippetsFolder}.`);
 }
