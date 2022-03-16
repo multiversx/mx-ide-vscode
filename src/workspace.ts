@@ -238,18 +238,21 @@ function setupGitignore() {
 **/wallets/**
 **/erdpy.data-storage.json
 **/*.interaction.json
+**/*.session.sqlite
 `);
 }
 
 function setupErdjsSnippets() {
-    const erdjsVersion = "9.2.0";
-    const erdjsSnippetsVersion = "1.0.0";
+    const erdjsVersion = "^9.2.0";
+    const erdjsSnippetsVersion = "^1.0.0";
 
     ensureFolder("erdjs-snippets");
 
     let npmrcPath = path.join(getPath(), "erdjs-snippets", ".npmrc");
     let packageJsonPath = path.join(getPath(), "erdjs-snippets", "package.json");
     let tsconfigPath = path.join(getPath(), "erdjs-snippets", "tsconfig.json");
+    let localnetSessionPath = path.join(getPath(), "erdjs-snippets", "localnet.session.json");
+    let devnetSessionPath = path.join(getPath(), "erdjs-snippets", "devnet.session.json");
 
     writeFileIfMissing(npmrcPath, `package-lock=false`);
 
@@ -263,6 +266,7 @@ function setupErdjsSnippets() {
     },
     "dependencies": {
         "@elrondnetwork/erdjs": "${erdjsVersion}",
+        "@elrondnetwork/erdjs-snippets": "${erdjsSnippetsVersion}",
         "bignumber.js": "9.0.2"
     },
     "devDependencies": {
@@ -312,6 +316,16 @@ function setupErdjsSnippets() {
         "node_modules",
         "out"
     ]
+}`);
+
+    writeFileIfMissing(localnetSessionPath, `{
+    "proxyUrl": "http://localhost:7950",
+    "whalePem": "~/elrondsdk/testwallets/alice.pem"
+}`);
+
+    writeFileIfMissing(devnetSessionPath, `{
+    "proxyUrl": "https://devnet-gateway.elrond.com",
+    "whalePem": "~/elrondsdk/testwallets/alice.pem"
 }`);
 }
 
