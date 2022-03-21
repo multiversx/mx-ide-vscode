@@ -1,10 +1,10 @@
-name: Publish
+name: Release and publish
 
 on:
   workflow_dispatch:
-  release:
-    types:
-      - released
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -22,12 +22,21 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
 
-    - name: Save VSIX file
+    - name: Create release, attach VSIX file
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        echo " - [CHANGELOG](https://github.com/ElrondNetwork/elrond-ide-vscode/blob/master/CHANGELOG.md)" >> notes.txt
+        echo " - [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide)" >> notes.txt
+        echo "" >> notes.txt
+
+        RELEASE_TAG=v$(node -p "require('./package.json').version")
+        gh release create $RELEASE_TAG --title="$RELEASE_TAG" --generate-notes --notes-file=notes.txt
+
+        sleep 5
+
         npm run package
-        gh release upload ${GITHUB_REF_NAME} $(find . -type f -name "*.vsix")
+        gh release upload $RELEASE_TAG $(find . -type f -name "*.vsix")        
 
     - name: Publish on Marketplace
       env:

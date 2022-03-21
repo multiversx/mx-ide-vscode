@@ -61,4 +61,4 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 
 1. Within a PR, bump version in `package.json` and `package-lock.json`, and update changelog.
 2. Open and merge the PR against the `main` (`master`) branch.
-3. Create release on Github. This will trigger the publish on Visual Studio Marketplace, as well.
+3. Trigger the Github Workflow called `Release`. This will also publish the extension on the Visual Studio Marketplace.
