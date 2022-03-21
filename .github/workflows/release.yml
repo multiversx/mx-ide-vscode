@@ -1,4 +1,4 @@
-name: Build and Test
+name: Publish
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
     - uses: actions/checkout@v2
