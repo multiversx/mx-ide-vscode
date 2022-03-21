@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.11.0",
+	"version": "0.12.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -84,11 +84,6 @@
 				"category": "Elrond"
 			},
 			{
-				"command": "elrond.runWasmVMDebugTests",
-				"title": "Run Wasm VM Debug Tests (not yet implemented)",
-				"category": "Elrond"
-			},
-			{
 				"command": "elrond.gotoContract",
 				"title": "Show in Workspace Explorer",
 				"category": "Elrond"
@@ -107,13 +102,18 @@
 				"command": "elrond.stopTestnet",
 				"title": "Stop Testnet",
 				"category": "Elrond"
+			},
+			{
+				"command": "elrond.setupErdjsSnippets",
+				"title": "Setup erdjs-snippets",
+				"category": "Elrond"
 			}
 		],
 		"menus": {
 			"explorer/context": [
 				{
 					"command": "elrond.buildContract",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
@@ -123,7 +123,7 @@
 				},
 				{
 					"command": "elrond.cleanContract",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
@@ -133,7 +133,7 @@
 				},
 				{
 					"command": "elrond.runContractSnippet",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets",
 					"group": "Elrond"
 				},
 				{
@@ -148,12 +148,7 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
-					"group": "Elrond"
-				},
-				{
-					"command": "elrond.runWasmVMDebugTests",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target",
+					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "Elrond"
 				},
 				{
@@ -202,10 +197,6 @@
 					"when": "false"
 				},
 				{
-					"command": "elrond.runWasmVMDebugTests",
-					"when": "false"
-				},
-				{
 					"command": "elrond.gotoContract",
 					"when": "false"
 				},
@@ -250,10 +241,6 @@
 				},
 				{
 					"command": "elrond.runMandosTests",
-					"when": "view == smartContracts && viewItem == contract"
-				},
-				{
-					"command": "elrond.runWasmVMDebugTests",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{

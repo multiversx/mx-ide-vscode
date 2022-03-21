@@ -12,7 +12,7 @@ import { FreeTextVersion, Version } from './version';
 import fs = require('fs');
 
 const Erdpy = "erdpy";
-const DefaultErdpyVersion = new Version(1, 1, 0);
+const DefaultErdpyVersion = new Version(1, 3, 0);
 const LatestErdpyReleaseUrl = "https://api.github.com/repos/ElrondNetwork/elrond-sdk-erdpy/releases/latest";
 const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk-erdpy/main/erdpy-up.py";
 
@@ -255,16 +255,6 @@ export async function runMandosTests(folder: string) {
         await runInTerminal("mandos", `mandos-test "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
-    }
-}
-
-export async function runWasmVMDebugTests(_folder: string) {
-    try {
-        await ensureInstalledErdpyGroup("vmtools");
-        await ensureInstalledErdpyGroup("nodejs");
-        Feedback.infoModal("Not yet implemented.");
-    } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run Wasm VM tests.", Inner: error });
     }
 }
 

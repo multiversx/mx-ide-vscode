@@ -1,5 +1,7 @@
 # Changelog
 
+## v0.12.0
+ - [Add support for erdjs-snippets. Additional refactoring & cleanup](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/48)
 
 ## v0.11.0 
  - [Upgrade packages, Typescript. General cleanup and refactoring](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/34)

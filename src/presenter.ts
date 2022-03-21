@@ -26,13 +26,6 @@ export async function askContractName() {
     return result;
 }
 
-export async function askModifySettings(): Promise<boolean> {
-    let answer = await askYesNo(`Allow Elrond IDE to modify this workspace's "settings.json"?
-The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
-For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`);
-    return answer;
-}
-
 export async function askModifyLaunchAndTasks(): Promise<boolean> {
     let answer = await askYesNo(`Allow Elrond IDE to modify this workspace's "launch.json" and "tasks.json"?\n
 For a better experience when debugging Smart Contracts, we recommed allowing this change.`);
@@ -104,4 +97,15 @@ export async function askChoice(choices: string[]): Promise<string> {
 
 export async function askChoiceTyped<T extends vscode.QuickPickItem>(choices: T[]): Promise<T> {
     return await vscode.window.showQuickPick<T>(choices, { ignoreFocusOut: true });
+}
+
+export async function askOpenFolder(title: string): Promise<string> {
+    let uris: vscode.Uri[] = await vscode.window.showOpenDialog({
+        canSelectFiles: false,
+        canSelectFolders: true,
+        canSelectMany: false,
+        title: title
+    });
+
+    return uris ? uris[0]?.path : null;
 }

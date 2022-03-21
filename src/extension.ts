@@ -4,6 +4,7 @@ import { Feedback } from './feedback';
 import * as sdk from "./sdk";
 import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
 import * as workspace from "./workspace";
+import * as erdjsSnippets from "./erdjsSnippets";
 import * as presenter from "./presenter";
 import { Environment } from './environment';
 import * as errors from './errors';
@@ -30,7 +31,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.runContractSnippet", runContractSnippet);
 	vscode.commands.registerCommand("elrond.runMandosTests", runMandosTests);
-	vscode.commands.registerCommand("elrond.runWasmVMDebugTests", runWasmVMDebugTests);
 	vscode.commands.registerCommand("elrond.runFreshTestnet", runFreshTestnet);
 	vscode.commands.registerCommand("elrond.resumeExistingTestnet", resumeExistingTestnet);
 	vscode.commands.registerCommand("elrond.stopTestnet", stopTestnet);
@@ -39,6 +39,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("elrond.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("elrond.refreshContracts", async () => await refreshViewModel(contractsViewModel));
+
+	vscode.commands.registerCommand("elrond.setupErdjsSnippets", setupErdjsSnippets);
 
 	Environment.set();
 }
@@ -163,15 +165,6 @@ async function runMandosTests(item: any) {
 	}
 }
 
-async function runWasmVMDebugTests(contract: SmartContract) {
-	try {
-		let folder = getContractFolder(contract);
-		await sdk.runWasmVMDebugTests(folder);
-	} catch (error) {
-		errors.caughtTopLevel(error);
-	}
-}
-
 async function runFreshTestnet(testnetToml: Uri) {
 	try {
 		await sdk.runFreshTestnet(testnetToml);
@@ -199,4 +192,11 @@ async function stopTestnet(testnetToml: Uri) {
 async function ensureInstalledBuildchains() {
 	let languages = workspace.getLanguages();
 	await sdk.ensureInstalledBuildchains(languages);
+}
+
+async function setupErdjsSnippets() {
+	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "erdjs-snippets":`);
+	if (destinationFolder) {
+		await erdjsSnippets.setup(destinationFolder);
+	}
 }

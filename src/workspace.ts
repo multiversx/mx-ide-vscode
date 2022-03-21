@@ -27,20 +27,17 @@ export function getPath() {
 }
 
 export async function setup() {
-    ensureFolder(".vscode");
+    ensureFolder(path.join(getPath(), ".vscode"));
     ensureWorkspaceDefinitionFile();
-    await patchSettings();
+    await patchSettingsForElrondSdk();
     setupGitignore();
 }
 
 
-function ensureFolder(folderName: string) {
-    let folderPath = path.join(getPath(), folderName);
-    if (fs.existsSync(folderPath)) {
-        return;
+export function ensureFolder(folderPath: string) {
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
     }
-
-    fs.mkdirSync(folderPath);
 }
 
 function ensureWorkspaceDefinitionFile() {
@@ -50,14 +47,7 @@ function ensureWorkspaceDefinitionFile() {
     }
 }
 
-async function patchSettings(): Promise<boolean> {
-    let filePath = path.join(getPath(), ".vscode", "settings.json");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "{}");
-    }
-
-    let json = fs.readFileSync(filePath, { encoding: "utf8" });
-    let settings = JSON.parse(json);
+async function patchSettingsForElrondSdk(): Promise<boolean> {
     let env = Environment.getForVsCodeFiles();
     let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
     let rustFolder = path.join(sdkPath, "vendor-rust");
@@ -75,6 +65,22 @@ async function patchSettings(): Promise<boolean> {
         "rust-client.autoStartRls": false
     };
 
+    let askText = `Allow Elrond IDE to modify this workspace's "settings.json"?
+The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
+For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
+
+    return await patchSettings(patch, askText);
+}
+
+export async function patchSettings(patch: any, askText: string): Promise<boolean> {
+    let filePath = path.join(getPath(), ".vscode", "settings.json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, "{}");
+    }
+
+    let settingsJson = fs.readFileSync(filePath, { encoding: "utf8" });
+    let settings = JSON.parse(settingsJson);
+
     let patched = false;
     for (const [key, value] of Object.entries(patch)) {
         if (!_.isEqual(settings[key], value)) {
@@ -87,7 +93,9 @@ async function patchSettings(): Promise<boolean> {
         return false;
     }
 
-    let allow = await presenter.askModifySettings();
+    // Patch has been applied in-memory, and now we have to update the file (settings.json).
+    // Ask for permission.
+    let allow = await presenter.askYesNo(askText);
     if (!allow) {
         return false;
     }
@@ -113,8 +121,7 @@ export async function patchLaunchAndTasks() {
     let envJson = JSON.stringify(env);
 
     let launchPath = path.join(getPath(), ".vscode", "launch.json");
-    if (!fs.existsSync(launchPath)) {
-        fs.writeFileSync(launchPath, `{
+    writeFileIfMissing(launchPath, `{
     "version": "0.2.0",
     "configurations": [
         {
@@ -126,11 +133,9 @@ export async function patchLaunchAndTasks() {
         }
     ]
 }`);
-    }
 
     let tasksPath = path.join(getPath(), ".vscode", "tasks.json");
-    if (!fs.existsSync(tasksPath)) {
-        fs.writeFileSync(tasksPath, `{
+    writeFileIfMissing(tasksPath, `{
     "version": "2.0.0",
     "tasks": [
         {
@@ -144,7 +149,6 @@ export async function patchLaunchAndTasks() {
         }
     ]
 }`);
-    }
 
     let launchObject = JSON.parse(fs.readFileSync(launchPath, { encoding: "utf8" }));
     let tasksObject = JSON.parse(fs.readFileSync(tasksPath, { encoding: "utf8" }));
@@ -158,7 +162,7 @@ export async function patchLaunchAndTasks() {
         let project = metadata.ProjectName;
         let projectPath = metadata.ProjectPathInWorkspace;
         let language = metadata.Language;
-        
+
         // Patch "launchItems" and "tasksItems", if needed (not needed at this moment).
         // In the past, we've patched both "launchItems" and "tasks" collections.
     });
@@ -229,9 +233,9 @@ export class ProjectMetadata {
 }
 
 function setupGitignore() {
-    let filePath = path.join(getPath(), ".gitignore");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, `# Elrond IDE
+    let gitignore = path.join(getPath(), ".gitignore");
+    
+    writeFileIfMissing(gitignore, `# Elrond IDE
 **/node_modules
 **/output/**
 **/testnet/**
@@ -239,10 +243,10 @@ function setupGitignore() {
 **/erdpy.data-storage.json
 **/*.interaction.json
 `);
-    }
 }
 
-
-
-
-
+export function writeFileIfMissing(filePath: string, content: string) {
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, content);
+    }
+}
