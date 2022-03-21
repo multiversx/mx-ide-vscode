@@ -12,7 +12,7 @@ import { FreeTextVersion, Version } from './version';
 import fs = require('fs');
 
 const Erdpy = "erdpy";
-const DefaultErdpyVersion = new Version(1, 2, 3);
+const DefaultErdpyVersion = new Version(1, 3, 0);
 const LatestErdpyReleaseUrl = "https://api.github.com/repos/ElrondNetwork/elrond-sdk-erdpy/releases/latest";
 const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk-erdpy/main/erdpy-up.py";
 
