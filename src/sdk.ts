@@ -1,6 +1,6 @@
 import { Feedback } from './feedback';
 import { ProcessFacade, sleep } from "./utils";
-import { Terminal, Uri, window } from 'vscode';
+import { InputBoxOptions, Terminal, Uri, window } from 'vscode';
 import { MySettings } from './settings';
 import axios from "axios";
 import * as storage from "./storage";
@@ -10,6 +10,8 @@ import { Environment } from './environment';
 import path = require("path");
 import { FreeTextVersion, Version } from './version';
 import fs = require('fs');
+import os = require('os');
+import { patchSettings } from './workspace';
 
 const Erdpy = "erdpy";
 const DefaultErdpyVersion = new Version(1, 3, 0);
@@ -18,6 +20,10 @@ const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk-e
 
 export function getPath() {
     return MySettings.getElrondSdk();
+}
+
+function getPrettyPrinterPath() {
+    return path.join(getPath(), "elrond_wasm_lldb_pretty_printers.py");
 }
 
 export async function reinstall() {
@@ -91,9 +97,7 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
 
 export async function reinstallErdpy(version: Version) {
     let erdpyUp = storage.getPathTo("erdpy-up.py");
-    let response = await axios.get(ErdpyUpUrl);
-    fs.writeFileSync(erdpyUp, response.data);
-    Feedback.debug(`Downloaded: ${ErdpyUpUrl} to ${erdpyUp}.`);
+    await downloadFile(erdpyUp, ErdpyUpUrl);
 
     let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${version}`;
     await runInTerminal("installer", erdpyUpCommand, Environment.old);
@@ -289,5 +293,65 @@ export async function stopTestnet(_testnetToml: Uri) {
         await killRunningInTerminal("testnet");
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+    }
+}
+
+export async function installRustDebuggerPrettyPrinterScript() {
+    let repository = await showInputBoxWithDefault({
+        title: "Github repository",
+        prompt: "The github repository containing the rust debugger pretty printer script.",
+        defaultInput: "ElrondNetwork/elrond-wasm-rs",
+        ignoreFocusOut: true,
+    });
+    let branch = await showInputBoxWithDefault({
+        title: "Branch",
+        prompt: "The branch to use.",
+        defaultInput: "master",
+        ignoreFocusOut: true,
+    });
+    let inputPath = await showInputBoxWithDefault({
+        title: "File path",
+        prompt: "File path to the pretty printer script.",
+        defaultInput: "tools/rust-debugger/pretty-printers/elrond_wasm_lldb_pretty_printers.py",
+        ignoreFocusOut: true,
+    });
+
+    let url = `https://raw.githubusercontent.com/${repository}/${branch}/${inputPath}`;
+    let prettyPrinterPath = getPrettyPrinterPath();
+    await downloadFile(prettyPrinterPath, url);
+
+    let patch = {
+        "lldb.launch.initCommands": [
+            `command script import ${prettyPrinterPath}`
+        ],
+    };
+    let globalSettingsPath = path.join(os.homedir(), ".config", "Code", "User", "settings.json");
+    await patchSettings(patch, globalSettingsPath);
+}
+
+async function showInputBoxWithDefault(options: InputBoxOptions & { defaultInput: string }) {
+    let input = await window.showInputBox({
+        ...options,
+        prompt: `${options.prompt} Leave empty to accept the default.`,
+        placeHolder: `Default: ${options.defaultInput}`
+    });
+    if (input) {
+        return input;
+    }
+    return options.defaultInput;
+}
+
+async function downloadFile(path: fs.PathLike, url: string) {
+    let fileData = await downloadRawData(url);
+    fs.writeFileSync(path, fileData);
+    Feedback.debug(`Downloaded file from ${url} to ${path}.`);
+}
+
+async function downloadRawData(url: string): Promise<string> {
+    try {
+        let response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        throw new Error(`Failed to download ${url}\n${error}`);
     }
 }

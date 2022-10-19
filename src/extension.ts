@@ -27,6 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("elrond.setupWorkspace", setupWorkspace);
 	vscode.commands.registerCommand("elrond.installSdk", installSdk);
 	vscode.commands.registerCommand("elrond.installSdkModule", installSdkModule);
+	vscode.commands.registerCommand("elrond.installRustDebuggerPrettyPrinterScript", installRustDebuggerPrettyPrinterScript);
 	vscode.commands.registerCommand("elrond.gotoContract", gotoContract);
 	vscode.commands.registerCommand("elrond.buildContract", buildContract);
 	vscode.commands.registerCommand("elrond.runContractSnippet", runContractSnippet);
@@ -73,6 +74,14 @@ async function installSdk() {
 async function installSdkModule() {
 	try {
 		await sdk.reinstallModule();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function installRustDebuggerPrettyPrinterScript() {
+	try {
+		await sdk.installRustDebuggerPrettyPrinterScript();
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

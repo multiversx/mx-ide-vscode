@@ -18,6 +18,7 @@ Elrond IDE supports the following programming languages:
  - Build Smart Contracts to WASM
  - Step-by-step debugging Rust smart contracts
  - Automatically download tools and dependencies
+ - Rust debugger support for managed types - see [the installation guide](#installing-the-rust-debugger-pretty-printer-script)
 
 ## How to get it
 
@@ -54,6 +55,16 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 * `cleanContract`
 * `runMandosTests`
 * `runContractSnippet`
+
+## Installing the rust debugger pretty printer script
+
+The rust debugger pretty printer script for LLDB allows proper viewing of managed types (BigUint, ManagedBuffer etc.) when debugging smart contract rust tests.
+
+Prerequisites: First, make sure that the [CodeLLDB](https://github.com/vadimcn/vscode-lldb) extension is installed. This can be done directly from Visual Studio Code extensions menu.
+
+Then, from Visual Studio Code open the command menu via `Ctrl+Shift+P` and run `Elrond: Install the rust debugger pretty printer script`. If this option isn't present, make sure you have the latest version of the `Elrond` Visual Studio Code extension.
+
+You will be prompted for the repository, branch and path for the pretty printer script. Simply leave the options blank in order to install the latest version of the script from elrond-wasm-rs.
 
 ## Contributors
 

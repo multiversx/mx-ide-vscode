@@ -69,11 +69,11 @@ async function patchSettingsForElrondSdk(): Promise<boolean> {
 The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
 For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
 
-    return await patchSettings(patch, askText);
+    let localSettingsJsonPath = path.join(getPath(), ".vscode", "settings.json");
+    return await askPatchSettings(patch, localSettingsJsonPath, askText);
 }
 
-export async function patchSettings(patch: any, askText: string): Promise<boolean> {
-    let filePath = path.join(getPath(), ".vscode", "settings.json");
+export async function patchSettingsOnConfirm(patch: any, filePath: string, askForPermission: () => Promise<boolean>): Promise<boolean> {
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
@@ -95,16 +95,30 @@ export async function patchSettings(patch: any, askText: string): Promise<boolea
 
     // Patch has been applied in-memory, and now we have to update the file (settings.json).
     // Ask for permission.
-    let allow = await presenter.askYesNo(askText);
+    let allow = await askForPermission();
     if (!allow) {
         return false;
     }
 
     let content = JSON.stringify(settings, null, 4);
     fs.writeFileSync(filePath, content);
-    Feedback.info("Updated settings.json.");
+    Feedback.info(`Updated ${filePath}.`);
 
     return true;
+}
+
+export async function askPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
+    async function askForPermission(): Promise<boolean> {
+        return await presenter.askYesNo(askText);
+    }
+    return await patchSettingsOnConfirm(patch, filePath, askForPermission);
+}
+
+export async function patchSettings(patch: any, filePath: string): Promise<boolean> {
+    async function askForPermission(): Promise<boolean> {
+        return true;
+    }
+    return await patchSettingsOnConfirm(patch, filePath, askForPermission);
 }
 
 export function guardIsOpen(): boolean {
@@ -234,7 +248,7 @@ export class ProjectMetadata {
 
 function setupGitignore() {
     let gitignore = path.join(getPath(), ".gitignore");
-    
+
     writeFileIfMissing(gitignore, `# Elrond IDE
 **/node_modules
 **/output/**
