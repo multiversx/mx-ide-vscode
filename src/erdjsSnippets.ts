@@ -1,5 +1,5 @@
 import path = require("path");
-import { askPatchSettings } from "./workspace";
+import { promptThenPatchSettings } from "./workspace";
 import { Feedback } from "./feedback";
 
 export async function setup(destinationFolder: string) {
@@ -15,7 +15,7 @@ The changes include setting up the Mocha Test Explorer (and the mocha runner).\n
 For a better experience when using erdjs-based "snippets", we recommed allowing this change.`;
 
     let filePath = path.join(".", ".vscode", "settings.json");
-    await askPatchSettings(patch, filePath, askText);
+    await promptThenPatchSettings(patch, filePath, askText);
 
     Feedback.info(`"erdjs-snippets" have been set up at the following location: ${erdjsSnippetsFolder}.`);
 }

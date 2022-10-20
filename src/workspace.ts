@@ -70,7 +70,7 @@ The changes include setting environment variables for the terminal integrated in
 For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
 
     let localSettingsJsonPath = path.join(getPath(), ".vscode", "settings.json");
-    return await askPatchSettings(patch, localSettingsJsonPath, askText);
+    return await promptThenPatchSettings(patch, localSettingsJsonPath, askText);
 }
 
 export async function patchSettingsOnConfirm(patch: any, filePath: string, askForPermission: () => Promise<boolean>): Promise<boolean> {
@@ -107,14 +107,14 @@ export async function patchSettingsOnConfirm(patch: any, filePath: string, askFo
     return true;
 }
 
-export async function askPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
+export async function promptThenPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
     async function askForPermission(): Promise<boolean> {
         return await presenter.askYesNo(askText);
     }
     return await patchSettingsOnConfirm(patch, filePath, askForPermission);
 }
 
-export async function patchSettings(patch: any, filePath: string): Promise<boolean> {
+export async function patchSettingsWithoutPrompt(patch: any, filePath: string): Promise<boolean> {
     async function askForPermission(): Promise<boolean> {
         return true;
     }

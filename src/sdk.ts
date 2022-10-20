@@ -11,7 +11,7 @@ import path = require("path");
 import { FreeTextVersion, Version } from './version';
 import fs = require('fs');
 import os = require('os');
-import { patchSettings } from './workspace';
+import { patchSettingsWithoutPrompt } from './workspace';
 
 const Erdpy = "erdpy";
 const DefaultErdpyVersion = new Version(1, 3, 0);
@@ -326,7 +326,7 @@ export async function installRustDebuggerPrettyPrinterScript() {
         ],
     };
     let globalSettingsPath = path.join(os.homedir(), ".config", "Code", "User", "settings.json");
-    await patchSettings(patch, globalSettingsPath);
+    await patchSettingsWithoutPrompt(patch, globalSettingsPath);
 }
 
 async function showInputBoxWithDefault(options: InputBoxOptions & { defaultInput: string }) {
