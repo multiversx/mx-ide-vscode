@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.13.0
+ - [Add LLDB pretty printers support for debugging elrond-wasm-rs projects](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/55)
+
 ## v0.12.0
  - [Add support for erdjs-snippets. Additional refactoring & cleanup](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/48)
 
