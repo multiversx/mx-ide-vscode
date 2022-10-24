@@ -1,6 +1,6 @@
 import { Feedback } from './feedback';
 import { ProcessFacade, sleep } from "./utils";
-import { InputBoxOptions, Terminal, Uri, window } from 'vscode';
+import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace } from 'vscode';
 import { MySettings } from './settings';
 import axios from "axios";
 import * as storage from "./storage";
@@ -10,8 +10,6 @@ import { Environment } from './environment';
 import path = require("path");
 import { FreeTextVersion, Version } from './version';
 import fs = require('fs');
-import os = require('os');
-import { patchSettingsWithoutPrompt } from './workspace';
 
 const Erdpy = "erdpy";
 const DefaultErdpyVersion = new Version(1, 3, 0);
@@ -320,13 +318,11 @@ export async function installRustDebuggerPrettyPrinterScript() {
     let prettyPrinterPath = getPrettyPrinterPath();
     await downloadFile(prettyPrinterPath, url);
 
-    let patch = {
-        "lldb.launch.initCommands": [
-            `command script import ${prettyPrinterPath}`
-        ],
-    };
-    let globalSettingsPath = path.join(os.homedir(), ".config", "Code", "User", "settings.json");
-    await patchSettingsWithoutPrompt(patch, globalSettingsPath);
+    let lldbConfig = workspace.getConfiguration("lldb");
+    let commands = [`command script import ${prettyPrinterPath}`];
+    await lldbConfig.update("launch.initCommands", commands, ConfigurationTarget.Global);
+
+    await Feedback.infoModal(`The rust debugger pretty printer script has been installed.`);
 }
 
 async function showInputBoxWithDefault(options: InputBoxOptions & { defaultInput: string }) {
