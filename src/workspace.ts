@@ -73,7 +73,7 @@ For a better experience when debugging and building Smart Contracts, we recommed
     return await promptThenPatchSettings(patch, localSettingsJsonPath, askText);
 }
 
-export async function patchSettingsOnConfirm(patch: any, filePath: string, askForPermission: () => Promise<boolean>): Promise<boolean> {
+export async function promptThenPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
@@ -95,7 +95,7 @@ export async function patchSettingsOnConfirm(patch: any, filePath: string, askFo
 
     // Patch has been applied in-memory, and now we have to update the file (settings.json).
     // Ask for permission.
-    let allow = await askForPermission();
+    let allow = await presenter.askYesNo(askText);
     if (!allow) {
         return false;
     }
@@ -105,20 +105,6 @@ export async function patchSettingsOnConfirm(patch: any, filePath: string, askFo
     Feedback.info(`Updated ${filePath}.`);
 
     return true;
-}
-
-export async function promptThenPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
-    async function askForPermission(): Promise<boolean> {
-        return await presenter.askYesNo(askText);
-    }
-    return await patchSettingsOnConfirm(patch, filePath, askForPermission);
-}
-
-export async function patchSettingsWithoutPrompt(patch: any, filePath: string): Promise<boolean> {
-    async function askForPermission(): Promise<boolean> {
-        return true;
-    }
-    return await patchSettingsOnConfirm(patch, filePath, askForPermission);
 }
 
 export function guardIsOpen(): boolean {

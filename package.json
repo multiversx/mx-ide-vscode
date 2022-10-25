@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "Elrond IDE",
 	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.13.0",
+	"version": "0.13.1",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
