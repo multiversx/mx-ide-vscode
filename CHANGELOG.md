@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.13.2
+ - [Update lldb pretty printer script path](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/59)
+
 ## v0.13.1
  - [Fix the settings update when modifying the lldb global config](https://github.com/ElrondNetwork/elrond-ide-vscode/pull/56)
 
