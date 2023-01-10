@@ -10,7 +10,7 @@ export async function setup(destinationFolder: string) {
         "mochaExplorer.mochaPath": path.join(erdjsSnippetsFolder, "node_modules", "mocha")
     };
 
-    let askText = `Allow Elrond IDE to modify this workspace's "settings.json"?
+    let askText = `Allow MultiversX IDE to modify this workspace's "settings.json"?
 The changes include setting up the Mocha Test Explorer (and the mocha runner).\n
 For a better experience when using erdjs-based "snippets", we recommed allowing this change.`;
 

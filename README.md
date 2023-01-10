@@ -1,16 +1,14 @@
-# Elrond IDE for Visual Studio Code
+# MultiversX IDE for Visual Studio Code
 
-[![Build Status](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode.svg?branch=master)](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode)
-
-**This Visual Studio Code extension is under development: [CHANGELOG](https://github.com/ElrondNetwork/elrond-ide-vscode/releases)**
+![Build Status](https://github.com/multiversx/mx-ide-vscode/actions/workflows/build.yml/badge.svg)
 
 ## What is it?
 
-**Elrond IDE** is an extension for Visual Studio Code that offers development support for Elrond Smart Contracts.
+**MultiversX IDE** is an extension for Visual Studio Code that offers development support for MultiversX Smart Contracts.
 
-Elrond IDE supports the following programming languages:
+MultiversX IDE supports the following programming languages:
 
- - Rust - recommended. For Rust, the IDE also provides a step-by-step debugging experience, via [elrond-wasm-debug](https://crates.io/keywords/elrond).
+ - Rust - recommended. For Rust, the IDE also provides a step-by-step debugging experience, via [mx-sc-debug](https://crates.io/keywords/multiversx).
  - C / C++
 
 ## Main features
@@ -22,7 +20,7 @@ Elrond IDE supports the following programming languages:
 
 ## How to get it
 
-Elrond IDE can be installed from the Visual Studio Code Marketplace.
+MultiversX IDE can be installed from the Visual Studio Code Marketplace.
 
 ## Requirements and dependencies
 
@@ -32,11 +30,11 @@ Elrond IDE can be installed from the Visual Studio Code Marketplace.
  - **Windows** is not supported yet
  - **MacOS** is supported
 
-If you experience any issues, please let us know [on Github](https://github.com/ElrondNetwork/elrond-ide-vscode/issues) or [on Telegram](https://t.me/ElrondDevelopers).
+If you experience any issues, please let us know [on Github](https://github.com/multiversx/mx-ide-vscode/issues) or [on Telegram](https://t.me/ElrondDevelopers).
 
-### [erdpy](https://github.com/ElrondNetwork/elrond-sdk-erdpy)
+### [erdpy](https://github.com/multiversx/mx-sdk-erdpy)
 
-**erdpy** is the backend of the Visual Studio Code extension. **erdpy** is **required** by the Elrond IDE. In order to install it, please follow [these steps](https://docs.elrond.com/sdk-and-tools/erdpy/installing-erdpy).
+**erdpy** is the backend of the Visual Studio Code extension. **erdpy** is **required** by the MultiversX IDE. In order to install it, please follow [these steps](https://docs.multiversx.com/sdk-and-tools/erdpy/installing-erdpy).
 
 ### Other dependencies
 
@@ -62,14 +60,14 @@ The rust debugger pretty printer script for LLDB allows proper viewing of manage
 
 Prerequisites: First, make sure that the [CodeLLDB](https://github.com/vadimcn/vscode-lldb) extension is installed. This can be done directly from Visual Studio Code extensions menu.
 
-Then, from Visual Studio Code open the command menu via `Ctrl+Shift+P` and run `Elrond: Install the rust debugger pretty printer script`. If this option isn't present, make sure you have the latest version of the `Elrond` Visual Studio Code extension.
+Then, from Visual Studio Code open the command menu via `Ctrl+Shift+P` and run `MultiversX: Install the rust debugger pretty printer script`. If this option isn't present, make sure you have the latest version of the `MultiversX` Visual Studio Code extension.
 
-You will be prompted for the repository, branch and path for the pretty printer script. Simply leave the options blank in order to install the latest version of the script from elrond-wasm-rs.
+You will be prompted for the repository, branch and path for the pretty printer script. Simply leave the options blank in order to install the latest version of the script from mx-sdk-rs.
 
 ## Contributors
 
 ### How to publish an update of the extension
 
-1. Within a PR, bump version in `package.json` and `package-lock.json`, and update changelog.
+1. Within a PR, bump the version in `package.json` and `package-lock.json`.
 2. Open and merge the PR against the `main` (`master`) branch.
 3. Trigger the Github Workflow called `Release`. This will also publish the extension on the Visual Studio Marketplace.

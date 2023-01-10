@@ -1,12 +1,12 @@
 {
 	"name": "vscode-elrond-ide",
-	"displayName": "Elrond IDE",
-	"description": "Elrond IDE for developing Smart Contracts",
-	"version": "0.13.2",
+	"displayName": "MultiversX IDE",
+	"description": "MultiversX IDE for developing Smart Contracts",
+	"version": "0.14.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ElrondNetwork/elrond-ide-vscode.git"
+		"url": "https://github.com/multiversx/mx-ide-vscode.git"
 	},
 	"engines": {
 		"vscode": "^1.64.0"
@@ -19,242 +19,242 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"onCommand:elrond.setupWorkspace",
-		"onCommand:elrond.installRustDebuggerPrettyPrinterScript",
+		"onCommand:multiversx.setupWorkspace",
+		"onCommand:multiversx.installRustDebuggerPrettyPrinterScript",
 		"workspaceContains:**/elrond.workspace.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "elrond.setupWorkspace",
+				"command": "multiversx.setupWorkspace",
 				"title": "Setup Workspace",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.installSdk",
+				"command": "multiversx.installSdk",
 				"title": "Install SDK",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.installSdkModule",
+				"command": "multiversx.installSdkModule",
 				"title": "Install Module or Dependency",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.installRustDebuggerPrettyPrinterScript",
+				"command": "multiversx.installRustDebuggerPrettyPrinterScript",
 				"title": "Install the rust debugger pretty printer script",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.refreshTemplates",
+				"command": "multiversx.refreshTemplates",
 				"title": "Refresh",
-				"category": "Elrond",
+				"category": "multiversx",
 				"icon": {
 					"light": "content/light/refresh.svg",
 					"dark": "content/dark/refresh.svg"
 				}
 			},
 			{
-				"command": "elrond.newFromTemplate",
+				"command": "multiversx.newFromTemplate",
 				"title": "New Contract",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.refreshContracts",
+				"command": "multiversx.refreshContracts",
 				"title": "Refresh",
-				"category": "Elrond",
+				"category": "multiversx",
 				"icon": {
 					"light": "content/light/refresh.svg",
 					"dark": "content/dark/refresh.svg"
 				}
 			},
 			{
-				"command": "elrond.buildContract",
+				"command": "multiversx.buildContract",
 				"title": "Build Contract",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.cleanContract",
+				"command": "multiversx.cleanContract",
 				"title": "Clean Contract",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.runContractSnippet",
+				"command": "multiversx.runContractSnippet",
 				"title": "Run Contract Snippet",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.runMandosTests",
+				"command": "multiversx.runMandosTests",
 				"title": "Run Mandos Tests",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.gotoContract",
+				"command": "multiversx.gotoContract",
 				"title": "Show in Workspace Explorer",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.runFreshTestnet",
+				"command": "multiversx.runFreshTestnet",
 				"title": "Start Fresh Testnet",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.resumeExistingTestnet",
+				"command": "multiversx.resumeExistingTestnet",
 				"title": "Resume Testnet",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.stopTestnet",
+				"command": "multiversx.stopTestnet",
 				"title": "Stop Testnet",
-				"category": "Elrond"
+				"category": "multiversx"
 			},
 			{
-				"command": "elrond.setupErdjsSnippets",
+				"command": "multiversx.setupErdjsSnippets",
 				"title": "Setup erdjs-snippets",
-				"category": "Elrond"
+				"category": "multiversx"
 			}
 		],
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "elrond.buildContract",
+					"command": "multiversx.buildContract",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
-					"group": "Elrond"
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.buildContract",
-					"when": "resourceFilename == elrond.json",
-					"group": "Elrond"
+					"command": "multiversx.buildContract",
+					"when": "resourceFilename == multiversx.json",
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.cleanContract",
+					"command": "multiversx.cleanContract",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
-					"group": "Elrond"
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.cleanContract",
-					"when": "resourceFilename == elrond.json",
-					"group": "Elrond"
+					"command": "multiversx.cleanContract",
+					"when": "resourceFilename == multiversx.json",
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.runContractSnippet",
+					"command": "multiversx.runContractSnippet",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets",
-					"group": "Elrond"
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.runContractSnippet",
-					"when": "resourceFilename == elrond.json",
-					"group": "Elrond"
+					"command": "multiversx.runContractSnippet",
+					"when": "resourceFilename == multiversx.json",
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.runMandosTests",
+					"command": "multiversx.runMandosTests",
 					"when": "resourceFilename =~ /.scen.json/",
-					"group": "Elrond"
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.runMandosTests",
+					"command": "multiversx.runMandosTests",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
-					"group": "Elrond"
+					"group": "multiversx"
 				},
 				{
-					"command": "elrond.runFreshTestnet",
+					"command": "multiversx.runFreshTestnet",
 					"when": "resourceFilename == testnet.toml",
-					"group": "Elrond Testnet"
+					"group": "multiversx Testnet"
 				},
 				{
-					"command": "elrond.resumeExistingTestnet",
+					"command": "multiversx.resumeExistingTestnet",
 					"when": "resourceFilename == testnet.toml",
-					"group": "Elrond Testnet"
+					"group": "multiversx Testnet"
 				},
 				{
-					"command": "elrond.stopTestnet",
+					"command": "multiversx.stopTestnet",
 					"when": "resourceFilename == testnet.toml",
-					"group": "Elrond Testnet"
+					"group": "multiversx Testnet"
 				}
 			],
 			"commandPalette": [
 				{
-					"command": "elrond.refreshContracts",
+					"command": "multiversx.refreshContracts",
 					"when": "false"
 				},
 				{
-					"command": "elrond.refreshTemplates",
+					"command": "multiversx.refreshTemplates",
 					"when": "false"
 				},
 				{
-					"command": "elrond.newFromTemplate",
+					"command": "multiversx.newFromTemplate",
 					"when": "false"
 				},
 				{
-					"command": "elrond.buildContract",
+					"command": "multiversx.buildContract",
 					"when": "false"
 				},
 				{
-					"command": "elrond.cleanContract",
+					"command": "multiversx.cleanContract",
 					"when": "false"
 				},
 				{
-					"command": "elrond.runContractSnippet",
+					"command": "multiversx.runContractSnippet",
 					"when": "false"
 				},
 				{
-					"command": "elrond.runMandosTests",
+					"command": "multiversx.runMandosTests",
 					"when": "false"
 				},
 				{
-					"command": "elrond.gotoContract",
+					"command": "multiversx.gotoContract",
 					"when": "false"
 				},
 				{
-					"command": "elrond.runFreshTestnet",
+					"command": "multiversx.runFreshTestnet",
 					"when": "false"
 				},
 				{
-					"command": "elrond.resumeExistingTestnet",
+					"command": "multiversx.resumeExistingTestnet",
 					"when": "false"
 				},
 				{
-					"command": "elrond.stopTestnet",
+					"command": "multiversx.stopTestnet",
 					"when": "false"
 				}
 			],
 			"editor/context": [],
 			"view/title": [
 				{
-					"command": "elrond.refreshTemplates",
+					"command": "multiversx.refreshTemplates",
 					"when": "view == contractTemplates",
 					"group": "navigation"
 				},
 				{
-					"command": "elrond.refreshContracts",
+					"command": "multiversx.refreshContracts",
 					"when": "view == smartContracts",
 					"group": "navigation"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "elrond.buildContract",
+					"command": "multiversx.buildContract",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.cleanContract",
+					"command": "multiversx.cleanContract",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.runContractSnippet",
+					"command": "multiversx.runContractSnippet",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.runMandosTests",
+					"command": "multiversx.runMandosTests",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.gotoContract",
+					"command": "multiversx.gotoContract",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "elrond.newFromTemplate",
+					"command": "multiversx.newFromTemplate",
 					"when": "view == contractTemplates",
 					"group": "inline"
 				}
@@ -263,7 +263,7 @@
 		"configuration": {
 			"title": "vscode-elrond-ide",
 			"properties": {
-				"elrond.elrondsdk": {
+				"multiversx.elrondsdk": {
 					"type": "string",
 					"default": "~/elrondsdk"
 				}
@@ -272,14 +272,14 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "elrond",
-					"title": "Elrond Workspace Explorer",
+					"id": "multiversx",
+					"title": "MultiversX Workspace Explorer",
 					"icon": "content/logo.png"
 				}
 			]
 		},
 		"views": {
-			"elrond": [
+			"multiversx": [
 				{
 					"id": "smartContracts",
 					"name": "Smart Contracts",

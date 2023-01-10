@@ -65,7 +65,7 @@ async function patchSettingsForElrondSdk(): Promise<boolean> {
         "rust-client.autoStartRls": false
     };
 
-    let askText = `Allow Elrond IDE to modify this workspace's "settings.json"?
+    let askText = `Allow MultiversX IDE to modify this workspace's "settings.json"?
 The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
 For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
 
@@ -235,7 +235,7 @@ export class ProjectMetadata {
 function setupGitignore() {
     let gitignore = path.join(getPath(), ".gitignore");
 
-    writeFileIfMissing(gitignore, `# Elrond IDE
+    writeFileIfMissing(gitignore, `# MultiversX IDE
 **/node_modules
 **/output/**
 **/testnet/**
