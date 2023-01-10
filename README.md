@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode.svg?branch=master)](https://travis-ci.com/ElrondNetwork/elrond-ide-vscode)
 
-**This Visual Studio Code extension is under development: [CHANGELOG](https://github.com/ElrondNetwork/elrond-ide-vscode/releases)**
-
 ## What is it?
 
 **Elrond IDE** is an extension for Visual Studio Code that offers development support for Elrond Smart Contracts.
@@ -70,6 +68,6 @@ You will be prompted for the repository, branch and path for the pretty printer 
 
 ### How to publish an update of the extension
 
-1. Within a PR, bump version in `package.json` and `package-lock.json`, and update changelog.
+1. Within a PR, bump the version in `package.json` and `package-lock.json`.
 2. Open and merge the PR against the `main` (`master`) branch.
 3. Trigger the Github Workflow called `Release`. This will also publish the extension on the Visual Studio Marketplace.
