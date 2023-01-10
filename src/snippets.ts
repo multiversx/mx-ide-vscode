@@ -17,7 +17,7 @@ export async function runContractSnippet(folder: string) {
     if (!snippetsFiles.length) {
         throw new errors.MyError({ Message: `No *snippets.sh file found.` });
     }
-    
+
     let allSnippets: Snippet[] = [];
 
     snippetsFiles.forEach(file => {
@@ -31,7 +31,7 @@ export async function runContractSnippet(folder: string) {
         return;
     }
 
-    let terminalName = `Elrond snippets: ${metadata.ProjectName}`;
+    let terminalName = `MultiversX snippets: ${metadata.ProjectName}`;
     let command = `source ${snippetChoice.file} && ${snippetChoice.name}`;
     await runInTerminal(terminalName, command, metadata);
     Feedback.info(`Snippet "${snippetChoice}" has been executed. Check output in Terminal.`);
@@ -50,7 +50,7 @@ async function runInTerminal(terminalName: string, command: string, metadata: wo
 
     let terminal = window.terminals.find(item => item.name == terminalName);
     if (!terminal) {
-        let env = { 
+        let env = {
             PROJECT: metadata.ProjectPath,
             PROJECT_NAME: metadata.ProjectName,
             TESTNET: envTestnet,
@@ -73,7 +73,7 @@ export class Snippet implements QuickPickItem {
     readonly detail?: string;
     readonly picked?: boolean;
     readonly alwaysShow?: boolean;
-    
+
     constructor(file: string, name: string) {
         this.file = file;
         this.name = name;

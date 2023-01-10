@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 const os = require("os");
 
 export class MySettings {
-    public static getElrondSdk() : string {
+    public static getElrondSdk(): string {
         let folder = MySettings.getConfigurationValue("elrondsdk").toString();
         return folder.replace("~", os.homedir);
     }
@@ -12,7 +12,7 @@ export class MySettings {
     }
 
     private static getConfigurationValue(key: string) {
-        let configuration = vscode.workspace.getConfiguration("elrond");
+        let configuration = vscode.workspace.getConfiguration("multiversx");
         let value = configuration.get(key);
         return value;
     }

@@ -13,8 +13,8 @@ import fs = require('fs');
 
 const Erdpy = "erdpy";
 const DefaultErdpyVersion = new Version(1, 3, 0);
-const LatestErdpyReleaseUrl = "https://api.github.com/repos/ElrondNetwork/elrond-sdk-erdpy/releases/latest";
-const ErdpyUpUrl = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk-erdpy/main/erdpy-up.py";
+const LatestErdpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-erdpy/releases/latest";
+const ErdpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-erdpy/main/erdpy-up.py";
 
 export function getPath() {
     return MySettings.getElrondSdk();
@@ -163,7 +163,7 @@ function findTerminal(name: string): Terminal {
 }
 
 function patchTerminalName(name: string): string {
-    return `Elrond: ${name}`;
+    return `MultiversX: ${name}`;
 }
 
 async function destroyTerminal(name: string) {
@@ -298,7 +298,7 @@ export async function installRustDebuggerPrettyPrinterScript() {
     let repository = await showInputBoxWithDefault({
         title: "Github repository",
         prompt: "The github repository containing the rust debugger pretty printer script.",
-        defaultInput: "ElrondNetwork/elrond-wasm-rs",
+        defaultInput: "multiversx/mx-sdk-rs",
         ignoreFocusOut: true,
     });
     let branch = await showInputBoxWithDefault({

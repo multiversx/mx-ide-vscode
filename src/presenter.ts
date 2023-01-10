@@ -27,13 +27,13 @@ export async function askContractName() {
 }
 
 export async function askModifyLaunchAndTasks(): Promise<boolean> {
-    let answer = await askYesNo(`Allow Elrond IDE to modify this workspace's "launch.json" and "tasks.json"?\n
+    let answer = await askYesNo(`Allow MultiversX IDE to modify this workspace's "launch.json" and "tasks.json"?\n
 For a better experience when debugging Smart Contracts, we recommed allowing this change.`);
     return answer;
 }
 
 export async function askInstallErdpy(requiredVersion: Version): Promise<boolean> {
-    let answer = await askYesNo(`Elrond IDE requires erdpy ${requiredVersion} (part of Elrond SDK), which isn't available in your environment.
+    let answer = await askYesNo(`MultiversX IDE requires erdpy ${requiredVersion}, which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }
