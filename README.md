@@ -30,7 +30,7 @@ MultiversX IDE can be installed from the Visual Studio Code Marketplace.
  - **Windows** is not supported yet
  - **MacOS** is supported
 
-If you experience any issues, please let us know [on Github](https://github.com/multiversx/mx-ide-vscode/issues) or [on Telegram](https://t.me/ElrondDevelopers).
+If you experience any issues, please let us know [on Github](https://github.com/multiversx/mx-ide-vscode/issues) or [on Telegram](https://t.me/MultiversXDevelopers).
 
 ### [erdpy](https://github.com/multiversx/mx-sdk-erdpy)
 
