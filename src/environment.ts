@@ -9,7 +9,7 @@ export class Environment {
             Environment.saveOld();
         }
 
-        let sdkPath = MySettings.getElrondSdk();
+        let sdkPath = MySettings.getSdkPath();
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");
@@ -27,7 +27,7 @@ export class Environment {
     }
 
     static getForVsCodeFiles(): any {
-        let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+        let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");
@@ -45,7 +45,7 @@ export class Environment {
     }
 
     static getForTerminal(): any {
-        let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+        let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
         let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
         let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");

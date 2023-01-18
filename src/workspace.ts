@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
+import { Environment } from "./environment";
+import * as errors from './errors';
+import { Feedback } from "./feedback";
+import * as presenter from "./presenter";
+import { MySettings } from "./settings";
 import path = require("path");
 import fs = require("fs");
-import { Feedback } from "./feedback";
 import _ = require('underscore');
-import * as presenter from "./presenter";
-import * as errors from './errors';
 import glob = require("glob");
-import { Environment } from "./environment";
-import { MySettings } from "./settings";
 
 let languages = ["cpp", "clang", "rust"];
 
@@ -29,7 +29,7 @@ export function getPath() {
 export async function setup() {
     ensureFolder(path.join(getPath(), ".vscode"));
     ensureWorkspaceDefinitionFile();
-    await patchSettingsForElrondSdk();
+    await patchSettingsForSdk();
     setupGitignore();
 }
 
@@ -41,15 +41,15 @@ export function ensureFolder(folderPath: string) {
 }
 
 function ensureWorkspaceDefinitionFile() {
-    let filePath = path.join(getPath(), "elrond.workspace.json");
+    let filePath = path.join(getPath(), "multiversx.workspace.json");
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
 }
 
-async function patchSettingsForElrondSdk(): Promise<boolean> {
+async function patchSettingsForSdk(): Promise<boolean> {
     let env = Environment.getForVsCodeFiles();
-    let sdkPath = path.join("${env:HOME}", MySettings.getElrondSdkRelativeToHome());
+    let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
     let rustFolder = path.join(sdkPath, "vendor-rust");
     let rustBinFolder = path.join(rustFolder, "bin");
 
@@ -189,7 +189,7 @@ export function getLanguages() {
 }
 
 export function getMetadataObjects(): ProjectMetadata[] {
-    let pattern = `${getPath()}/**/elrond.json`;
+    let pattern = `${getPath()}/**/(elrond|multiversx).json`;
     let paths = glob.sync(pattern, {});
     let result: ProjectMetadata[] = [];
 
@@ -206,6 +206,7 @@ export function getMetadataObjects(): ProjectMetadata[] {
 
 export function getMetadataObjectByFolder(folder: string): ProjectMetadata {
     let metadataPath = path.join(folder, "elrond.json");
+    // OR
     return new ProjectMetadata(metadataPath);
 }
 

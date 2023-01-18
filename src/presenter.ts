@@ -38,7 +38,7 @@ Do you agree to install it?`);
     return answer;
 }
 
-export async function askErdpyVersion(defaultVersion: Version): Promise<Version> {
+export async function askMxpyVersion(defaultVersion: Version): Promise<Version> {
     const result = await vscode.window.showInputBox({
         prompt: "Enter the erdpy version to install",
         value: defaultVersion.toString(),

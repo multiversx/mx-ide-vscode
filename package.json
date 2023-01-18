@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "MultiversX IDE",
 	"description": "MultiversX IDE for developing Smart Contracts",
-	"version": "0.14.1",
+	"version": "0.15.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -21,7 +21,7 @@
 	"activationEvents": [
 		"onCommand:multiversx.setupWorkspace",
 		"onCommand:multiversx.installRustDebuggerPrettyPrinterScript",
-		"workspaceContains:**/elrond.workspace.json"
+		"workspaceContains:**/(elrond|multiversx).workspace.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -263,9 +263,9 @@
 		"configuration": {
 			"title": "vscode-elrond-ide",
 			"properties": {
-				"multiversx.elrondsdk": {
+				"multiversx.sdkPath": {
 					"type": "string",
-					"default": "~/elrondsdk"
+					"default": "~/multiversx-sdk"
 				}
 			}
 		},

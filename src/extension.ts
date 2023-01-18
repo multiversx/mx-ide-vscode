@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
-import { Root } from './root';
-import { Feedback } from './feedback';
-import * as sdk from "./sdk";
-import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
-import * as workspace from "./workspace";
-import * as erdjsSnippets from "./erdjsSnippets";
-import * as presenter from "./presenter";
-import { Environment } from './environment';
-import * as errors from './errors';
-import * as snippets from './snippets';
-import { SmartContractsViewModel, SmartContract } from './contracts';
 import { Uri } from 'vscode';
+import { SmartContract, SmartContractsViewModel } from './contracts';
+import { Environment } from './environment';
+import * as erdjsSnippets from "./erdjsSnippets";
+import * as errors from './errors';
+import { Feedback } from './feedback';
+import * as presenter from "./presenter";
+import { Root } from './root';
+import * as sdk from "./sdk";
+import * as snippets from './snippets';
+import { ContractTemplate, TemplatesViewModel } from './templates';
+import * as workspace from "./workspace";
 import path = require("path");
 
 
@@ -150,7 +150,7 @@ async function runContractSnippet(contract: any) {
 function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
 		let fsPath = contract.fsPath;
-		if (fsPath.includes("elrond.json")) {
+		if (fsPath.includes("elrond.json") || fsPath.includes("multiversx.json")) {
 			return path.dirname(fsPath);
 		} else if (fsPath.includes("snippets.sh")) {
 			return path.dirname(fsPath);
