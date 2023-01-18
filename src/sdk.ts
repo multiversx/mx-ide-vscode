@@ -1,23 +1,23 @@
-import { Feedback } from './feedback';
-import { ProcessFacade, sleep } from "./utils";
-import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace } from 'vscode';
-import { MySettings } from './settings';
 import axios from "axios";
-import * as storage from "./storage";
-import * as errors from './errors';
-import * as presenter from './presenter';
+import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace } from 'vscode';
 import { Environment } from './environment';
-import path = require("path");
+import * as errors from './errors';
+import { Feedback } from './feedback';
+import * as presenter from './presenter';
+import { MySettings } from './settings';
+import * as storage from "./storage";
+import { ProcessFacade, sleep } from "./utils";
 import { FreeTextVersion, Version } from './version';
+import path = require("path");
 import fs = require('fs');
 
-const Erdpy = "erdpy";
-const DefaultErdpyVersion = new Version(1, 3, 0);
-const LatestErdpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-erdpy/releases/latest";
-const ErdpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-erdpy/main/erdpy-up.py";
+const Mxpy = "mxpy";
+const DefaultMxpyVersion = new Version(5, 0, 1);
+const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
+const MxpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/main/mxpy-up.py";
 
 export function getPath() {
-    return MySettings.getElrondSdk();
+    return MySettings.getSdkPath();
 }
 
 function getPrettyPrinterPath() {
@@ -25,46 +25,46 @@ function getPrettyPrinterPath() {
 }
 
 export async function reinstall() {
-    let latestErdpyVersion = await getLatestKnownErdpyVersion();
-    let version = await presenter.askErdpyVersion(latestErdpyVersion);
+    let latestVersion = await getLatestKnownMxpyVersion();
+    let version = await presenter.askMxpyVersion(latestVersion);
     if (!version) {
         return;
     }
 
-    await reinstallErdpy(version);
+    await reinstallMxpy(version);
 }
 
 /** 
  * Fetch the latest known version from Github, or fallback to the IDE-configured default version, if the fetch fails.
  */
-async function getLatestKnownErdpyVersion(): Promise<Version> {
+async function getLatestKnownMxpyVersion(): Promise<Version> {
     try {
-        let response = await axios.get(LatestErdpyReleaseUrl);
+        let response = await axios.get(LatestMxpyReleaseUrl);
         return Version.parse(response.data.tag_name);
     } catch {
-        return DefaultErdpyVersion;
+        return DefaultMxpyVersion;
     }
 }
 
 export async function ensureInstalled() {
-    await ensureErdpy();
+    await ensureMxpy();
 }
 
-async function ensureErdpy() {
-    let isEdpyInstalled = await isErdpyInstalled();
+async function ensureMxpy() {
+    let isEdpyInstalled = await isMxpyInstalled();
     if (isEdpyInstalled) {
         return;
     }
 
-    let latestErdpyVersion = await getLatestKnownErdpyVersion();
-    let answer = await presenter.askInstallErdpy(latestErdpyVersion);
+    let latestMxpyVersion = await getLatestKnownMxpyVersion();
+    let answer = await presenter.askInstallMxpy(latestMxpyVersion);
     if (answer) {
-        await reinstallErdpy(latestErdpyVersion);
+        await reinstallMxpy(latestMxpyVersion);
     }
 }
 
-async function isErdpyInstalled(exactVersion?: Version): Promise<boolean> {
-    let [cliVersionString, ok] = await getOneLineStdout(Erdpy, ["--version"]);
+async function isMxpyInstalled(exactVersion?: Version): Promise<boolean> {
+    let [cliVersionString, ok] = await getOneLineStdout(Mxpy, ["--version"]);
     if (!ok) {
         return false;
     }
@@ -76,7 +76,7 @@ async function isErdpyInstalled(exactVersion?: Version): Promise<boolean> {
     }
 
     // No exact version specified (desired).
-    let latestKnownVersion = await getLatestKnownErdpyVersion();
+    let latestKnownVersion = await getLatestKnownMxpyVersion();
     return installedVersion.isNewerOrSameAs(latestKnownVersion);
 }
 
@@ -93,27 +93,27 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
     }
 }
 
-export async function reinstallErdpy(version: Version) {
-    let erdpyUp = storage.getPathTo("erdpy-up.py");
-    await downloadFile(erdpyUp, ErdpyUpUrl);
+export async function reinstallMxpy(version: Version) {
+    let mxpyUp = storage.getPathTo("mxpy-up.py");
+    await downloadFile(mxpyUp, MxpyUpUrl);
 
-    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${version}`;
-    await runInTerminal("installer", erdpyUpCommand, Environment.old);
+    let mxpyUpCommand = `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
+    await runInTerminal("installer", mxpyUpCommand, Environment.old);
 
-    Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
+    Feedback.info("mxpy installation has been started. Please wait for installation to finish.");
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyInstalled(version)));
+    } while ((!await isMxpyInstalled(version)));
 
-    await Feedback.infoModal("erdpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
+    await Feedback.infoModal("mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
 }
 
 export async function fetchTemplates(cacheFile: string) {
     try {
         await ProcessFacade.execute({
-            program: Erdpy,
+            program: Mxpy,
             args: ["contract", "templates"],
             doNotDumpStdout: true,
             stdoutToFile: cacheFile
@@ -128,7 +128,7 @@ export async function fetchTemplates(cacheFile: string) {
 export async function newFromTemplate(folder: string, template: string, name: string) {
     try {
         await ProcessFacade.execute({
-            program: Erdpy,
+            program: Mxpy,
             args: ["contract", "new", "--directory", folder, "--template", template, name],
         });
 
@@ -188,23 +188,23 @@ async function killRunningInTerminal(name: string) {
 
 export async function ensureInstalledBuildchains(languages: string[]) {
     for (let i = 0; i < languages.length; i++) {
-        await ensureInstalledErdpyGroup(languages[i]);
+        await ensureInstalledMxpyGroup(languages[i]);
     }
 }
 
-async function ensureInstalledErdpyGroup(group: string) {
-    if (await isErdpyGroupInstalled(group)) {
+async function ensureInstalledMxpyGroup(group: string) {
+    if (await isMxpyGroupInstalled(group)) {
         return;
     }
 
-    let answer = await presenter.askInstallErdpyGroup(group);
+    let answer = await presenter.askInstallMxpyGroup(group);
     if (answer) {
-        await reinstallErdpyGroup(group, FreeTextVersion.unspecified());
+        await reinstallMxpyGroup(group, FreeTextVersion.unspecified());
     }
 }
 
-async function isErdpyGroupInstalled(group: string): Promise<boolean> {
-    let [_, ok] = await getOneLineStdout(Erdpy, ["deps", "check", group]);
+async function isMxpyGroupInstalled(group: string): Promise<boolean> {
+    let [_, ok] = await getOneLineStdout(Mxpy, ["deps", "check", group]);
     return ok;
 }
 
@@ -219,25 +219,25 @@ export async function reinstallModule(): Promise<void> {
         return;
     }
 
-    await reinstallErdpyGroup(module, version);
+    await reinstallMxpyGroup(module, version);
 }
 
-async function reinstallErdpyGroup(group: string, version: FreeTextVersion) {
+async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version.isSpecified() ? `--tag=${version}` : "";
-    await runInTerminal("installer", `${Erdpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
+    await runInTerminal("installer", `${Mxpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyGroupInstalled(group)));
+    } while ((!await isMxpyGroupInstalled(group)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `${Erdpy} --verbose contract build "${folder}"`);
+        await runInTerminal("build", `${Mxpy} --verbose contract build "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -245,18 +245,18 @@ export async function buildContract(folder: string) {
 
 export async function cleanContract(folder: string) {
     try {
-        await runInTerminal("build", `${Erdpy} --verbose contract clean "${folder}"`);
+        await runInTerminal("build", `${Mxpy} --verbose contract clean "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
 }
 
-export async function runMandosTests(folder: string) {
+export async function runScenarios(folder: string) {
     try {
-        await ensureInstalledErdpyGroup("vmtools");
-        await runInTerminal("mandos", `mandos-test "${folder}"`);
+        await ensureInstalledMxpyGroup("vmtools");
+        await runInTerminal("scenarios", `run-scenarios "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
+        throw new errors.MyError({ Message: "Could not run scenarios.", Inner: error });
     }
 }
 
@@ -264,12 +264,12 @@ export async function runFreshTestnet(testnetToml: Uri) {
     try {
         let folder = path.dirname(testnetToml.fsPath);
 
-        await ensureInstalledErdpyGroup("golang");
+        await ensureInstalledMxpyGroup("golang");
         await destroyTerminal("testnet");
-        await runInTerminal("testnet", `${Erdpy} testnet clean`, null, folder);
-        await runInTerminal("testnet", `${Erdpy} testnet prerequisites`);
-        await runInTerminal("testnet", `${Erdpy} testnet config`);
-        await runInTerminal("testnet", `${Erdpy} testnet start`);
+        await runInTerminal("testnet", `${Mxpy} testnet clean`, null, folder);
+        await runInTerminal("testnet", `${Mxpy} testnet prerequisites`);
+        await runInTerminal("testnet", `${Mxpy} testnet config`);
+        await runInTerminal("testnet", `${Mxpy} testnet start`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }
@@ -280,7 +280,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
         let folder = path.dirname(testnetToml.fsPath);
 
         await destroyTerminal("testnet");
-        await runInTerminal("testnet", `${Erdpy} testnet start`, null, folder);
+        await runInTerminal("testnet", `${Mxpy} testnet start`, null, folder);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
     }

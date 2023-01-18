@@ -32,18 +32,18 @@ For a better experience when debugging Smart Contracts, we recommed allowing thi
     return answer;
 }
 
-export async function askInstallErdpy(requiredVersion: Version): Promise<boolean> {
-    let answer = await askYesNo(`MultiversX IDE requires erdpy ${requiredVersion}, which isn't available in your environment.
+export async function askInstallMxpy(requiredVersion: Version): Promise<boolean> {
+    let answer = await askYesNo(`MultiversX IDE requires mxpy ${requiredVersion}, which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }
 
-export async function askErdpyVersion(defaultVersion: Version): Promise<Version> {
+export async function askMxpyVersion(defaultVersion: Version): Promise<Version> {
     const result = await vscode.window.showInputBox({
-        prompt: "Enter the erdpy version to install",
+        prompt: "Enter the mxpy version to install",
         value: defaultVersion.toString(),
         ignoreFocusOut: true,
-        placeHolder: "For example: 1.0.0",
+        placeHolder: "For example: 5.6.7",
         validateInput: text => {
             return text.length > 0 ? null : "Should not be empty.";
         }
@@ -56,8 +56,8 @@ export async function askErdpyVersion(defaultVersion: Version): Promise<Version>
     return Version.parse(result);
 }
 
-export async function askInstallErdpyGroup(group: string): Promise<boolean> {
-    let answer = await askYesNo(`It seems that your workspace requires the dependency group "${group}", which isn't available in your erdpy environment.
+export async function askInstallMxpyGroup(group: string): Promise<boolean> {
+    let answer = await askYesNo(`It seems that your workspace requires the dependency group "${group}", which isn't available in your environment.
 Do you agree to install it?`);
     return answer;
 }

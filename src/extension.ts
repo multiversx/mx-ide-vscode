@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
-import { Root } from './root';
-import { Feedback } from './feedback';
-import * as sdk from "./sdk";
-import { TemplatesViewModel as TemplatesViewModel, ContractTemplate } from './templates';
-import * as workspace from "./workspace";
-import * as erdjsSnippets from "./erdjsSnippets";
-import * as presenter from "./presenter";
-import { Environment } from './environment';
-import * as errors from './errors';
-import * as snippets from './snippets';
-import { SmartContractsViewModel, SmartContract } from './contracts';
 import { Uri } from 'vscode';
+import { SmartContract, SmartContractsViewModel } from './contracts';
+import { Environment } from './environment';
+import * as javaScriptSnippets from "./javaScriptSnippets";
+import * as errors from './errors';
+import { Feedback } from './feedback';
+import * as presenter from "./presenter";
+import { Root } from './root';
+import * as sdk from "./sdk";
+import * as snippets from './snippets';
+import { ContractTemplate, TemplatesViewModel } from './templates';
+import * as workspace from "./workspace";
 import path = require("path");
 
 
@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.gotoContract", gotoContract);
 	vscode.commands.registerCommand("multiversx.buildContract", buildContract);
 	vscode.commands.registerCommand("multiversx.runContractSnippet", runContractSnippet);
-	vscode.commands.registerCommand("multiversx.runMandosTests", runMandosTests);
+	vscode.commands.registerCommand("multiversx.runScenarios", runScenarios);
 	vscode.commands.registerCommand("multiversx.runFreshTestnet", runFreshTestnet);
 	vscode.commands.registerCommand("multiversx.resumeExistingTestnet", resumeExistingTestnet);
 	vscode.commands.registerCommand("multiversx.stopTestnet", stopTestnet);
@@ -41,7 +41,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
-	vscode.commands.registerCommand("multiversx.setupErdjsSnippets", setupErdjsSnippets);
+	vscode.commands.registerCommand("multiversx.setupJavaScriptSnippets", setupJavaScriptSnippets);
 
 	Environment.set();
 }
@@ -150,7 +150,7 @@ async function runContractSnippet(contract: any) {
 function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
 		let fsPath = contract.fsPath;
-		if (fsPath.includes("elrond.json")) {
+		if (fsPath.includes("multiversx.json")) {
 			return path.dirname(fsPath);
 		} else if (fsPath.includes("snippets.sh")) {
 			return path.dirname(fsPath);
@@ -162,12 +162,12 @@ function getContractFolder(contract: any): string {
 	return (contract as SmartContract).getPath();
 }
 
-async function runMandosTests(item: any) {
+async function runScenarios(item: any) {
 	try {
 		if (item instanceof Uri) {
-			await sdk.runMandosTests(item.fsPath);
+			await sdk.runScenarios(item.fsPath);
 		} else {
-			await sdk.runMandosTests((item as SmartContract).getPath());
+			await sdk.runScenarios((item as SmartContract).getPath());
 		}
 	} catch (error) {
 		errors.caughtTopLevel(error);
@@ -203,9 +203,9 @@ async function ensureInstalledBuildchains() {
 	await sdk.ensureInstalledBuildchains(languages);
 }
 
-async function setupErdjsSnippets() {
-	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "erdjs-snippets":`);
+async function setupJavaScriptSnippets() {
+	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "js-snippets":`);
 	if (destinationFolder) {
-		await erdjsSnippets.setup(destinationFolder);
+		await javaScriptSnippets.setup(destinationFolder);
 	}
 }

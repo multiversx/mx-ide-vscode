@@ -2,13 +2,13 @@ import * as vscode from "vscode";
 const os = require("os");
 
 export class MySettings {
-    public static getElrondSdk(): string {
-        let folder = MySettings.getConfigurationValue("elrondsdk").toString();
+    public static getSdkPath(): string {
+        let folder = MySettings.getConfigurationValue("sdkPath").toString();
         return folder.replace("~", os.homedir);
     }
 
-    public static getElrondSdkRelativeToHome(): string {
-        return MySettings.getElrondSdk().replace(os.homedir, "");
+    public static getSdkPathRelativeToHome(): string {
+        return MySettings.getSdkPath().replace(os.homedir, "");
     }
 
     private static getConfigurationValue(key: string) {
