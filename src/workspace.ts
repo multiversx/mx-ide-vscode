@@ -27,12 +27,31 @@ export function getPath() {
 }
 
 export async function setup() {
+    migrateOldWorkspace();
     ensureFolder(path.join(getPath(), ".vscode"));
     ensureWorkspaceDefinitionFile();
     await patchSettingsForSdk();
     setupGitignore();
 }
 
+function migrateOldWorkspace() {
+    const oldFilePath = path.join(getPath(), "elrond.workspace.json");
+    if (fs.existsSync(oldFilePath)) {
+        fs.renameSync(oldFilePath, path.join(getPath(), "multiversx.workspace.json"));
+
+        // Replace "elrondsdk" with "multiversx-sdk":
+        const oldSettingsJson = fs.readFileSync(oldFilePath, { encoding: "utf8" });
+        const patchedOldSettingsJson = oldSettingsJson.replace(/elrondsdk/g, "multiversx-sdk");
+        fs.writeFileSync(oldFilePath, patchedOldSettingsJson);
+    }
+
+    // Also rename project metadata files:
+    const pattern = `${getPath()}/**/elrond.json`;
+    const paths = glob.sync(pattern, {});
+    for (const filePath of paths) {
+        fs.renameSync(filePath, "multiversx.json");
+    }
+}
 
 export function ensureFolder(folderPath: string) {
     if (!fs.existsSync(folderPath)) {
@@ -41,7 +60,7 @@ export function ensureFolder(folderPath: string) {
 }
 
 function ensureWorkspaceDefinitionFile() {
-    let filePath = path.join(getPath(), "multiversx.workspace.json");
+    const filePath = path.join(getPath(), "multiversx.workspace.json");
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
@@ -189,7 +208,7 @@ export function getLanguages() {
 }
 
 export function getMetadataObjects(): ProjectMetadata[] {
-    let pattern = `${getPath()}/**/(elrond|multiversx).json`;
+    let pattern = `${getPath()}/**/multiversx.json`;
     let paths = glob.sync(pattern, {});
     let result: ProjectMetadata[] = [];
 
@@ -205,8 +224,7 @@ export function getMetadataObjects(): ProjectMetadata[] {
 }
 
 export function getMetadataObjectByFolder(folder: string): ProjectMetadata {
-    let metadataPath = path.join(folder, "elrond.json");
-    // OR
+    const metadataPath = path.join(folder, "multiversx.json");
     return new ProjectMetadata(metadataPath);
 }
 

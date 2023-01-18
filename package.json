@@ -21,7 +21,7 @@
 	"activationEvents": [
 		"onCommand:multiversx.setupWorkspace",
 		"onCommand:multiversx.installRustDebuggerPrettyPrinterScript",
-		"workspaceContains:**/(elrond|multiversx).workspace.json"
+		"workspaceContains:**/multiversx.workspace.json"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

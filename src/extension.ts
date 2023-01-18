@@ -150,7 +150,7 @@ async function runContractSnippet(contract: any) {
 function getContractFolder(contract: any): string {
 	if (contract instanceof Uri) {
 		let fsPath = contract.fsPath;
-		if (fsPath.includes("elrond.json") || fsPath.includes("multiversx.json")) {
+		if (fsPath.includes("multiversx.json")) {
 			return path.dirname(fsPath);
 		} else if (fsPath.includes("snippets.sh")) {
 			return path.dirname(fsPath);
