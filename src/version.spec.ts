@@ -3,7 +3,7 @@ import { Version } from './version';
 
 describe("test version", () => {
     it("should parse", async () => {
-        assert.deepEqual(Version.parse("erdpy 1.2.3"), new Version(1, 2, 3));
+        assert.deepEqual(Version.parse("mxpy 1.2.3"), new Version(1, 2, 3));
         assert.deepEqual(Version.parse("v1.2.3"), new Version(1, 2, 3));
         assert.deepEqual(Version.parse("1.2.3"), new Version(1, 2, 3));
     });

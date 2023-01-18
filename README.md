@@ -30,18 +30,18 @@ MultiversX IDE can be installed from the Visual Studio Code Marketplace.
  - **Windows** is not supported yet
  - **MacOS** is supported
 
-If you experience any issues, please let us know [on Github](https://github.com/multiversx/mx-ide-vscode/issues) or [on Telegram](https://t.me/MultiversXDevelopers).
+If you experience any issues, please let us know [on Github](https://github.com/multiversx/mx-ide-vscode/issues), on [Discord](http://discord.gg/MultiversXBuilders) or [on Telegram](https://t.me/MultiversXDevelopers).
 
-### [erdpy](https://github.com/multiversx/mx-sdk-erdpy)
+### [mxpy](https://github.com/multiversx/mx-sdk-py-cli)
 
-**erdpy** is the backend of the Visual Studio Code extension. **erdpy** is **required** by the MultiversX IDE. In order to install it, please follow [these steps](https://docs.multiversx.com/sdk-and-tools/erdpy/installing-erdpy).
+**mxpy** is the backend of the Visual Studio Code extension. **mxpy** is **required** by the MultiversX IDE. In order to install it, please follow [these steps](https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy).
 
 ### Other dependencies
 
-The extension, via `erdpy`, will automatically download its external dependencies, so you do not have to worry much about setting up the development environment. These automatically installed dependencies include:
+The extension, via `mxpy`, will automatically download its external dependencies, so you do not have to worry much about setting up the development environment. These automatically installed dependencies include:
 
 * `RUST` buildchain
-* `VM Tools` (e.g. Mandos framework)
+* `VM Tools` (e.g. tests / scenarios framework)
 * `LLVM (clang, llc, wasm-ld etc.)`
 
 ## Extension Commands
@@ -51,7 +51,7 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 * `newFromTemplate`
 * `buildContract`
 * `cleanContract`
-* `runMandosTests`
+* `runScenarios`
 * `runContractSnippet`
 
 ## Installing the rust debugger pretty printer script

@@ -12,7 +12,7 @@ import path = require("path");
 import fs = require('fs');
 
 const Mxpy = "mxpy";
-const DefaultMxpyVersion = new Version(1, 3, 0);
+const DefaultMxpyVersion = new Version(5, 0, 1);
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 const MxpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/main/mxpy-up.py";
 
@@ -31,7 +31,7 @@ export async function reinstall() {
         return;
     }
 
-    await reinstallErdpy(version);
+    await reinstallMxpy(version);
 }
 
 /** 
@@ -47,23 +47,23 @@ async function getLatestKnownMxpyVersion(): Promise<Version> {
 }
 
 export async function ensureInstalled() {
-    await ensureErdpy();
+    await ensureMxpy();
 }
 
-async function ensureErdpy() {
-    let isEdpyInstalled = await isErdpyInstalled();
+async function ensureMxpy() {
+    let isEdpyInstalled = await isMxpyInstalled();
     if (isEdpyInstalled) {
         return;
     }
 
-    let latestErdpyVersion = await getLatestKnownMxpyVersion();
-    let answer = await presenter.askInstallErdpy(latestErdpyVersion);
+    let latestMxpyVersion = await getLatestKnownMxpyVersion();
+    let answer = await presenter.askInstallMxpy(latestMxpyVersion);
     if (answer) {
-        await reinstallErdpy(latestErdpyVersion);
+        await reinstallMxpy(latestMxpyVersion);
     }
 }
 
-async function isErdpyInstalled(exactVersion?: Version): Promise<boolean> {
+async function isMxpyInstalled(exactVersion?: Version): Promise<boolean> {
     let [cliVersionString, ok] = await getOneLineStdout(Mxpy, ["--version"]);
     if (!ok) {
         return false;
@@ -93,21 +93,21 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
     }
 }
 
-export async function reinstallErdpy(version: Version) {
-    let erdpyUp = storage.getPathTo("erdpy-up.py");
-    await downloadFile(erdpyUp, MxpyUpUrl);
+export async function reinstallMxpy(version: Version) {
+    let mxpyUp = storage.getPathTo("mxpy-up.py");
+    await downloadFile(mxpyUp, MxpyUpUrl);
 
-    let erdpyUpCommand = `python3 "${erdpyUp}" --no-modify-path --exact-version=${version}`;
-    await runInTerminal("installer", erdpyUpCommand, Environment.old);
+    let mxpyUpCommand = `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
+    await runInTerminal("installer", mxpyUpCommand, Environment.old);
 
-    Feedback.info("erdpy installation has been started. Please wait for installation to finish.");
+    Feedback.info("mxpy installation has been started. Please wait for installation to finish.");
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyInstalled(version)));
+    } while ((!await isMxpyInstalled(version)));
 
-    await Feedback.infoModal("erdpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
+    await Feedback.infoModal("mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
 }
 
 export async function fetchTemplates(cacheFile: string) {
@@ -188,22 +188,22 @@ async function killRunningInTerminal(name: string) {
 
 export async function ensureInstalledBuildchains(languages: string[]) {
     for (let i = 0; i < languages.length; i++) {
-        await ensureInstalledErdpyGroup(languages[i]);
+        await ensureInstalledMxpyGroup(languages[i]);
     }
 }
 
-async function ensureInstalledErdpyGroup(group: string) {
-    if (await isErdpyGroupInstalled(group)) {
+async function ensureInstalledMxpyGroup(group: string) {
+    if (await isMxpyGroupInstalled(group)) {
         return;
     }
 
-    let answer = await presenter.askInstallErdpyGroup(group);
+    let answer = await presenter.askInstallMxpyGroup(group);
     if (answer) {
-        await reinstallErdpyGroup(group, FreeTextVersion.unspecified());
+        await reinstallMxpyGroup(group, FreeTextVersion.unspecified());
     }
 }
 
-async function isErdpyGroupInstalled(group: string): Promise<boolean> {
+async function isMxpyGroupInstalled(group: string): Promise<boolean> {
     let [_, ok] = await getOneLineStdout(Mxpy, ["deps", "check", group]);
     return ok;
 }
@@ -219,10 +219,10 @@ export async function reinstallModule(): Promise<void> {
         return;
     }
 
-    await reinstallErdpyGroup(module, version);
+    await reinstallMxpyGroup(module, version);
 }
 
-async function reinstallErdpyGroup(group: string, version: FreeTextVersion) {
+async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version.isSpecified() ? `--tag=${version}` : "";
     await runInTerminal("installer", `${Mxpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
@@ -230,7 +230,7 @@ async function reinstallErdpyGroup(group: string, version: FreeTextVersion) {
     do {
         Feedback.debug("Waiting for the installer to finish.");
         await sleep(5000);
-    } while ((!await isErdpyGroupInstalled(group)));
+    } while ((!await isMxpyGroupInstalled(group)));
 
     await Feedback.infoModal(`${group} has been installed.`);
 }
@@ -251,12 +251,12 @@ export async function cleanContract(folder: string) {
     }
 }
 
-export async function runMandosTests(folder: string) {
+export async function runScenarios(folder: string) {
     try {
-        await ensureInstalledErdpyGroup("vmtools");
-        await runInTerminal("mandos", `mandos-test "${folder}"`);
+        await ensureInstalledMxpyGroup("vmtools");
+        await runInTerminal("scenarios", `run-scenarios "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run Mandos tests.", Inner: error });
+        throw new errors.MyError({ Message: "Could not run scenarios.", Inner: error });
     }
 }
 
@@ -264,7 +264,7 @@ export async function runFreshTestnet(testnetToml: Uri) {
     try {
         let folder = path.dirname(testnetToml.fsPath);
 
-        await ensureInstalledErdpyGroup("golang");
+        await ensureInstalledMxpyGroup("golang");
         await destroyTerminal("testnet");
         await runInTerminal("testnet", `${Mxpy} testnet clean`, null, folder);
         await runInTerminal("testnet", `${Mxpy} testnet prerequisites`);

@@ -260,6 +260,7 @@ function setupGitignore() {
 **/testnet/**
 **/wallets/**
 **/erdpy.data-storage.json
+**/mxpy.data-storage.json
 **/*.interaction.json
 `);
 }

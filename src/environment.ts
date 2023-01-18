@@ -10,8 +10,8 @@ export class Environment {
         }
 
         let sdkPath = MySettings.getSdkPath();
-        let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
-        let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let mxpyVenvFolder = path.join(sdkPath, "mxpy-venv");
+        let mxpyBinFolder = path.join(mxpyVenvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
@@ -20,16 +20,16 @@ export class Environment {
 
         // This is required for other VS Code extensions to work well and use the custom (Rust) environment.
         delete process.env["PYTHONHOME"];
-        process.env["PATH"] = `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`;
-        process.env["VIRTUAL_ENV"] = erdpyEnvFolder;
+        process.env["PATH"] = `${rustBinFolder}:${mxpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`;
+        process.env["VIRTUAL_ENV"] = mxpyVenvFolder;
         process.env["RUSTUP_HOME"] = rustFolder;
         process.env["CARGO_HOME"] = rustFolder;
     }
 
     static getForVsCodeFiles(): any {
         let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
-        let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
-        let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let mxpyVenvFolder = path.join(sdkPath, "mxpy-venv");
+        let mxpyBinFolder = path.join(mxpyVenvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
@@ -37,8 +37,8 @@ export class Environment {
         let nodeJsBinFolder = path.join(nodeJsFolder, "bin");
 
         return {
-            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:\${env:PATH}`,
-            "VIRTUAL_ENV": erdpyEnvFolder,
+            "PATH": `${rustBinFolder}:${mxpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:\${env:PATH}`,
+            "VIRTUAL_ENV": mxpyVenvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder
         };
@@ -46,8 +46,8 @@ export class Environment {
 
     static getForTerminal(): any {
         let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
-        let erdpyEnvFolder = path.join(sdkPath, "erdpy-venv");
-        let erdpyBinFolder = path.join(erdpyEnvFolder, "bin");
+        let mxpyVenvFolder = path.join(sdkPath, "mxpy-venv");
+        let mxpyBinFolder = path.join(mxpyVenvFolder, "bin");
         let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");
@@ -56,8 +56,8 @@ export class Environment {
 
         return {
             "PYTHONHOME": null,
-            "PATH": `${rustBinFolder}:${erdpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`,
-            "VIRTUAL_ENV": erdpyEnvFolder,
+            "PATH": `${rustBinFolder}:${mxpyBinFolder}:${vmToolsFolder}:${nodeJsBinFolder}:${process.env["PATH"]}`,
+            "VIRTUAL_ENV": mxpyVenvFolder,
             "RUSTUP_HOME": rustFolder,
             "CARGO_HOME": rustFolder
         };

@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.gotoContract", gotoContract);
 	vscode.commands.registerCommand("multiversx.buildContract", buildContract);
 	vscode.commands.registerCommand("multiversx.runContractSnippet", runContractSnippet);
-	vscode.commands.registerCommand("multiversx.runMandosTests", runMandosTests);
+	vscode.commands.registerCommand("multiversx.runScenarios", runScenarios);
 	vscode.commands.registerCommand("multiversx.runFreshTestnet", runFreshTestnet);
 	vscode.commands.registerCommand("multiversx.resumeExistingTestnet", resumeExistingTestnet);
 	vscode.commands.registerCommand("multiversx.stopTestnet", stopTestnet);
@@ -162,12 +162,12 @@ function getContractFolder(contract: any): string {
 	return (contract as SmartContract).getPath();
 }
 
-async function runMandosTests(item: any) {
+async function runScenarios(item: any) {
 	try {
 		if (item instanceof Uri) {
-			await sdk.runMandosTests(item.fsPath);
+			await sdk.runScenarios(item.fsPath);
 		} else {
-			await sdk.runMandosTests((item as SmartContract).getPath());
+			await sdk.runScenarios((item as SmartContract).getPath());
 		}
 	} catch (error) {
 		errors.caughtTopLevel(error);

@@ -85,8 +85,8 @@
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.runMandosTests",
-				"title": "Run Mandos Tests",
+				"command": "multiversx.runScenarios",
+				"title": "Run Scenarios",
 				"category": "multiversx"
 			},
 			{
@@ -148,12 +148,12 @@
 					"group": "multiversx"
 				},
 				{
-					"command": "multiversx.runMandosTests",
+					"command": "multiversx.runScenarios",
 					"when": "resourceFilename =~ /.scen.json/",
 					"group": "multiversx"
 				},
 				{
-					"command": "multiversx.runMandosTests",
+					"command": "multiversx.runScenarios",
 					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != erdjs-snippets && resourceFilename != interaction",
 					"group": "multiversx"
 				},
@@ -199,7 +199,7 @@
 					"when": "false"
 				},
 				{
-					"command": "multiversx.runMandosTests",
+					"command": "multiversx.runScenarios",
 					"when": "false"
 				},
 				{
@@ -246,7 +246,7 @@
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
-					"command": "multiversx.runMandosTests",
+					"command": "multiversx.runScenarios",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
