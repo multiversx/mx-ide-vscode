@@ -38,18 +38,23 @@ function migrateOldWorkspace() {
     const oldFilePath = path.join(getPath(), "elrond.workspace.json");
     if (fs.existsSync(oldFilePath)) {
         fs.renameSync(oldFilePath, path.join(getPath(), "multiversx.workspace.json"));
-
-        // Replace "elrondsdk" with "multiversx-sdk":
-        const oldSettingsJson = fs.readFileSync(oldFilePath, { encoding: "utf8" });
-        const patchedOldSettingsJson = oldSettingsJson.replace(/elrondsdk/g, "multiversx-sdk");
-        fs.writeFileSync(oldFilePath, patchedOldSettingsJson);
     }
 
     // Also rename project metadata files:
     const pattern = `${getPath()}/**/elrond.json`;
     const paths = glob.sync(pattern, {});
     for (const filePath of paths) {
-        fs.renameSync(filePath, "multiversx.json");
+        const parentOfFilePath = path.dirname(filePath);
+        fs.renameSync(filePath, path.join(parentOfFilePath, "multiversx.json"));
+    }
+
+    // In .vscode, replace "elrondsdk" with "multiversx-sdk":
+    const vscodeFiles = glob.sync(`${getPath()}/.vscode/*.json`, {});
+
+    for (const filePath of vscodeFiles) {
+        const oldContent = fs.readFileSync(filePath, { encoding: "utf8" });
+        const newContent = oldContent.replace(/elrondsdk/g, "multiversx-sdk");
+        fs.writeFileSync(filePath, newContent);
     }
 }
 
