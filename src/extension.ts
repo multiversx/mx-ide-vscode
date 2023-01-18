@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import { Environment } from './environment';
-import * as erdjsSnippets from "./erdjsSnippets";
+import * as javaScriptSnippets from "./javaScriptSnippets";
 import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
@@ -41,7 +41,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
-	vscode.commands.registerCommand("multiversx.setupErdjsSnippets", setupErdjsSnippets);
+	vscode.commands.registerCommand("multiversx.setupJavaScriptSnippets", setupJavaScriptSnippets);
 
 	Environment.set();
 }
@@ -203,9 +203,9 @@ async function ensureInstalledBuildchains() {
 	await sdk.ensureInstalledBuildchains(languages);
 }
 
-async function setupErdjsSnippets() {
-	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "erdjs-snippets":`);
+async function setupJavaScriptSnippets() {
+	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "js-snippets":`);
 	if (destinationFolder) {
-		await erdjsSnippets.setup(destinationFolder);
+		await javaScriptSnippets.setup(destinationFolder);
 	}
 }
