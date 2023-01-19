@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import { Environment } from './environment';
-import * as javaScriptSnippets from "./javaScriptSnippets";
 import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
@@ -40,8 +39,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
-
-	vscode.commands.registerCommand("multiversx.setupJavaScriptSnippets", setupJavaScriptSnippets);
 
 	Environment.set();
 }
@@ -201,11 +198,4 @@ async function stopTestnet(testnetToml: Uri) {
 async function ensureInstalledBuildchains() {
 	let languages = workspace.getLanguages();
 	await sdk.ensureInstalledBuildchains(languages);
-}
-
-async function setupJavaScriptSnippets() {
-	let destinationFolder = await presenter.askOpenFolder(`Please select a destination for "js-snippets":`);
-	if (destinationFolder) {
-		await javaScriptSnippets.setup(destinationFolder);
-	}
 }

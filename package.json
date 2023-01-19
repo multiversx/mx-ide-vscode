@@ -108,11 +108,6 @@
 				"command": "multiversx.stopTestnet",
 				"title": "Stop Testnet",
 				"category": "multiversx"
-			},
-			{
-				"command": "multiversx.setupJavaScriptSnippets",
-				"title": "Setup JavaScript snippets",
-				"category": "multiversx"
 			}
 		],
 		"menus": {
