@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "MultiversX IDE",
 	"description": "MultiversX IDE for developing Smart Contracts",
-	"version": "0.15.0",
+	"version": "0.16.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -107,11 +107,6 @@
 			{
 				"command": "multiversx.stopTestnet",
 				"title": "Stop Testnet",
-				"category": "multiversx"
-			},
-			{
-				"command": "multiversx.setupJavaScriptSnippets",
-				"title": "Setup JavaScript snippets",
 				"category": "multiversx"
 			}
 		],
