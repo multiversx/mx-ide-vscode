@@ -21,7 +21,7 @@ export function getPath() {
 }
 
 function getPrettyPrinterPath() {
-    return path.join(getPath(), "mx_sc_lldb_pretty_printers.py");
+    return path.join(getPath(), "multiversx_sc_lldb_pretty_printers.py");
 }
 
 export async function reinstall() {
@@ -310,7 +310,7 @@ export async function installRustDebuggerPrettyPrinterScript() {
     let inputPath = await showInputBoxWithDefault({
         title: "File path",
         prompt: "File path to the pretty printer script.",
-        defaultInput: "tools/rust-debugger/pretty-printers/mx_sc_lldb_pretty_printers.py",
+        defaultInput: "tools/rust-debugger/pretty-printers/multiversx_sc_lldb_pretty_printers.py",
         ignoreFocusOut: true,
     });
 
