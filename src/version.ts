@@ -1,72 +1,43 @@
+const semver = require("semver");
+
 /**
  * Utility class, useful for representing and manipulating version strings (e.g. of IDE dependencies).
  */
 export class Version {
-    readonly major: number;
-    readonly minor: number;
-    readonly patch: number;
+    public readonly value: string;
+    public readonly vValue: string;
+    public readonly cleanedValue: string;
 
-    constructor(major: number, minor: number, patch: number) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
-    }
-
-    static unspecified(): Version {
-        return new Version(0, 0, 0);
+    private constructor(value: string, cleanedValue: string) {
+        this.value = value;
+        this.vValue = value.startsWith("v") ? value : "v" + value;
+        this.cleanedValue = cleanedValue;
     }
 
     static parse(versionString: string) {
-        // Only keep numbers and dots.
-        let normalizedVersionString = versionString.replace(/[^\d.]/g, "");
-        let [major, minor, patch] = normalizedVersionString.split(".");
-        let majorNumber = parseInt(major);
-        let minorNumber = parseInt(minor);
-        let patchNumber = parseInt(patch);
+        // Handle input such as "mxpy v1.2.3".
+        const tokens = versionString.trim().split(" ");
+        const version = tokens[tokens.length - 1].trim();
+        // Handle both semver and PEP440 (at least, partially).
+        const cleanedVersion = semver.clean(version, { loose: true });
 
-        if (isNaN(majorNumber) || isNaN(minorNumber) || isNaN(patchNumber)) {
-            throw new CannotParseVersionError(versionString);
+        if (!cleanedVersion) {
+            throw new Error(`Invalid version string: ${versionString}`);
         }
 
-        return new Version(majorNumber, minorNumber, patchNumber);
+        return new Version(version, cleanedVersion);
     }
 
     isNewerOrSameAs(other: Version) {
-        return this.isNewerThan(other) || this.isSameAs(other);
-    }
-
-    isNewerThan(other: Version) {
-        let firstNonZeroPart = [
-            this.major - other.major,
-            this.minor - other.minor,
-            this.patch - other.patch
-        ].find(e => e != 0);
-        
-        return firstNonZeroPart > 0;
-    }
-
-    isOlderThan(other: Version) {
-        return !this.isSameAs(other) && !this.isNewerThan(other);
+        return semver.gte(this.cleanedValue, other.cleanedValue);
     }
 
     isSameAs(other: Version) {
-        return this.major == other.major && this.minor == other.minor && this.patch == other.patch;
+        return semver.eq(this.cleanedValue, other.cleanedValue);
     }
 
-    toString(): string {
-        return `${this.major}.${this.minor}.${this.patch}`;
-    }
-
-    toStringWithPrefix(): string {
-        return `v${this.toString()}`;
-    }
-
-    isSpecified(): boolean {
-        return !this.isUnspecified();
-    }
-
-    isUnspecified(): boolean {
-        return this.major == 0 && this.minor == 0 && this.patch == 0;
+    toString() {
+        return this.value;
     }
 }
 
@@ -91,13 +62,5 @@ export class FreeTextVersion {
 
     toString(): string {
         return this.value;
-    }
-}
-
-// Workaround: currently, we cannot move this to "errors.ts" (since that file imports "vscode", and this would cause the unit tests to fail).
-// TODO: Improve / refactor "errors.ts".
-export class CannotParseVersionError extends Error {
-    public constructor(version: string) {
-        super(`Cannot parse version: ${version}`);
     }
 }

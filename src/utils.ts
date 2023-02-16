@@ -1,10 +1,9 @@
 import child_process = require('child_process');
 import fs = require('fs');
 import path = require('path');
-import _ = require('underscore');
-import { Feedback } from './feedback';
-import { MyExecError, MyError } from './errors';
 import { Terminal } from 'vscode';
+import { MyError, MyExecError } from './errors';
+import { Feedback } from './feedback';
 const psList = require('ps-list');
 
 export class ProcessFacade {
