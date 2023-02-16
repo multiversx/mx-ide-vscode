@@ -209,7 +209,7 @@ async function isMxpyGroupInstalled(group: string): Promise<boolean> {
 }
 
 export async function reinstallModule(): Promise<void> {
-    let module = await presenter.askChooseSdkModule(["vmtools", "rust", "clang", "cpp"]);
+    let module = await presenter.askChooseSdkModule(["vmtools", "rust"]);
     if (!module) {
         return;
     }
