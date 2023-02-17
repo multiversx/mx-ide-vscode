@@ -140,71 +140,6 @@ export function guardIsOpen(): boolean {
     return true;
 }
 
-export async function patchLaunchAndTasks() {
-    let env = Environment.getForVsCodeFiles();
-    let envJson = JSON.stringify(env);
-
-    let launchPath = path.join(getPath(), ".vscode", "launch.json");
-    writeFileIfMissing(launchPath, `{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "request": "launch",
-            "type": "node",
-            "name": "Dump env",
-            "args": ["-e", "console.log(JSON.stringify(process.env, null, 4))"],
-            "env": ${envJson}
-        }
-    ]
-}`);
-
-    let tasksPath = path.join(getPath(), ".vscode", "tasks.json");
-    writeFileIfMissing(tasksPath, `{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Dump env",
-            "command": "node",
-            "args": ["-e", "console.log(JSON.stringify(process.env, null, 4))"],
-            "type": "process",
-            "options": {
-                "env": ${envJson}
-            }
-        }
-    ]
-}`);
-
-    let launchObject = JSON.parse(fs.readFileSync(launchPath, { encoding: "utf8" }));
-    let tasksObject = JSON.parse(fs.readFileSync(tasksPath, { encoding: "utf8" }));
-    let launchItems: any[] = launchObject["configurations"];
-    let tasksItems: any[] = tasksObject["tasks"];
-    let patched = false;
-
-    let metadataObjects = getMetadataObjects();
-
-    metadataObjects.forEach(metadata => {
-        let project = metadata.ProjectName;
-        let projectPath = metadata.ProjectPathInWorkspace;
-        let language = metadata.Language;
-
-        // Patch "launchItems" and "tasksItems", if needed (not needed at this moment).
-        // In the past, we've patched both "launchItems" and "tasks" collections.
-    });
-
-    if (!patched) {
-        return;
-    }
-
-    let allow = await presenter.askModifyLaunchAndTasks();
-    if (!allow) {
-        return;
-    }
-
-    fs.writeFileSync(launchPath, JSON.stringify(launchObject, null, 4));
-    fs.writeFileSync(tasksPath, JSON.stringify(tasksObject, null, 4));
-    Feedback.info("Updated launch.json and tasks.json.");
-}
-
 export function getLanguages() {
     let metadataObjects = getMetadataObjects();
     let languagesInProject = metadataObjects.map(item => item.Language);
@@ -264,7 +199,6 @@ function setupGitignore() {
 **/output/**
 **/testnet/**
 **/wallets/**
-**/erdpy.data-storage.json
 **/mxpy.data-storage.json
 **/*.interaction.json
 `);
