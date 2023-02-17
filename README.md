@@ -42,7 +42,6 @@ The extension, via `mxpy`, will automatically download its external dependencies
 
 * `RUST` buildchain
 * `VM Tools` (e.g. tests / scenarios framework)
-* `LLVM (clang, llc, wasm-ld etc.)`
 
 ## Extension Commands
 

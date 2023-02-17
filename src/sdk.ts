@@ -12,9 +12,8 @@ import path = require("path");
 import fs = require('fs');
 
 const Mxpy = "mxpy";
-const DefaultMxpyVersion = new Version(5, 0, 1);
+const DefaultMxpyVersion = Version.parse("5.3.2");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
-const MxpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/main/mxpy-up.py";
 
 export function getPath() {
     return MySettings.getSdkPath();
@@ -65,7 +64,7 @@ async function ensureMxpy() {
 
 async function isMxpyInstalled(exactVersion?: Version): Promise<boolean> {
     let [cliVersionString, ok] = await getOneLineStdout(Mxpy, ["--version"]);
-    if (!ok) {
+    if (!cliVersionString || !ok) {
         return false;
     }
 
@@ -94,10 +93,15 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
 }
 
 export async function reinstallMxpy(version: Version) {
-    let mxpyUp = storage.getPathTo("mxpy-up.py");
-    await downloadFile(mxpyUp, MxpyUpUrl);
+    const mxpyUp = storage.getPathTo("mxpy-up.py");
+    const mxpyUpUrl = getMxpyUpUrl(version);
+    await downloadFile(mxpyUp, mxpyUpUrl);
 
-    let mxpyUpCommand = `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
+    const isV6OrNewer = version.isNewerOrSameAs(Version.parse("6.0.0-alpha.0"));
+    const mxpyUpCommand = isV6OrNewer ?
+        `python3 "${mxpyUp}" --exact-version=${version.value} --not-interactive` :
+        `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
+
     await runInTerminal("installer", mxpyUpCommand, Environment.old);
 
     Feedback.info("mxpy installation has been started. Please wait for installation to finish.");
@@ -108,6 +112,10 @@ export async function reinstallMxpy(version: Version) {
     } while ((!await isMxpyInstalled(version)));
 
     await Feedback.infoModal("mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
+}
+
+function getMxpyUpUrl(version: Version) {
+    return `https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/${version.vValue}/mxpy-up.py`;
 }
 
 export async function fetchTemplates(cacheFile: string) {
@@ -209,7 +217,7 @@ async function isMxpyGroupInstalled(group: string): Promise<boolean> {
 }
 
 export async function reinstallModule(): Promise<void> {
-    let module = await presenter.askChooseSdkModule(["vmtools", "rust", "clang", "cpp"]);
+    let module = await presenter.askChooseSdkModule(["vmtools", "rust"]);
     if (!module) {
         return;
     }

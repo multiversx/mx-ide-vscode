@@ -9,7 +9,7 @@ import fs = require("fs");
 import _ = require('underscore');
 import glob = require("glob");
 
-let languages = ["cpp", "clang", "rust"];
+let languages = ["rust"];
 
 export function isOpen(): boolean {
     return getPath() ? true : false;
@@ -251,7 +251,7 @@ export class ProjectMetadata {
         this.ProjectName = path.basename(this.ProjectPath);
 
         if (!languages.includes(this.Language)) {
-            throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}` });
+            throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}. Language not supported: ${this.Language}` });
         }
     }
 }
