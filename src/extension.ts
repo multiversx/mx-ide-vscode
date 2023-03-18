@@ -7,7 +7,6 @@ import { Feedback } from './feedback';
 import * as presenter from "./presenter";
 import { Root } from './root';
 import * as sdk from "./sdk";
-import * as snippets from './snippets';
 import { ContractTemplate, TemplatesViewModel } from './templates';
 import * as workspace from "./workspace";
 import path = require("path");
@@ -29,7 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.installRustDebuggerPrettyPrinterScript", installRustDebuggerPrettyPrinterScript);
 	vscode.commands.registerCommand("multiversx.gotoContract", gotoContract);
 	vscode.commands.registerCommand("multiversx.buildContract", buildContract);
-	vscode.commands.registerCommand("multiversx.runContractSnippet", runContractSnippet);
 	vscode.commands.registerCommand("multiversx.runScenarios", runScenarios);
 	vscode.commands.registerCommand("multiversx.runFreshTestnet", runFreshTestnet);
 	vscode.commands.registerCommand("multiversx.resumeExistingTestnet", resumeExistingTestnet);
@@ -130,15 +128,6 @@ async function cleanContract(contract: any) {
 	try {
 		let folder = getContractFolder(contract);
 		await sdk.cleanContract(folder);
-	} catch (error) {
-		errors.caughtTopLevel(error);
-	}
-}
-
-async function runContractSnippet(contract: any) {
-	try {
-		let folder = getContractFolder(contract);
-		await snippets.runContractSnippet(folder);
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}
