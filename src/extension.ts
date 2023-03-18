@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { SmartContract, SmartContractsViewModel } from './contracts';
-import { Environment } from './environment';
 import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
@@ -37,8 +36,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
-
-	Environment.set();
 }
 
 export function deactivate() {
@@ -50,7 +47,6 @@ async function setupWorkspace() {
 		return;
 	}
 
-	Environment.set();
 	await workspace.setup();
 	await sdk.ensureInstalled();
 	await ensureInstalledBuildchains();

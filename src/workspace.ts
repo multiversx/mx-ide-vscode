@@ -72,7 +72,7 @@ function ensureWorkspaceDefinitionFile() {
 }
 
 async function patchSettingsForSdk(): Promise<boolean> {
-    let env = Environment.getForVsCodeFiles();
+    let env = Environment.getForVsCodeSettings();
     let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
     let rustFolder = path.join(sdkPath, "vendor-rust");
     let rustBinFolder = path.join(rustFolder, "bin");
