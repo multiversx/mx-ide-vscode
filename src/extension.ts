@@ -53,7 +53,6 @@ async function setupWorkspace() {
 	Environment.set();
 	await workspace.setup();
 	await sdk.ensureInstalled();
-	await workspace.patchLaunchAndTasks();
 	await ensureInstalledBuildchains();
 	await Feedback.infoModal("Workspace has been set up.");
 }
@@ -97,7 +96,6 @@ async function newFromTemplate(template: ContractTemplate) {
 		let contractName = await presenter.askContractName();
 
 		await sdk.newFromTemplate(parentFolder, templateName, contractName);
-		await workspace.patchLaunchAndTasks();
 		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
