@@ -3,7 +3,6 @@ import { Environment } from "./environment";
 import * as errors from './errors';
 import { Feedback } from "./feedback";
 import * as presenter from "./presenter";
-import { MySettings } from "./settings";
 import path = require("path");
 import fs = require("fs");
 import _ = require('underscore');
@@ -73,21 +72,14 @@ function ensureWorkspaceDefinitionFile() {
 
 async function patchSettingsForSdk(): Promise<boolean> {
     let env = Environment.getForVsCodeSettings();
-    let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
-    let rustFolder = path.join(sdkPath, "vendor-rust");
-    let rustBinFolder = path.join(rustFolder, "bin");
 
     let patch = {
         "terminal.integrated.env.linux": env,
         "terminal.integrated.env.osx": env,
-        "terminal.integrated.environmentChangesIndicator": "on",
-        "terminal.integrated.inheritEnv": true,
-        "workbench.dialogs.customEnabled": true,
-        "rust-client.rustupPath": path.join(rustBinFolder, "rustup"),
-        "rust-client.rlsPath": path.join(rustBinFolder, "rls"),
-        "rust-client.disableRustup": true,
-        "rust-client.autoStartRls": false
+        "rust-analyzer.server.extraEnv": env,
+        "terminal.integrated.environmentChangesIndicator": "on"
     };
+
 
     let askText = `Allow MultiversX IDE to modify this workspace's "settings.json"?
 The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
