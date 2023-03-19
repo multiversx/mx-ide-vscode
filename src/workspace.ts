@@ -25,13 +25,6 @@ export function getPath() {
 
 export async function setup() {
     ensureWorkspaceDefinitionFile();
-    setupGitignore();
-}
-
-export function ensureFolder(folderPath: string) {
-    if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
-    }
 }
 
 function ensureWorkspaceDefinitionFile() {
@@ -101,21 +94,3 @@ export class ProjectMetadata {
     }
 }
 
-function setupGitignore() {
-    let gitignore = path.join(getPath(), ".gitignore");
-
-    writeFileIfMissing(gitignore, `# MultiversX IDE
-**/node_modules
-**/output/**
-**/testnet/**
-**/wallets/**
-**/mxpy.data-storage.json
-**/*.interaction.json
-`);
-}
-
-export function writeFileIfMissing(filePath: string, content: string) {
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, content);
-    }
-}
