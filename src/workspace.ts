@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
-import { Environment } from "./environment";
 import * as errors from './errors';
 import { Feedback } from "./feedback";
-import * as presenter from "./presenter";
 import path = require("path");
 import fs = require("fs");
 import _ = require('underscore');
@@ -26,35 +24,8 @@ export function getPath() {
 }
 
 export async function setup() {
-    migrateOldWorkspace();
-    ensureFolder(path.join(getPath(), ".vscode"));
     ensureWorkspaceDefinitionFile();
-    await patchSettingsForSdk();
     setupGitignore();
-}
-
-function migrateOldWorkspace() {
-    const oldFilePath = path.join(getPath(), "elrond.workspace.json");
-    if (fs.existsSync(oldFilePath)) {
-        fs.renameSync(oldFilePath, path.join(getPath(), "multiversx.workspace.json"));
-    }
-
-    // Also rename project metadata files:
-    const pattern = `${getPath()}/**/elrond.json`;
-    const paths = glob.sync(pattern, {});
-    for (const filePath of paths) {
-        const parentOfFilePath = path.dirname(filePath);
-        fs.renameSync(filePath, path.join(parentOfFilePath, "multiversx.json"));
-    }
-
-    // In .vscode, replace "elrondsdk" with "multiversx-sdk":
-    const vscodeFiles = glob.sync(`${getPath()}/.vscode/*.json`, {});
-
-    for (const filePath of vscodeFiles) {
-        const oldContent = fs.readFileSync(filePath, { encoding: "utf8" });
-        const newContent = oldContent.replace(/elrondsdk/g, "multiversx-sdk");
-        fs.writeFileSync(filePath, newContent);
-    }
 }
 
 export function ensureFolder(folderPath: string) {
@@ -68,59 +39,6 @@ function ensureWorkspaceDefinitionFile() {
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, "{}");
     }
-}
-
-async function patchSettingsForSdk(): Promise<boolean> {
-    let env = Environment.getForVsCodeSettings();
-
-    let patch = {
-        "terminal.integrated.env.linux": env,
-        "terminal.integrated.env.osx": env,
-        "rust-analyzer.server.extraEnv": env,
-        "terminal.integrated.environmentChangesIndicator": "on"
-    };
-
-
-    let askText = `Allow MultiversX IDE to modify this workspace's "settings.json"?
-The changes include setting environment variables for the terminal integrated in Visual Studio Code.\n
-For a better experience when debugging and building Smart Contracts, we recommed allowing this change.`;
-
-    let localSettingsJsonPath = path.join(getPath(), ".vscode", "settings.json");
-    return await promptThenPatchSettings(patch, localSettingsJsonPath, askText);
-}
-
-export async function promptThenPatchSettings(patch: any, filePath: string, askText: string): Promise<boolean> {
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "{}");
-    }
-
-    let settingsJson = fs.readFileSync(filePath, { encoding: "utf8" });
-    let settings = JSON.parse(settingsJson);
-
-    let patched = false;
-    for (const [key, value] of Object.entries(patch)) {
-        if (!_.isEqual(settings[key], value)) {
-            settings[key] = value;
-            patched = true;
-        }
-    }
-
-    if (!patched) {
-        return false;
-    }
-
-    // Patch has been applied in-memory, and now we have to update the file (settings.json).
-    // Ask for permission.
-    let allow = await presenter.askYesNo(askText);
-    if (!allow) {
-        return false;
-    }
-
-    let content = JSON.stringify(settings, null, 4);
-    fs.writeFileSync(filePath, content);
-    Feedback.info(`Updated ${filePath}.`);
-
-    return true;
 }
 
 export function guardIsOpen(): boolean {
