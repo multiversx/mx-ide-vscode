@@ -4,12 +4,7 @@
 
 ## What is it?
 
-**MultiversX IDE** is an extension for Visual Studio Code that offers development support for MultiversX Smart Contracts.
-
-MultiversX IDE supports the following programming languages:
-
- - Rust - recommended. For Rust, the IDE also provides a step-by-step debugging experience, via [mx-sc-debug](https://crates.io/keywords/multiversx).
- - C / C++
+**MultiversX IDE** is an extension for Visual Studio Code that offers development support for MultiversX Smart Contracts written in Rust.
 
 ## Main features
 
