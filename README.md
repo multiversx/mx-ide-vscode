@@ -46,7 +46,6 @@ This extension contributes the following commands (`Ctrl+Shift+P`):
 * `buildContract`
 * `cleanContract`
 * `runScenarios`
-* `runContractSnippet`
 
 ## Installing the rust debugger pretty printer script
 

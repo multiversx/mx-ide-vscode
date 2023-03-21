@@ -26,12 +26,6 @@ export async function askContractName() {
     return result;
 }
 
-export async function askModifyLaunchAndTasks(): Promise<boolean> {
-    let answer = await askYesNo(`Allow MultiversX IDE to modify this workspace's "launch.json" and "tasks.json"?\n
-For a better experience when debugging Smart Contracts, we recommed allowing this change.`);
-    return answer;
-}
-
 export async function askInstallMxpy(requiredVersion: Version): Promise<boolean> {
     let answer = await askYesNo(`MultiversX IDE requires mxpy ${requiredVersion}, which isn't available in your environment.
 Do you agree to install it?`);

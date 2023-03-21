@@ -102,7 +102,7 @@ export async function reinstallMxpy(version: Version) {
         `python3 "${mxpyUp}" --exact-version=${version.value} --not-interactive` :
         `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
 
-    await runInTerminal("installer", mxpyUpCommand, Environment.old);
+    await runInTerminal("installer", mxpyUpCommand);
 
     Feedback.info("mxpy installation has been started. Please wait for installation to finish.");
 

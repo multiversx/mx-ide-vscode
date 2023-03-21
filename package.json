@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "MultiversX IDE",
 	"description": "MultiversX IDE for developing Smart Contracts",
-	"version": "0.17.0",
+	"version": "0.18.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -80,11 +80,6 @@
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.runContractSnippet",
-				"title": "Run Contract Snippet",
-				"category": "multiversx"
-			},
-			{
 				"command": "multiversx.runScenarios",
 				"title": "Run Scenarios",
 				"category": "multiversx"
@@ -129,16 +124,6 @@
 				},
 				{
 					"command": "multiversx.cleanContract",
-					"when": "resourceFilename == multiversx.json",
-					"group": "multiversx"
-				},
-				{
-					"command": "multiversx.runContractSnippet",
-					"when": "explorerResourceIsFolder && resourceFilename != output && resourceFilename != debug && resourceFilename != target && resourceFilename != js-snippets",
-					"group": "multiversx"
-				},
-				{
-					"command": "multiversx.runContractSnippet",
 					"when": "resourceFilename == multiversx.json",
 					"group": "multiversx"
 				},
@@ -190,10 +175,6 @@
 					"when": "false"
 				},
 				{
-					"command": "multiversx.runContractSnippet",
-					"when": "false"
-				},
-				{
 					"command": "multiversx.runScenarios",
 					"when": "false"
 				},
@@ -234,10 +215,6 @@
 				},
 				{
 					"command": "multiversx.cleanContract",
-					"when": "view == smartContracts && viewItem == contract"
-				},
-				{
-					"command": "multiversx.runContractSnippet",
 					"when": "view == smartContracts && viewItem == contract"
 				},
 				{
