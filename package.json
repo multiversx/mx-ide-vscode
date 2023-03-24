@@ -275,6 +275,12 @@
 		"views": {
 			"multiversx": [
 				{
+					"id": "multiversx.help",
+					"name": "Help",
+					"contextualTitle": "Help",
+					"type": "webview"
+				},
+				{
 					"id": "smartContracts",
 					"name": "Smart Contracts",
 					"contextualTitle": "Smart Contracts in Workspace"

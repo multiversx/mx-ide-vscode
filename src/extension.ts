@@ -5,6 +5,7 @@ import { BotGatewayStub } from './botGateway';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
 import { Feedback } from './feedback';
+import { HelpViewProvider } from './help';
 import * as presenter from "./presenter";
 import { Root } from './root';
 import * as sdk from "./sdk";
@@ -22,6 +23,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
 	let contractsViewModel = new SmartContractsViewModel();
 	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
+
+	const helpViewProvider = new HelpViewProvider(context.extensionUri);
+	vscode.window.registerWebviewViewProvider("multiversx.help", helpViewProvider);
 
 	vscode.commands.registerCommand("multiversx.setupWorkspace", setupWorkspace);
 	vscode.commands.registerCommand("multiversx.installSdk", installSdk);
