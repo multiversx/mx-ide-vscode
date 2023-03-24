@@ -3,6 +3,7 @@
 node_modules
 out/**
 src/**
+**/*.map
 tsconfig.json
 webpack.config.js
 .gitignore
