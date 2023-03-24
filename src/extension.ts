@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
+import { BotGatewayStub } from './botGateway';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
 import { Feedback } from './feedback';
@@ -36,6 +37,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
+
+	vscode.commands.registerCommand("multiversx.botExplainCode", botExplainCode);
 }
 
 export function deactivate() {
@@ -181,4 +184,37 @@ async function stopTestnet(testnetToml: Uri) {
 async function ensureInstalledBuildchains() {
 	let languages = workspace.getLanguages();
 	await sdk.ensureInstalledBuildchains(languages);
+}
+
+async function botExplainCode(_uri: Uri) {
+	const botGateway = new BotGatewayStub();
+
+	try {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+
+		const document = editor.document;
+		const selection = editor.selection;
+		const code = selection.isEmpty ? document.getText() : document.getText(selection);
+		const explanation = await botGateway.explainCode({ code: code });
+
+		// https://github.com/microsoft/vscode/issues/75612
+		const renderedExplanation = await vscode.commands.executeCommand("markdown.api.render", explanation);
+
+		const panel = vscode.window.createWebviewPanel(
+			"multiversx",
+			"Explanation",
+			vscode.ViewColumn.Beside,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true,
+			}
+		);
+
+		panel.webview.html = renderedExplanation.toString();
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
 }

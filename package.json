@@ -103,6 +103,16 @@
 				"command": "multiversx.stopTestnet",
 				"title": "Stop Testnet",
 				"category": "multiversx"
+			},
+			{
+				"command": "multiversx.botAskQuestion",
+				"title": "xBot, please help",
+				"category": "multiversx"
+			},
+			{
+				"command": "multiversx.botExplainCode",
+				"title": "xBot, explain code",
+				"category": "multiversx"
 			}
 		],
 		"menus": {
@@ -195,7 +205,18 @@
 					"when": "false"
 				}
 			],
-			"editor/context": [],
+			"editor/context": [
+				{
+					"when": "resourceLangId == rust",
+					"command": "multiversx.botAskQuestion",
+					"group": "multiversx xBot"
+				},
+				{
+					"when": "resourceLangId == rust",
+					"command": "multiversx.botExplainCode",
+					"group": "multiversx xBot"
+				}
+			],
 			"view/title": [
 				{
 					"command": "multiversx.refreshTemplates",
@@ -302,7 +323,6 @@
 	},
 	"dependencies": {
 		"glob": "8.1.0",
-		"ps-list": "7.2.0",
 		"underscore": "1.12.1",
 		"axios": "0.24.0",
 		"semver": "7.3.8"
