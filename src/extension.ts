@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
+import { BotInlineCompletionItemProvider } from './botCodeCompletion';
 import { BotGatewayStub } from './botGateway';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
@@ -39,6 +40,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
 	vscode.commands.registerCommand("multiversx.botExplainCode", botExplainCode);
+
+	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({
+		pattern: "**/*",
+	}, new BotInlineCompletionItemProvider());
+
+	context.subscriptions.push(completionProvider);
 }
 
 export function deactivate() {
