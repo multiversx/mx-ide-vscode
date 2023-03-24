@@ -1,10 +1,10 @@
 .github/**
 .vscode/**
-out/test/**
+node_modules
+out/**
 src/**
+tsconfig.json
+webpack.config.js
 .gitignore
-**/tsconfig.json
-**/tslint.json
-**/.mocharc.json
-**/*.map
-**/*.ts
+.eslintrc.json
+.mocharc.json

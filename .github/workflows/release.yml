@@ -37,4 +37,4 @@ jobs:
     - name: Publish on Marketplace
       env:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: npm run deploy
+      run: vsce publish

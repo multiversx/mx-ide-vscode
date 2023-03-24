@@ -7,7 +7,7 @@ export class BotInlineCompletionItemProvider implements vscode.InlineCompletionI
         context: vscode.InlineCompletionContext,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.InlineCompletionItem[]> {
-        if (context.triggerKind != vscode.InlineCompletionTriggerKind.Invoke) {
+        if (context.triggerKind !== vscode.InlineCompletionTriggerKind.Invoke) {
             return [];
         }
 
