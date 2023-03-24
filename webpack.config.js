@@ -6,7 +6,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
-const config = {
+const extensionConfig = {
     // Use "webworker" target for browser extension development.
     target: 'node', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
 
@@ -49,4 +49,50 @@ const config = {
         ]
     }
 };
-module.exports = config;
+
+/**@type {import('webpack').Configuration}*/
+const helpWebViewConfig = {
+    target: ["web", "es2020"],
+
+    entry: './src/help/main.ts',
+    // https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/780dd005b820c00340fe72a76a50099c5d0ef952/default/hello-world-webpack/webpack.config.js
+    experiments: { outputModule: true },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'helpWebView.js',
+        libraryTarget: "module",
+        chunkFormat: "module"
+    },
+    devtool: 'source-map',
+    externals: {
+        vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+    },
+    resolve: {
+        // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
+        mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
+        extensions: ['.ts', '.js'],
+        alias: {
+            // provides alternate implementation for node module and source files
+        },
+        fallback: {
+            // Webpack 5 no longer polyfills Node.js core modules automatically.
+            // see https://webpack.js.org/configuration/resolve/#resolvefallback
+            // for the list of Node.js core module polyfills.
+        }
+    },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'ts-loader'
+                    }
+                ]
+            }
+        ]
+    }
+};
+
+module.exports = [extensionConfig, helpWebViewConfig];
