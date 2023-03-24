@@ -9,8 +9,11 @@
 		"url": "https://github.com/multiversx/mx-ide-vscode.git"
 	},
 	"engines": {
-		"vscode": "^1.64.0"
+		"vscode": "^1.76.2"
 	},
+	"enabledApiProposals": [
+		"inlineCompletionsAdditions"
+	],
 	"categories": [
 		"Programming Languages",
 		"Extension Packs",
@@ -19,8 +22,6 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"onCommand:multiversx.setupWorkspace",
-		"onCommand:multiversx.installRustDebuggerPrettyPrinterScript",
 		"workspaceContains:**/multiversx.workspace.json"
 	],
 	"main": "./out/extension.js",
@@ -313,7 +314,7 @@
 		"@types/mocha": "9.1.0",
 		"@types/node": "13.13.2",
 		"@types/underscore": "^1.10.1",
-		"@types/vscode": "1.64.0",
+		"@types/vscode": "^1.76.0",
 		"chai": "4.2.0",
 		"mocha": "9.2.2",
 		"ts-node": "9.1.1",
