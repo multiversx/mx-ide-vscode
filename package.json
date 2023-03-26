@@ -275,9 +275,9 @@
 		"views": {
 			"multiversx": [
 				{
-					"id": "multiversx.help",
-					"name": "Help",
-					"contextualTitle": "Help",
+					"id": "multiversx.welcome",
+					"name": "Welcome",
+					"contextualTitle": "Welcome",
 					"type": "webview"
 				},
 				{
@@ -320,22 +320,23 @@
 		"@types/node": "13.13.2",
 		"@types/underscore": "^1.10.1",
 		"@types/vscode": "^1.76.0",
-		"chai": "4.2.0",
-		"mocha": "9.2.2",
-		"ts-loader": "^9.4.2",
-		"ts-node": "9.1.1",
-		"eslint": "^8.36.0",
 		"@typescript-eslint/eslint-plugin": "^5.56.0",
 		"@typescript-eslint/parser": "^5.56.0",
-		"typescript": "^4.4.4",
-		"vsce": "2.6.7",
-		"webpack": "^5.76.3",
-		"webpack-cli": "^5.0.1",
 		"@vscode/webview-ui-toolkit": "1.2.2",
 		"axios": "0.24.0",
+		"chai": "4.2.0",
+		"eslint": "^8.36.0",
 		"glob": "8.1.0",
+		"html-loader": "^4.2.0",
+		"mocha": "9.2.2",
 		"semver": "7.3.8",
-		"underscore": "1.12.1"
+		"ts-loader": "^9.4.2",
+		"ts-node": "9.1.1",
+		"typescript": "^4.4.4",
+		"underscore": "1.12.1",
+		"vsce": "2.6.7",
+		"webpack": "^5.76.3",
+		"webpack-cli": "^5.0.1"
 	},
 	"extensionDependencies": []
 }

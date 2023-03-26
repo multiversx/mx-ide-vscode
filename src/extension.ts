@@ -1,15 +1,16 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
+import { AssistantFacade } from './assistant/assistantFacade';
 import { BotInlineCompletionItemProvider } from './botCodeCompletion';
 import { BotGatewayStub } from './botGateway';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
 import { Feedback } from './feedback';
-import { HelpViewProvider } from './help';
 import * as presenter from "./presenter";
 import { Root } from './root';
 import * as sdk from "./sdk";
 import { ContractTemplate, TemplatesViewModel } from './templates';
+import { WelcomeViewProvider } from './welcome/viewProvider';
 import * as workspace from "./workspace";
 import path = require("path");
 
@@ -17,15 +18,21 @@ import path = require("path");
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
 
+	const assistant = new AssistantFacade(context.globalState);
+
 	Root.ExtensionContext = context;
 
-	let templatesViewModel = new TemplatesViewModel();
+	const templatesViewModel = new TemplatesViewModel();
+	const contractsViewModel = new SmartContractsViewModel();
+
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
-	let contractsViewModel = new SmartContractsViewModel();
 	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
 
-	const helpViewProvider = new HelpViewProvider(context.extensionUri);
-	vscode.window.registerWebviewViewProvider("multiversx.help", helpViewProvider);
+	const welcomeViewProvider = new WelcomeViewProvider({
+		extensionUri: context.extensionUri,
+		assistant: assistant
+	});
+	vscode.window.registerWebviewViewProvider("multiversx.welcome", welcomeViewProvider);
 
 	vscode.commands.registerCommand("multiversx.setupWorkspace", setupWorkspace);
 	vscode.commands.registerCommand("multiversx.installSdk", installSdk);

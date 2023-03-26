@@ -45,21 +45,28 @@ const extensionConfig = {
                         loader: 'ts-loader'
                     }
                 ]
+            },
+            {
+                test: /\.html$/i,
+                loader: "html-loader",
+                options: {
+                    esModule: false,
+                },
             }
         ]
     }
 };
 
 /**@type {import('webpack').Configuration}*/
-const helpWebViewConfig = {
+const welcomeWebViewConfig = {
     target: ["web", "es2020"],
 
-    entry: './src/help/main.ts',
+    entry: './src/welcome/main.ts',
     // https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/780dd005b820c00340fe72a76a50099c5d0ef952/default/hello-world-webpack/webpack.config.js
     experiments: { outputModule: true },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'helpWebView.js',
+        filename: 'welcome.js',
         libraryTarget: "module",
         chunkFormat: "module"
     },
@@ -90,9 +97,16 @@ const helpWebViewConfig = {
                         loader: 'ts-loader'
                     }
                 ]
+            },
+            {
+                test: /\.html$/i,
+                loader: "html-loader",
+                options: {
+                    esModule: false,
+                },
             }
         ]
     }
 };
 
-module.exports = [extensionConfig, helpWebViewConfig];
+module.exports = [extensionConfig, welcomeWebViewConfig];
