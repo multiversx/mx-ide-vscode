@@ -7,8 +7,32 @@ interface VSCode {
     setState(state: any): void;
 };
 
+interface State {
+    terms: AcceptTerms;
+}
+
+interface AcceptTerms {
+    acceptTermsOfService: boolean;
+    acceptPrivacyStatement: boolean;
+}
+
 declare function acquireVsCodeApi(): VSCode;
 declare const window: any;
+
+class TermsView {
+    readonly checkboxTermsOfService: any;
+    readonly checkboxPrivacyStatement: any;
+
+    constructor() {
+        this.checkboxTermsOfService = window.document.getElementById("CheckboxAssistantTermsOfService");
+        this.checkboxPrivacyStatement = window.document.getElementById("CheckboxAssistantPrivacyStatement");
+    }
+
+    render(terms?: AcceptTerms) {
+        this.checkboxTermsOfService.checked = terms?.acceptTermsOfService || false;
+        this.checkboxPrivacyStatement.checked = terms?.acceptPrivacyStatement || false;
+    }
+}
 
 async function main() {
     provideVSCodeDesignSystem().register(
@@ -17,22 +41,53 @@ async function main() {
     );
 
     const vscode = acquireVsCodeApi();
-    const checkboxTermsOfService = window.document.getElementById("CheckboxAssistantTermsOfService");
-    const checkboxPrivacyStatement = window.document.getElementById("CheckboxAssistantPrivacyStatement");
+    const state: State = vscode.getState() || {};
+    const termsView = new TermsView();
+    termsView.render(state.terms);
 
-    checkboxTermsOfService.addEventListener("change", () => {
+    function onTermsViewChange() {
+        const isAcceptedTermsOfService = termsView.checkboxTermsOfService.checked;
+        const isAcceptedPrivacyStatement = termsView.checkboxPrivacyStatement.checked;
+
         vscode.postMessage({
-            type: "setAssistantTermsOfService",
-            value: checkboxTermsOfService.checked
+            type: "acceptTerms",
+            value: {
+                acceptTermsOfService: isAcceptedTermsOfService,
+                acceptPrivacyStatement: isAcceptedPrivacyStatement
+            }
         });
+
+        holdState();
+    }
+
+    termsView.checkboxTermsOfService.addEventListener("change", () => {
+        onTermsViewChange();
     });
 
-    checkboxPrivacyStatement.addEventListener("change", () => {
-        vscode.postMessage({
-            type: "setAssistantPrivacyStatement",
-            value: checkboxPrivacyStatement.checked
-        });
+    termsView.checkboxPrivacyStatement.addEventListener("change", () => {
+        onTermsViewChange();
     });
+
+    window.addEventListener("message", async (event: any) => {
+        const message = event.data;
+
+        switch (message.type) {
+            case "initialize":
+                const value: State = message.value;
+                termsView.render(value.terms);
+                holdState();
+                return;
+        }
+    });
+
+    function holdState() {
+        vscode.setState({
+            terms: {
+                acceptTermsOfService: termsView.checkboxTermsOfService.checked,
+                acceptPrivacyStatement: termsView.checkboxPrivacyStatement.checked
+            }
+        });
+    }
 }
 
 (async () => {

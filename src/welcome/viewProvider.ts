@@ -1,12 +1,17 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-const html = require("./main.html");
+const mainHtml = require("./main.html");
 
 interface IAssistant {
-    setAcceptTermsOfService(accept: boolean): Promise<void>;
-    getAcceptTermsOfService(): Promise<boolean>;
-    setAcceptPrivacyStatement(accept: boolean): Promise<void>;
-    getAcceptPrivacyStatement(): Promise<boolean>;
+    acceptTerms(options: {
+        acceptTermsOfService: boolean;
+        acceptPrivacyStatement: boolean;
+    }): Promise<void>;
+
+    areTermsAccepted(): Promise<{
+        acceptTermsOfService: boolean;
+        acceptPrivacyStatement: boolean;
+    }>;
 }
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
@@ -38,20 +43,25 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(async data => {
-            switch (data.type) {
-                case "setAssistantTermsOfService":
-                    await this.assistant.setAcceptTermsOfService(data.value);
-                    return;
-                case "setAssistantPrivacyStatement":
-                    await this.assistant.setAcceptPrivacyStatement(data.value);
-                    return;
+        webviewView.webview.onDidReceiveMessage(async message => {
+            switch (message.type) {
+                case "acceptTerms":
+                    await this.assistant.acceptTerms(message.value);
+                    break;
+            }
+        });
+
+        await webviewView.webview.postMessage({
+            type: "initialize",
+            value: {
+                terms: await this.assistant.areTermsAccepted()
             }
         });
     }
 
     private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
         const webviewUri = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "welcome.js"]));
-        return html.replace("{{uriWelcomeJs}}", webviewUri.toString());
+        const html = mainHtml.replace("{{uriWelcomeJs}}", webviewUri.toString());
+        return html;
     }
 }

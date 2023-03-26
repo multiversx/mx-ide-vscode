@@ -7,21 +7,21 @@ export class AssistantFacade {
         this.memento = memento;
     }
 
-    async setAcceptTermsOfService(accept: boolean): Promise<void> {
-        console.log("setAcceptTermsOfService", accept);
-        await this.memento.update("assistant.acceptTermsOfService", accept);
+    async acceptTerms(options: {
+        acceptTermsOfService: boolean;
+        acceptPrivacyStatement: boolean;
+    }): Promise<void> {
+        console.info("AssistantFacade.acceptTerms", options);
+        await this.memento.update("assistant.acceptTerms", options);
     }
 
-    async getAcceptTermsOfService(): Promise<boolean> {
-        return this.memento.get("assistant.acceptTermsOfService", false);
-    }
-
-    async setAcceptPrivacyStatement(accept: boolean): Promise<void> {
-        console.log("setAcceptPrivacyStatement", accept);
-        await this.memento.update("assistant.acceptPrivacyStatement", accept);
-    }
-
-    async getAcceptPrivacyStatement(): Promise<boolean> {
-        return this.memento.get("assistant.acceptPrivacyStatement", false);
+    async areTermsAccepted(): Promise<{
+        acceptTermsOfService: boolean;
+        acceptPrivacyStatement: boolean;
+    }> {
+        return this.memento.get("assistant.acceptTerms", {
+            acceptTermsOfService: false,
+            acceptPrivacyStatement: false
+        });
     }
 }
