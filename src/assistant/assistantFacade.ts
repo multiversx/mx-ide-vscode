@@ -1,40 +1,27 @@
-import { Memento } from "vscode";
 
 interface IAssistantGateway {
-    explainCode(options: { code: string }): Promise<string>;
+    explainCode(options: { sessionId: string, code: string }): Promise<string>;
+}
+
+interface ICodingSessionProvider {
+    getCodingSession(): string;
 }
 
 export class AssistantFacade {
-    private readonly memento: Memento;
     private readonly gateway: IAssistantGateway;
+    private readonly codingSessionProvider: ICodingSessionProvider;
 
     constructor(options: {
-        memento: Memento,
-        gateway: IAssistantGateway
+        gateway: IAssistantGateway,
+        codingSessionProvider: ICodingSessionProvider
     }) {
-        this.memento = options.memento;
         this.gateway = options.gateway;
-    }
-
-    async acceptTerms(options: {
-        acceptTermsOfService: boolean;
-        acceptPrivacyStatement: boolean;
-    }): Promise<void> {
-        console.info("AssistantFacade.acceptTerms", options);
-        await this.memento.update("assistant.acceptTerms", options);
-    }
-
-    async areTermsAccepted(): Promise<{
-        acceptTermsOfService: boolean;
-        acceptPrivacyStatement: boolean;
-    }> {
-        return this.memento.get("assistant.acceptTerms", {
-            acceptTermsOfService: false,
-            acceptPrivacyStatement: false
-        });
+        this.codingSessionProvider = options.codingSessionProvider;
     }
 
     async explainCode(options: { code: string }): Promise<string> {
-        return this.gateway.explainCode(options);
+        const codingSession = this.codingSessionProvider.getCodingSession();
+        const explanation = await this.gateway.explainCode({ sessionId: codingSession, code: options.code });
+        return explanation;
     }
 }

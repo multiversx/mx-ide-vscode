@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import axios, { AxiosRequestConfig } from "axios";
 
-
-const defaultTimeout = 10000;
+const defaultTimeout = 60000;
 const defaultAxiosConfig: AxiosRequestConfig = {
     timeout: defaultTimeout,
 };
@@ -22,9 +21,9 @@ export class AssistantGateway {
         return id;
     }
 
-    async explainCode(options: { code: string }): Promise<string> {
+    async explainCode(options: { sessionId: string, code: string }): Promise<string> {
         const payload = {
-            coding_session_id: "1",
+            coding_session_id: options.sessionId,
             content: options.code
         };
 
@@ -34,8 +33,16 @@ export class AssistantGateway {
     }
 
     private async doGet(url: string): Promise<any> {
+        const config = {
+            ...this.config,
+            headers: {
+                "Content-Type": "application/json",
+                ...this.config.headers,
+            }
+        };
+
         try {
-            const response = await axios.get(url, this.config);
+            const response = await axios.get(url, config);
             return response.data;
         } catch (error) {
             this.handleApiError(error, url);
@@ -62,10 +69,7 @@ export class AssistantGateway {
     }
 
     private handleApiError(error: any, resourceUrl: string) {
-        console.error("Content", error.response.data);
-        console.error("Status", error.response.status);
-
-        throw new Error(`Error while accessing ${resourceUrl}: ${error.message}`);
+        throw new Error(`Error while accessing ${resourceUrl}: ${error.message}, code = ${error.code}`);
     }
 }
 

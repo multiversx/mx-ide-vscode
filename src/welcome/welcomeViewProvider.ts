@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Uri } from "vscode";
 const mainHtml = require("./main.html");
 
-interface IAssistant {
+interface IAssistantTerms {
     acceptTerms(options: {
         acceptTermsOfService: boolean;
         acceptPrivacyStatement: boolean;
@@ -16,16 +16,16 @@ interface IAssistant {
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
     private readonly extensionUri: Uri;
-    private readonly assistant: IAssistant;
+    private readonly assistantTerms: IAssistantTerms;
 
     private _view?: vscode.WebviewView;
 
     constructor(options: {
         extensionUri: Uri;
-        assistant: IAssistant
+        assistantTerms: IAssistantTerms
     }) {
         this.extensionUri = options.extensionUri;
-        this.assistant = options.assistant;
+        this.assistantTerms = options.assistantTerms;
     }
 
     async resolveWebviewView(
@@ -46,7 +46,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async message => {
             switch (message.type) {
                 case "acceptTerms":
-                    await this.assistant.acceptTerms(message.value);
+                    await this.assistantTerms.acceptTerms(message.value);
                     break;
             }
         });
@@ -54,7 +54,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         await webviewView.webview.postMessage({
             type: "initialize",
             value: {
-                terms: await this.assistant.areTermsAccepted()
+                terms: await this.assistantTerms.areTermsAccepted()
             }
         });
     }

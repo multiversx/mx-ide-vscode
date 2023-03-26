@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
+import { AssistantTerms } from './assistant/assistantTerms';
 import { BotInlineCompletionItemProvider } from './botCodeCompletion';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
@@ -21,15 +22,6 @@ import path = require("path");
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
 
-	const assistantGateway = new AssistantGateway({
-		baseUrl: MySettings.getAssistantApiUrl()
-	});
-
-	const assistant = new AssistantFacade({
-		memento: context.globalState,
-		gateway: assistantGateway
-	});
-
 	Root.ExtensionContext = context;
 
 	const templatesViewModel = new TemplatesViewModel();
@@ -37,12 +29,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.registerTreeDataProvider("contractTemplates", templatesViewModel);
 	vscode.window.registerTreeDataProvider("smartContracts", contractsViewModel);
-
-	const welcomeViewProvider = new WelcomeViewProvider({
-		extensionUri: context.extensionUri,
-		assistant: assistant
-	});
-	vscode.window.registerWebviewViewProvider("multiversx.welcome", welcomeViewProvider);
 
 	vscode.commands.registerCommand("multiversx.setupWorkspace", setupWorkspace);
 	vscode.commands.registerCommand("multiversx.installSdk", installSdk);
@@ -60,16 +46,38 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
-	vscode.commands.registerCommand("multiversx.botExplainCode", async (uri: Uri) => await botExplainCode(uri, assistant));
+	const assistantGateway = new AssistantGateway({
+		baseUrl: MySettings.getAssistantApiUrl()
+	});
 
-	// Coding sessions
+	const assistantTerms = new AssistantTerms({
+		memento: context.globalState
+	});
+
 	const codingSessionsRepository = new CodingSessionsRepository({ memento: context.globalState });
+
 	const codingSessionsTreeDataProvider = new CodingSessionsTreeDataProvider({
 		creator: assistantGateway,
 		repository: codingSessionsRepository,
 		memento: context.globalState
 	});
 
+	const assistantFacade = new AssistantFacade({
+		gateway: assistantGateway,
+		codingSessionProvider: {
+			getCodingSession: () => codingSessionsTreeDataProvider.getSelectedCodingSession()
+		}
+	});
+
+	// Welcome
+	const welcomeViewProvider = new WelcomeViewProvider({
+		extensionUri: context.extensionUri,
+		assistantTerms: assistantTerms
+	});
+
+	vscode.window.registerWebviewViewProvider("multiversx.welcome", welcomeViewProvider);
+
+	// Coding sessions
 	vscode.window.registerTreeDataProvider("multiversx.codingSessions", codingSessionsTreeDataProvider);
 	await codingSessionsTreeDataProvider.refresh();
 
@@ -103,6 +111,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	}, new BotInlineCompletionItemProvider());
 
 	context.subscriptions.push(completionProvider);
+
+	// Assistant: explain
+	vscode.commands.registerCommand("multiversx.botExplainCode", async (uri: Uri) => {
+		await botExplainCode(uri, assistantFacade);
+	});
 }
 
 export function deactivate() {
@@ -275,7 +288,7 @@ async function botExplainCode(_uri: Uri, assistant: AssistantFacade) {
 			}
 		);
 
-		panel.webview.html = renderedExplanation.toString();
+		panel.webview.html = `<pre style="white-space: pre-wrap;">${renderedExplanation}</pre>`;
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

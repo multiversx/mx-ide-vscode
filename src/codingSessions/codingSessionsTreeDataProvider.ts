@@ -56,7 +56,7 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
             return [];
         }
 
-        const selectedIdentifier = this.getSelected();
+        const selectedIdentifier = this.getSelectedCodingSession();
 
         return this.models.map(item => new CodingSessionsTreeItem({
             model: item,
@@ -88,7 +88,7 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
         await this.memento.update("selectedCodingSession", identifier);
     }
 
-    private getSelected(): string {
+    public getSelectedCodingSession(): string {
         return this.memento.get<string>("selectedCodingSession");
     }
 }
