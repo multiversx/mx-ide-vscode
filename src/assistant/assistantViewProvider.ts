@@ -3,18 +3,9 @@ import { Uri } from "vscode";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
-    acceptTerms(options: {
-        acceptTermsOfService: boolean;
-        acceptPrivacyStatement: boolean;
-    }): Promise<void>;
-
-    areTermsAccepted(): Promise<{
-        acceptTermsOfService: boolean;
-        acceptPrivacyStatement: boolean;
-    }>;
 }
 
-export class WelcomeViewProvider implements vscode.WebviewViewProvider {
+export class AssistantViewProvider implements vscode.WebviewViewProvider {
     private readonly extensionUri: Uri;
     private readonly assistant: IAssistant;
 
@@ -45,23 +36,19 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async message => {
             switch (message.type) {
-                case "acceptTerms":
-                    await this.assistant.acceptTerms(message.value);
-                    break;
             }
         });
 
         await webviewView.webview.postMessage({
             type: "initialize",
             value: {
-                terms: await this.assistant.areTermsAccepted()
             }
         });
     }
 
     private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
-        const webviewUri = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "welcome.js"]));
-        const html = mainHtml.replace("{{uriWelcomeJs}}", webviewUri.toString());
+        const uriJs = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "assistant.js"]));
+        const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
         return html;
     }
 }

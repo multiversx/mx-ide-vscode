@@ -260,6 +260,10 @@
 				"multiversx.sdkPath": {
 					"type": "string",
 					"default": "~/multiversx-sdk"
+				},
+				"multiversx.assistantApiUrl": {
+					"type": "string",
+					"default": ""
 				}
 			}
 		},
@@ -278,6 +282,12 @@
 					"id": "multiversx.welcome",
 					"name": "Welcome",
 					"contextualTitle": "Welcome",
+					"type": "webview"
+				},
+				{
+					"id": "multiversx.assistant",
+					"name": "Assistant",
+					"contextualTitle": "Assistant",
 					"type": "webview"
 				},
 				{

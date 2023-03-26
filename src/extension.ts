@@ -1,16 +1,17 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { AssistantFacade } from './assistant/assistantFacade';
+import { AssistantGateway } from './assistant/assistantGateway';
 import { BotInlineCompletionItemProvider } from './botCodeCompletion';
-import { BotGatewayStub } from './botGateway';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
 import { Root } from './root';
 import * as sdk from "./sdk";
+import { MySettings } from './settings';
 import { ContractTemplate, TemplatesViewModel } from './templates';
-import { WelcomeViewProvider } from './welcome/viewProvider';
+import { WelcomeViewProvider } from './welcome/welcomeViewProvider';
 import * as workspace from "./workspace";
 import path = require("path");
 
@@ -18,7 +19,14 @@ import path = require("path");
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
 
-	const assistant = new AssistantFacade(context.globalState);
+	const assistantGateway = new AssistantGateway({
+		baseUrl: MySettings.getAssistantApiUrl()
+	});
+
+	const assistant = new AssistantFacade({
+		memento: context.globalState,
+		gateway: assistantGateway
+	});
 
 	Root.ExtensionContext = context;
 
@@ -50,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.newFromTemplate", newFromTemplate);
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
-	vscode.commands.registerCommand("multiversx.botExplainCode", botExplainCode);
+	vscode.commands.registerCommand("multiversx.botExplainCode", async (uri: Uri) => await botExplainCode(uri, assistant));
 
 	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({
 		pattern: "**/*",
@@ -204,9 +212,7 @@ async function ensureInstalledBuildchains() {
 	await sdk.ensureInstalledBuildchains(languages);
 }
 
-async function botExplainCode(_uri: Uri) {
-	const botGateway = new BotGatewayStub();
-
+async function botExplainCode(_uri: Uri, assistant: AssistantFacade) {
 	try {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -216,7 +222,7 @@ async function botExplainCode(_uri: Uri) {
 		const document = editor.document;
 		const selection = editor.selection;
 		const code = selection.isEmpty ? document.getText() : document.getText(selection);
-		const explanation = await botGateway.explainCode({ code: code });
+		const explanation = await assistant.explainCode({ code: code });
 
 		// https://github.com/microsoft/vscode/issues/75612
 		const renderedExplanation = await vscode.commands.executeCommand("markdown.api.render", explanation);

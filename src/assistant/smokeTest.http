@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:8080
+@codingSession = 30d785b5-8a3b-41b0-a40e-60d1d057ba4a
+
+### Create session
+
+GET {{baseUrl}}/coding-sessions/create
+
+### AMA
+
+POST {{baseUrl}}/coding-sessions/ama HTTP/1.1
+Content-Type: application/json
+
+{
+  "coding_session_id": "{{codingSession}}",
+  "content": "What is MultiversX?"
+}
+
+### Completion
+
+POST {{baseUrl}}/coding-sessions/completion HTTP/1.1
+Content-Type: application/json
+
+{
+  "coding_session_id": "{{codingSession}}",
+  "content": "let i = 0;\n// increment i"
+}
+
+### Review
+
+POST {{baseUrl}}/coding-sessions/review HTTP/1.1
+Content-Type: application/json
+
+{
+  "coding_session_id": "{{codingSession}}",
+  "content": "let i = 0; i = 1; i = 2; i = 3;"
+}
+
+### Explain
+
+POST {{baseUrl}}/coding-sessions/explain HTTP/1.1
+Content-Type: application/json
+
+{
+  "coding_session_id": "{{codingSession}}",
+  "content": "let i = 0; i = 1; i = 2; i = 3;"
+}

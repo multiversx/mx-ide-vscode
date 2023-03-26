@@ -11,8 +11,8 @@ export class MySettings {
         return MySettings.getSdkPath().replace(os.homedir, "");
     }
 
-    public static getBotApiUrl(): string {
-        return MySettings.getConfigurationValue("botApiUrl").toString();
+    public static getAssistantApiUrl(): string {
+        return MySettings.getConfigurationValue("assistantApiUrl").toString();
     }
 
     private static getConfigurationValue(key: string) {
