@@ -5,12 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Assistant</title>
+    <style>
+    </style>
 </head>
 
 <body>
-    <p>
-        AMA!
-    </p>
+    <div>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum quis nibh non blandit. Integer vehicula
+        faucibus semper. Donec nec sem bibendum, feugiat velit sed, mollis nulla. Curabitur bibendum, nunc eget sagittis
+        vehicula, mi sapien finibus arcu, vitae porttitor tortor lacus eget sapien. Mauris a consectetur justo. Maecenas
+        ut quam nisi. Nulla blandit fringilla suscipit. Pellentesque ornare vitae ligula eu volutpat. Nulla posuere
+        libero non justo congue, sit amet condimentum dolor volutpat. In hendrerit vehicula pretium. Praesent interdum
+        est semper, ornare ipsum at, condimentum tortor. Sed imperdiet sem non justo pulvinar lacinia. Nulla dignissim
+        quis arcu sit amet lobortis. Quisque nec sapien tempus, mattis velit ut, efficitur sem. Ut a tortor aliquet,
+        lacinia ligula vel, egestas nunc. Vivamus eu aliquam justo, at feugiat dui.
+    </div>
+
+    <vscode-divider role="presentation"></vscode-divider>
+
+    <div>
+        <form>
+            <vscode-text-area id="TextAreaAsk"" resize=" horizontal" cols="50"
+                placeholder="How to store a value in a Smart Contract?">Ask
+                anything (code-related)</vscode-text-area>
+            <div class="">
+                <vscode-button id="ButtonAsk">
+                    Ask
+                </vscode-button>
+            </div>
+        </form>
+    </div>
+
+    <vscode-progress-ring></vscode-progress-ring>
+
     <script type="module" src="{{uriJs}}"></script>
 </body>
 

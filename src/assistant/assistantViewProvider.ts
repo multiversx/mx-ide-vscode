@@ -3,6 +3,7 @@ import { Uri } from "vscode";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
+    askAnything(options: { question: string }): Promise<string>;
 }
 
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
@@ -34,8 +35,15 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
+        // TODO: try / catch below:
+
         webviewView.webview.onDidReceiveMessage(async message => {
             switch (message.type) {
+                case "ask":
+                    const question = message.value.question;
+                    const answer = await this.assistant.askAnything({ question });
+                    await this.appendAnswer(answer);
+                    break;
             }
         });
 
@@ -44,6 +52,10 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
             value: {
             }
         });
+    }
+
+    private async appendAnswer(answer: string): Promise<void> {
+        await vscode.window.showInformationMessage(answer);
     }
 
     private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {

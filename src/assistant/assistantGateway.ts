@@ -32,6 +32,17 @@ export class AssistantGateway {
         return reply;
     }
 
+    async askAnything(options: { sessionId: string, question: string }): Promise<string> {
+        const payload = {
+            coding_session_id: options.sessionId,
+            content: options.question
+        };
+
+        const response = await this.doPost(`${this.baseUrl}/coding-sessions/ama`, payload);
+        const reply = response.reply;
+        return reply;
+    }
+
     private async doGet(url: string): Promise<any> {
         const config = {
             ...this.config,

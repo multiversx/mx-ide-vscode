@@ -1,6 +1,7 @@
 
 interface IAssistantGateway {
     explainCode(options: { sessionId: string, code: string }): Promise<string>;
+    askAnything(options: { sessionId: string, question: string }): Promise<string>;
 }
 
 interface ICodingSessionProvider {
@@ -23,5 +24,11 @@ export class AssistantFacade {
         const codingSession = this.codingSessionProvider.getCodingSession();
         const explanation = await this.gateway.explainCode({ sessionId: codingSession, code: options.code });
         return explanation;
+    }
+
+    async askAnything(options: { question: string }): Promise<string> {
+        const codingSession = this.codingSessionProvider.getCodingSession();
+        const answer = await this.gateway.askAnything({ sessionId: codingSession, question: options.question });
+        return answer;
     }
 }

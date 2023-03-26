@@ -3,6 +3,7 @@ import { Uri } from 'vscode';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
 import { AssistantTerms } from './assistant/assistantTerms';
+import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { BotInlineCompletionItemProvider } from './botCodeCompletion';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
@@ -104,6 +105,14 @@ export async function activate(context: vscode.ExtensionContext) {
 			errors.caughtTopLevel(error);
 		}
 	});
+
+	// Asistant (chat)
+	const assistantViewProvider = new AssistantViewProvider({
+		extensionUri: context.extensionUri,
+		assistant: assistantFacade,
+	});
+
+	vscode.window.registerWebviewViewProvider("multiversx.assistant", assistantViewProvider);
 
 	// Assistant: completion
 	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({

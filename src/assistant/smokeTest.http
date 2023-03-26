@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "coding_session_id": "{{codingSession}}",
-  "content": "What is MultiversX?"
+  "content": "How to store a value in a MultiversX Smart Contract?"
 }
 
 ### Completion
