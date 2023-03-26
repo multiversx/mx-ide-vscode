@@ -3,6 +3,8 @@ import { Uri } from 'vscode';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
 import { BotInlineCompletionItemProvider } from './botCodeCompletion';
+import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
+import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import * as errors from './errors';
 import { Feedback } from './feedback';
@@ -60,6 +62,42 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.commands.registerCommand("multiversx.botExplainCode", async (uri: Uri) => await botExplainCode(uri, assistant));
 
+	// Coding sessions
+	const codingSessionsRepository = new CodingSessionsRepository({ memento: context.globalState });
+	const codingSessionsTreeDataProvider = new CodingSessionsTreeDataProvider({
+		creator: assistantGateway,
+		repository: codingSessionsRepository,
+		memento: context.globalState
+	});
+
+	vscode.window.registerTreeDataProvider("multiversx.codingSessions", codingSessionsTreeDataProvider);
+	await codingSessionsTreeDataProvider.refresh();
+
+	vscode.commands.registerCommand("multiversx.refreshCodingSessions", async () => {
+		await codingSessionsTreeDataProvider.refresh();
+	});
+
+	vscode.commands.registerCommand("multiversx.selectCodingSession", async (item: { identifier: string }) => {
+		await codingSessionsTreeDataProvider.selectCodingSession(item.identifier);
+	});
+
+	vscode.commands.registerCommand("multiversx.createCodingSession", async () => {
+		try {
+			await codingSessionsTreeDataProvider.createCodingSession();
+		} catch (error: any) {
+			errors.caughtTopLevel(error);
+		}
+	});
+
+	vscode.commands.registerCommand("multiversx.removeCodingSession", async (item: { identifier: string }) => {
+		try {
+			await codingSessionsTreeDataProvider.removeCodingSession(item.identifier);
+		} catch (error: any) {
+			errors.caughtTopLevel(error);
+		}
+	});
+
+	// Assistant: completion
 	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({
 		pattern: "**/*",
 	}, new BotInlineCompletionItemProvider());

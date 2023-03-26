@@ -114,6 +114,22 @@
 				"command": "multiversx.botExplainCode",
 				"title": "xBot, explain code",
 				"category": "multiversx"
+			},
+			{
+				"command": "multiversx.refreshCodingSessions",
+				"title": "Refresh Coding Sessions",
+				"category": "multiversx",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "multiversx.createCodingSession",
+				"title": "Create Coding Session",
+				"icon": "$(add)"
+			},
+			{
+				"command": "multiversx.removeCodingSession",
+				"title": "Remove Coding Session",
+				"icon": "$(trash)"
 			}
 		],
 		"menus": {
@@ -204,6 +220,10 @@
 				{
 					"command": "multiversx.stopTestnet",
 					"when": "false"
+				},
+				{
+					"command": "multiversx.refreshCodingSessions",
+					"when": "false"
 				}
 			],
 			"editor/context": [
@@ -228,6 +248,16 @@
 					"command": "multiversx.refreshContracts",
 					"when": "view == smartContracts",
 					"group": "navigation"
+				},
+				{
+					"command": "multiversx.refreshCodingSessions",
+					"when": "view == multiversx.codingSessions",
+					"group": "navigation"
+				},
+				{
+					"command": "multiversx.createCodingSession",
+					"when": "view == multiversx.codingSessions",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -250,6 +280,11 @@
 				{
 					"command": "multiversx.newFromTemplate",
 					"when": "view == contractTemplates",
+					"group": "inline"
+				},
+				{
+					"command": "multiversx.removeCodingSession",
+					"when": "view == multiversx.codingSessions && viewItem == codingSession",
 					"group": "inline"
 				}
 			]
@@ -285,6 +320,12 @@
 					"type": "webview"
 				},
 				{
+					"id": "multiversx.codingSessions",
+					"name": "Coding Sessions",
+					"contextualTitle": "Coding Sessions",
+					"type": "tree"
+				},
+				{
 					"id": "multiversx.assistant",
 					"name": "Assistant",
 					"contextualTitle": "Assistant",
@@ -310,6 +351,14 @@
 			{
 				"view": "smartContracts",
 				"contents": "Hit the refresh button to update the list of Smart Contracts within your workspace."
+			},
+			{
+				"view": "multiversx.assistant",
+				"contents": "In the Coding Sessions view, create a coding session (or choose an existing one) in order to interact with the assistant."
+			},
+			{
+				"view": "multiversx.codingSessions",
+				"contents": "Hit the refresh button to load existing coding sessions, or create a new one."
 			}
 		]
 	},

@@ -34,11 +34,6 @@ export class AssistantFacade {
         });
     }
 
-    async switchToSession(options: { sessionId: string }): Promise<void> {
-        console.info("AssistantFacade.switchToSession", options);
-        await this.memento.update("assistant.sessionId", options.sessionId);
-    }
-
     async explainCode(options: { code: string }): Promise<string> {
         return this.gateway.explainCode(options);
     }
