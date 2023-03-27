@@ -1,9 +1,10 @@
 
 import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDivider, vsCodeLink, vsCodeProgressRing, vsCodeTextArea } from "@vscode/webview-ui-toolkit";
-import { IAskQuestionRequested, MessageType } from "./messages";
+import { IAskQuestionRequested, IDisplayAnswerRequested, MessageType } from "./messages";
 
 enum InternalEvent {
     askQuestionRequested = "askQuestionRequested",
+    displayAnswerRequested = "displayAnswerRequested"
 }
 
 interface VSCode {
@@ -31,20 +32,32 @@ async function main() {
     const messaging = new Messaging(vscode);
     const state: State = vscode.getState() || {};
 
+    const historyView = new HistoryView();
     const askView = new AskView();
+
+    historyView.setup({
+        element: window.document.querySelector("#ViewHistory")
+    });
 
     askView.setup({
         element: window.document.querySelector("#ViewAsk")
     });
 
     messaging.onInitialize((items: any[]) => {
-        console.log("onInitialize", items);
+        items.forEach(item => {
+            historyView.appendItem(item);
+        });
     });
 
     onInternalEvent(InternalEvent.askQuestionRequested, async (event: any) => {
         const question = event.detail.question;
         askView.showProgressRing();
         messaging.sendAskQuestionRequested(question);
+    });
+
+    onInternalEvent(InternalEvent.displayAnswerRequested, async (event: any) => {
+        const answer = event.detail;
+        messaging.sendDisplayAnswerRequested(answer);
     });
 
     messaging.onMessageFinished(() => {
@@ -87,6 +100,15 @@ class Messaging {
             callback();
         });
     }
+
+    sendDisplayAnswerRequested(item: any) {
+        const message: IDisplayAnswerRequested = {
+            type: MessageType.displayAnswerRequested,
+            value: { item: item }
+        };
+
+        this.vscode.postMessage(message);
+    }
 }
 
 class AskView {
@@ -123,13 +145,39 @@ class HistoryView {
         this.element = options.element;
     }
 
-    appendItem() {
-
+    appendItem(model: any) {
+        const item = new HistoryViewItem();
+        const element = item.render(model);
+        this.element.appendChild(element);
     }
 }
 
 class HistoryViewItem {
+    render(model: any) {
+        const element = window.document.createElement("div");
+        element.classList.add("history-item");
 
+        const question = window.document.createElement("div");
+        question.classList.add("question");
+        question.textContent = model.question;
+        element.appendChild(question);
+
+        const answer = window.document.createElement("vscode-link");
+        answer.classList.add("answer");
+        answer.setAttribute("href", "#");
+        answer.textContent = "See answer";
+        element.appendChild(answer);
+
+        answer.addEventListener("click", () => {
+            triggerInternalEvent(InternalEvent.displayAnswerRequested, model);
+        });
+
+        const divider = window.document.createElement("vscode-divider");
+        divider.setAttribute("role", "presentation");
+        element.appendChild(divider);
+
+        return element;
+    }
 }
 
 function triggerInternalEvent(name: string, data: any) {

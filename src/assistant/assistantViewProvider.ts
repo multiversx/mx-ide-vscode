@@ -1,14 +1,15 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import { AnswerHeader } from "./answer";
+import { Answer, AnswerHeader } from "./answer";
 import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
-import { IAnswerFinished, IAskQuestionRequested, IInitialize, MessageType } from "./messages";
+import { IAnswerFinished, IAskQuestionRequested, IDisplayAnswerRequested, IInitialize, MessageType } from "./messages";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
     askAnything(options: { question: string }): Promise<AnswerStream>;
-    getPreviousAnswers(): AnswerHeader[];
+    getAnswersHeaders(): AnswerHeader[];
+    getAnswer(options: { sourceStreamId: string }): Answer;
 }
 
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
@@ -42,6 +43,11 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
             await this.askQuestion(question);
         });
 
+        this.messaging.onDisplayAnswerRequested(async item => {
+            const answer = this.assistant.getAnswer(item);
+            await this.answerPanelController.displayAnswer({ answer: answer });
+        });
+
         webviewView.webview.options = {
             enableScripts: true,
             enableForms: true,
@@ -50,13 +56,13 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        const items = this.assistant.getPreviousAnswers();
-        await this.messaging.sendInitialize(items);
+        const answersHeaders = this.assistant.getAnswersHeaders();
+        await this.messaging.sendInitialize(answersHeaders);
     }
 
     private async askQuestion(question: string): Promise<void> {
         const answerStream = await this.assistant.askAnything({ question: question });
-        await this.answerPanelController.openPanel({ answerStream: answerStream });
+        await this.answerPanelController.displayAnswerStream({ answerStream: answerStream });
 
         answerStream.onDidFinish(async () => {
             await this.messaging.sendAnswerFinished();
@@ -118,6 +124,20 @@ class Messaging {
         };
 
         await this.getWebview().postMessage(message);
+    }
+
+    onDisplayAnswerRequested(callback: (item: any) => void) {
+        if (!this.hasWebview()) {
+            return;
+        }
+
+        this.getWebview().onDidReceiveMessage((message: IDisplayAnswerRequested) => {
+            if (message.type !== MessageType.displayAnswerRequested) {
+                return;
+            }
+
+            callback(message.value.item);
+        });
     }
 
     private hasWebview(): boolean {

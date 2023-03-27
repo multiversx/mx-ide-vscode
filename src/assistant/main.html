@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Assistant</title>
     <style>
+        .history-item {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
         #TextAreaAsk {
             width: 100%;
         }
@@ -30,7 +35,8 @@
 </head>
 
 <body>
-    <vscode-divider role="presentation"></vscode-divider>
+    <div id="ViewHistory">
+    </div>
 
     <div id="ViewAsk">
         <vscode-text-area id="TextAreaAsk" resize="horizontal" cols="50"

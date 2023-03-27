@@ -1,7 +1,8 @@
 export enum MessageType {
     initialize = "initialize",
     askQuestionRequested = "askQuestionRequested",
-    answerFinished = "answerFinished"
+    answerFinished = "answerFinished",
+    displayAnswerRequested = "displayAnswerRequested"
 }
 
 export interface IInitialize {
@@ -20,4 +21,11 @@ export interface IAskQuestionRequested {
 
 export interface IAnswerFinished {
     type: MessageType.answerFinished;
+}
+
+export interface IDisplayAnswerRequested {
+    type: MessageType.displayAnswerRequested;
+    value: {
+        item: any;
+    };
 }

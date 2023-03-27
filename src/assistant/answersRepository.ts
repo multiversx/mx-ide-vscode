@@ -21,39 +21,42 @@ export class AnswersRepository {
         this.memento = options.memento;
     }
 
-    getHeadersByCodingSession(codingSessionId: string): AnswerHeader[] {
-        const items = this.getAllHeaders();
-        const filtered = items.filter(item => item.codingSessionId === codingSessionId);
+    getAnswersHeaders(options: { codingSessionId: string }): AnswerHeader[] {
+        const items = this.getAllAnswersHeaders();
+        const filtered = items.filter(item => item.codingSessionId === options.codingSessionId);
         return filtered;
     }
 
-    getBodyByHeader(header: { sourceStreamId: string }): AnswerBody {
-        const key = this.createBodyKey(header);
-        const body = this.memento.get<IAnswerBodyRecord>(key, new AnswerBody({ text: "" }));
-        return body;
+    getAnswer(options: { sourceStreamId: string }): Answer {
+        const answerHeader = this.getAllAnswersHeaders().find(item => item.sourceStreamId === options.sourceStreamId);
+        const bodyKey = this.createBodyKey(options);
+        const body = this.memento.get<IAnswerBodyRecord>(bodyKey, new AnswerBody({ text: "" }));
+        return new Answer({ header: answerHeader, body: body });
     }
 
-    private getAllHeaders() {
+    private getAllAnswersHeaders() {
         const records = this.memento.get<IAnswerHeaderRecord[]>(answerHeadersKey, []);
         const items = records.map(item => new AnswerHeader(item));
         return items;
     }
 
     async add(item: Answer) {
-        const headers = this.getAllHeaders();
+        const headers = this.getAllAnswersHeaders();
 
         await this.memento.update(answerHeadersKey, [...headers, item.header]);
         await this.memento.update(this.createBodyKey(item.header), item.body);
     }
 
-    async removeByCodingSession(codingSessionId: string) {
-        const items = this.getAllHeaders();
-        const filtered = items.filter(item => item.codingSessionId !== codingSessionId);
+    async removeAnswerHeaders(options: { codingSessionId: string }) {
+        const items = this.getAllAnswersHeaders();
+        const filtered = items.filter(item => item.codingSessionId !== options.codingSessionId);
 
         await this.memento.update(answerHeadersKey, filtered);
+
+        // TODO: also remove the answer bodies
     }
 
-    private createBodyKey(header: { sourceStreamId: string }) {
-        return `${answerBodyKeyPrefix}.${header.sourceStreamId}`;
+    private createBodyKey(options: { sourceStreamId: string }) {
+        return `${answerBodyKeyPrefix}.${options.sourceStreamId}`;
     }
 }

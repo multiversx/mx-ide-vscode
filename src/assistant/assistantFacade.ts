@@ -12,7 +12,8 @@ interface ICodingSessionProvider {
 
 interface IAnswersRepository {
     add(item: Answer): Promise<void>;
-    getHeadersByCodingSession(codingSessionId: string): AnswerHeader[];
+    getAnswersHeaders(options: { codingSessionId: string }): AnswerHeader[];
+    getAnswer(options: { sourceStreamId: string }): Answer;
 }
 
 export class AssistantFacade {
@@ -52,9 +53,14 @@ export class AssistantFacade {
         return answerStream;
     }
 
-    getPreviousAnswers(): AnswerHeader[] {
+    getAnswersHeaders(): AnswerHeader[] {
         const codingSession = this.codingSessionProvider.getCodingSession();
-        const headers = this.answersRepository.getHeadersByCodingSession(codingSession);
+        const headers = this.answersRepository.getAnswersHeaders({ codingSessionId: codingSession });
         return headers;
+    }
+
+    getAnswer(options: { sourceStreamId: string }): Answer {
+        const body = this.answersRepository.getAnswer(options);
+        return body;
     }
 }
