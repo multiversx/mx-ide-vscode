@@ -43,10 +43,8 @@ async function main() {
         element: window.document.querySelector("#ViewAsk")
     });
 
-    messaging.onInitialize((items: any[]) => {
-        items.forEach(item => {
-            historyView.appendItem(item);
-        });
+    messaging.onRefreshHistory((items: any[]) => {
+        historyView.refresh(items);
     });
 
     onInternalEvent(InternalEvent.askQuestionRequested, async (event: any) => {
@@ -72,9 +70,9 @@ class Messaging {
         this.vscode = vscode;
     }
 
-    onInitialize(callback: (items: any[]) => void) {
+    onRefreshHistory(callback: (items: any[]) => void) {
         window.addEventListener("message", (event: any) => {
-            if (event.data.type !== MessageType.initialize) {
+            if (event.data.type !== MessageType.refreshHistory) {
                 return;
             }
 
@@ -143,6 +141,14 @@ class HistoryView {
 
     setup(options: { element: any }) {
         this.element = options.element;
+    }
+
+    refresh(items: any[]) {
+        this.element.innerHTML = "";
+
+        for (const item of items) {
+            this.appendItem(item);
+        }
     }
 
     appendItem(model: any) {

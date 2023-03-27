@@ -130,6 +130,12 @@
 				"command": "multiversx.removeCodingSession",
 				"title": "Remove Coding Session",
 				"icon": "$(trash)"
+			},
+			{
+				"command": "multiversx.refreshAssistant",
+				"title": "Refresh Assistant",
+				"category": "multiversx",
+				"icon": "$(refresh)"
 			}
 		],
 		"menus": {
@@ -224,6 +230,10 @@
 				{
 					"command": "multiversx.refreshCodingSessions",
 					"when": "false"
+				},
+				{
+					"command": "multiversx.refreshAssistant",
+					"when": "false"
 				}
 			],
 			"editor/context": [
@@ -257,6 +267,11 @@
 				{
 					"command": "multiversx.createCodingSession",
 					"when": "view == multiversx.codingSessions",
+					"group": "navigation"
+				},
+				{
+					"command": "multiversx.refreshAssistant",
+					"when": "view == multiversx.assistant",
 					"group": "navigation"
 				}
 			],

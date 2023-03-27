@@ -4,7 +4,7 @@ import * as errors from "../errors";
 import { Answer, AnswerHeader } from "./answer";
 import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
-import { IAnswerFinished, IAskQuestionRequested, IDisplayAnswerRequested, IInitialize, MessageType } from "./messages";
+import { IAnswerFinished, IAskQuestionRequested, IDisplayAnswerRequested, IInitialize as IRefreshHistory, MessageType } from "./messages";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
@@ -67,7 +67,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        await this.messaging.sendInitialize(answersHeaders);
+        await this.messaging.sendRefreshHistory(answersHeaders);
     }
 
     private async askQuestion(question: string): Promise<void> {
@@ -84,6 +84,15 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
         return html;
     }
+
+    async refresh(): Promise<void> {
+        if (!this._view) {
+            return;
+        }
+
+        const answersHeaders = this.assistant.getAnswersHeaders();
+        await this.messaging.sendRefreshHistory(answersHeaders);
+    }
 }
 
 class Messaging {
@@ -95,13 +104,13 @@ class Messaging {
         this.getWebview = options.webviewGetter;
     }
 
-    async sendInitialize(items: any[]) {
+    async sendRefreshHistory(items: any[]) {
         if (!this.hasWebview()) {
             return;
         }
 
-        const message: IInitialize = {
-            type: MessageType.initialize,
+        const message: IRefreshHistory = {
+            type: MessageType.refreshHistory,
             value: {
                 items: items
             }

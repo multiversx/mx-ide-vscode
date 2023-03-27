@@ -1,12 +1,12 @@
 export enum MessageType {
-    initialize = "initialize",
+    refreshHistory = "initialize",
     askQuestionRequested = "askQuestionRequested",
     answerFinished = "answerFinished",
     displayAnswerRequested = "displayAnswerRequested"
 }
 
 export interface IInitialize {
-    type: MessageType.initialize;
+    type: MessageType.refreshHistory;
     value: {
         items: any[];
     };

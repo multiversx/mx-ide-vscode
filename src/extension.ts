@@ -118,6 +118,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.registerWebviewViewProvider("multiversx.assistant", assistantViewProvider);
 
+	vscode.commands.registerCommand("multiversx.refreshAssistant", async () => {
+		await assistantViewProvider.refresh();
+	});
+
 	// Assistant: completion
 	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({
 		pattern: "**/*",
