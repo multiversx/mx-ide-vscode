@@ -5,7 +5,7 @@ import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
 import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
-import { BotInlineCompletionItemProvider } from './botCodeCompletion';
+import { InlineCompletionItemProvider } from './assistant/codeCompletion';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
@@ -125,13 +125,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Assistant: completion
 	const completionProvider = vscode.languages.registerInlineCompletionItemProvider({
 		pattern: "**/*",
-	}, new BotInlineCompletionItemProvider());
+	}, new InlineCompletionItemProvider({
+		assistant: assistantFacade,
+	}));
 
 	context.subscriptions.push(completionProvider);
 
 	// Assistant: explain
-	vscode.commands.registerCommand("multiversx.botExplainCode", async (uri: Uri) => {
-		await botExplainCode(uri, assistantFacade);
+	vscode.commands.registerCommand("multiversx.explainCode", async (uri: Uri) => {
+		await explainCode(uri, assistantFacade);
 	});
 }
 
@@ -280,7 +282,7 @@ async function ensureInstalledBuildchains() {
 	await sdk.ensureInstalledBuildchains(languages);
 }
 
-async function botExplainCode(_uri: Uri, assistant: AssistantFacade) {
+async function explainCode(_uri: Uri, assistant: AssistantFacade) {
 	try {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

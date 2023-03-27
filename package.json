@@ -106,13 +106,8 @@
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.botAskQuestion",
-				"title": "xBot, please help",
-				"category": "multiversx"
-			},
-			{
-				"command": "multiversx.botExplainCode",
-				"title": "xBot, explain code",
+				"command": "multiversx.explainCode",
+				"title": "Explain code (assistant)",
 				"category": "multiversx"
 			},
 			{
@@ -239,13 +234,8 @@
 			"editor/context": [
 				{
 					"when": "resourceLangId == rust",
-					"command": "multiversx.botAskQuestion",
-					"group": "multiversx xBot"
-				},
-				{
-					"when": "resourceLangId == rust",
-					"command": "multiversx.botExplainCode",
-					"group": "multiversx xBot"
+					"command": "multiversx.explainCode",
+					"group": "multiversx"
 				}
 			],
 			"view/title": [

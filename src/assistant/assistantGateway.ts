@@ -35,6 +35,17 @@ export class AssistantGateway {
         return reply;
     }
 
+    async completeCode(options: { sessionId: string, code: string }): Promise<string> {
+        const payload = {
+            coding_session_id: options.sessionId,
+            content: options.code
+        };
+
+        const response = await this.doPost(`${this.baseUrl}/coding-sessions/completion`, payload);
+        const reply = response.reply;
+        return reply;
+    }
+
     async askAnything(options: {
         sessionId: string,
         question: string
