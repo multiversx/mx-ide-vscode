@@ -48,8 +48,6 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
     private async tryResolveWebviewView(webviewView: vscode.WebviewView): Promise<void> {
         this._view = webviewView;
 
-        const answersHeaders = this.assistant.getAnswersHeaders();
-
         this.messaging.onAskQuestionRequested(async question => {
             await this.askQuestion(question);
         });
@@ -67,7 +65,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        await this.messaging.sendRefreshHistory(answersHeaders);
+        await this.refresh();
     }
 
     private async askQuestion(question: string): Promise<void> {
@@ -76,6 +74,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         answerStream.onDidFinish(async () => {
             await this.messaging.sendAnswerFinished();
+            await this.refresh();
         });
     }
 

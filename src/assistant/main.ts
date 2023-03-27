@@ -9,12 +9,7 @@ enum InternalEvent {
 
 interface VSCode {
     postMessage(message: any): void;
-    getState(): any;
-    setState(state: any): void;
 };
-
-interface State {
-}
 
 declare function acquireVsCodeApi(): VSCode;
 declare const window: any;
@@ -30,7 +25,6 @@ async function main() {
 
     const vscode = acquireVsCodeApi();
     const messaging = new Messaging(vscode);
-    const state: State = vscode.getState() || {};
 
     const historyView = new HistoryView();
     const askView = new AskView();

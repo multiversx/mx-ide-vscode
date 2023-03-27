@@ -49,11 +49,12 @@ export class AnswersRepository {
 
     async removeAnswer(options: { codingSessionId: string }) {
         const items = this.getAllAnswersHeaders();
-        const filtered = items.filter(item => item.codingSessionId !== options.codingSessionId);
+        const itemsToKeep = items.filter(item => item.codingSessionId !== options.codingSessionId);
+        const itemsToRemove = items.filter(item => item.codingSessionId === options.codingSessionId);
 
-        await this.memento.update(answerHeadersKey, filtered);
+        await this.memento.update(answerHeadersKey, itemsToKeep);
 
-        for (const item of filtered) {
+        for (const item of itemsToRemove) {
             await this.memento.update(this.createBodyKey(item), undefined);
         }
     }

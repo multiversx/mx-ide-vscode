@@ -45,6 +45,8 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
     async selectCodingSession(identifier: string) {
         await this.setSelected(identifier);
         this.refreshSuperficially();
+
+        await vscode.commands.executeCommand("multiversx.refreshAssistant");
     }
 
     getTreeItem(element: CodingSessionsTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
