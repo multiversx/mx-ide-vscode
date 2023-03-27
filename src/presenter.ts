@@ -92,14 +92,3 @@ export async function askChoice(choices: string[]): Promise<string> {
 export async function askChoiceTyped<T extends vscode.QuickPickItem>(choices: T[]): Promise<T> {
     return await vscode.window.showQuickPick<T>(choices, { ignoreFocusOut: true });
 }
-
-export async function askOpenFolder(title: string): Promise<string> {
-    let uris: vscode.Uri[] = await vscode.window.showOpenDialog({
-        canSelectFiles: false,
-        canSelectFolders: true,
-        canSelectMany: false,
-        title: title
-    });
-
-    return uris ? uris[0]?.path : null;
-}
