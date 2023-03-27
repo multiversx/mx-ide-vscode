@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
+import { AnswerStream } from "./answerStream";
+import { IAskQuestionRequested, MessageType } from "./messages";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
-    askAnything(options: { question: string }): Promise<string>;
+    askAnything(options: { question: string }): Promise<AnswerStream>;
 }
 
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
@@ -27,6 +29,14 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
     ): Promise<void> {
         this._view = webviewView;
 
+        const messaging = new Messaging({
+            webview: webviewView.webview
+        });
+
+        messaging.onAskQuestionRequested(async question => {
+            await this.askQuestion(question);
+        });
+
         webviewView.webview.options = {
             enableScripts: true,
             enableForms: true,
@@ -34,33 +44,47 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         };
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
-
-        // TODO: try / catch below:
-
-        webviewView.webview.onDidReceiveMessage(async message => {
-            switch (message.type) {
-                case "ask":
-                    const question = message.value.question;
-                    const answer = await this.assistant.askAnything({ question });
-                    await this.appendAnswer(answer);
-                    break;
-            }
-        });
-
-        await webviewView.webview.postMessage({
-            type: "initialize",
-            value: {
-            }
-        });
     }
 
-    private async appendAnswer(answer: string): Promise<void> {
-        await vscode.window.showInformationMessage(answer);
+    private async askQuestion(question: string): Promise<void> {
+        const answerStream = await this.assistant.askAnything({ question: question });
+
+        answerStream.onDidReceivePart(async data => {
+            console.log("data", data);
+            await vscode.window.showInformationMessage(data);
+        });
     }
 
     private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
         const uriJs = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "assistant.js"]));
         const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
         return html;
+    }
+}
+
+class Messaging {
+    private readonly webview: vscode.Webview;
+
+    constructor(options: {
+        webview: vscode.Webview
+    }) {
+        this.webview = options.webview;
+    }
+
+    sendInitialize(data: any) {
+        this.webview.postMessage({
+            type: "initialize",
+            value: data
+        });
+    }
+
+    onAskQuestionRequested(callback: (question: string) => void) {
+        this.webview.onDidReceiveMessage((message: IAskQuestionRequested) => {
+            if (message.type !== MessageType.askQuestionRequested) {
+                return;
+            }
+
+            callback(message.value.question);
+        });
     }
 }

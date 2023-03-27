@@ -7,12 +7,12 @@ GET {{baseUrl}}/coding-sessions/create
 
 ### AMA
 
-POST {{baseUrl}}/coding-sessions/ama HTTP/1.1
+POST {{baseUrl}}/coding-sessions/streaming-ama/create/ HTTP/1.1
 Content-Type: application/json
 
 {
   "coding_session_id": "{{codingSession}}",
-  "content": "How to store a value in a MultiversX Smart Contract?"
+  "content": "Give me a very short example of a Rust function."
 }
 
 ### Completion

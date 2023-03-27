@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import axios, { AxiosRequestConfig } from "axios";
+import { AnswerStream } from "./answerStream";
+import EventSource = require("eventsource");
 
 const defaultTimeout = 60000;
 const defaultAxiosConfig: AxiosRequestConfig = {
@@ -32,25 +34,30 @@ export class AssistantGateway {
         return reply;
     }
 
-    async askAnything(options: { sessionId: string, question: string }): Promise<string> {
+    async askAnything(options: {
+        sessionId: string,
+        question: string
+    }): Promise<AnswerStream> {
         const payload = {
             coding_session_id: options.sessionId,
             content: options.question
         };
 
-        const response = await this.doPost(`${this.baseUrl}/coding-sessions/ama`, payload);
-        const reply = response.reply;
-        return reply;
+        const createStreamResponse = await this.doPost(`${this.baseUrl}/coding-sessions/streaming-ama/create`, payload);
+        const streamId = createStreamResponse.id;
+        const streamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/start/${streamId}/`;
+        const eventSource = new EventSource(streamUrl);
+
+        const answerStream = new AnswerStream({
+            source: eventSource,
+            messageEventName: "ama-stream-chunk"
+        });
+
+        return answerStream;
     }
 
     private async doGet(url: string): Promise<any> {
-        const config = {
-            ...this.config,
-            headers: {
-                "Content-Type": "application/json",
-                ...this.config.headers,
-            }
-        };
+        const config = this.prepareConfig();
 
         try {
             const response = await axios.get(url, config);
@@ -62,13 +69,7 @@ export class AssistantGateway {
     }
 
     private async doPost(url: string, payload: any): Promise<any> {
-        const config = {
-            ...this.config,
-            headers: {
-                "Content-Type": "application/json",
-                ...this.config.headers,
-            }
-        };
+        const config = this.prepareConfig();
 
         try {
             const response = await axios.post(url, payload, config);
@@ -79,27 +80,17 @@ export class AssistantGateway {
         }
     }
 
+    private prepareConfig() {
+        return {
+            ...this.config,
+            headers: {
+                "Content-Type": "application/json",
+                ...this.config.headers,
+            }
+        };
+    }
+
     private handleApiError(error: any, resourceUrl: string) {
         throw new Error(`Error while accessing ${resourceUrl}: ${error.message}, code = ${error.code}`);
-    }
-}
-
-export class AssistantGatewayStub {
-    async explainCode(options: { code: string }): Promise<string> {
-        return `
-This is a **test**.
-
-Your code was:
-
-\`\`\`rust
-${options.code}
-\`\`\`
-
-\`\`\`rust
-fn main() {
-    println!("Hello, world!");
-}
-\`\`\`
-`;
     }
 }

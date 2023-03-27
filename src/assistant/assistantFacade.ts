@@ -1,7 +1,8 @@
+import { AnswerStream } from "./answerStream";
 
 interface IAssistantGateway {
     explainCode(options: { sessionId: string, code: string }): Promise<string>;
-    askAnything(options: { sessionId: string, question: string }): Promise<string>;
+    askAnything(options: { sessionId: string, question: string }): Promise<AnswerStream>;
 }
 
 interface ICodingSessionProvider {
@@ -26,9 +27,14 @@ export class AssistantFacade {
         return explanation;
     }
 
-    async askAnything(options: { question: string }): Promise<string> {
+    async askAnything(options: { question: string }): Promise<AnswerStream> {
         const codingSession = this.codingSessionProvider.getCodingSession();
-        const answer = await this.gateway.askAnything({ sessionId: codingSession, question: options.question });
-        return answer;
+
+        const answerStream = await this.gateway.askAnything({
+            sessionId: codingSession,
+            question: options.question
+        });
+
+        return answerStream;
     }
 }
