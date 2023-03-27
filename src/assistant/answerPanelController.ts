@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { Answer } from './answer';
 import { AnswerStream } from "./answerStream";
 
 export class AnswerPanelController {
@@ -15,9 +16,9 @@ export class AnswerPanelController {
 			}
 		);
 
-		options.answerStream.onDidReceivePart(async () => {
-			const answer = options.answerStream.getAnswerUntilNow();
-			panel.webview.html = await this.renderHtml(answer);
+		options.answerStream.onDidReceivePart(async (answer: Answer) => {
+			const answerText = answer.body.text;
+			panel.webview.html = await this.renderHtml(answerText);
 		});
 	}
 

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import axios, { AxiosRequestConfig } from "axios";
+import { AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 import EventSource = require("eventsource");
 
@@ -43,14 +44,20 @@ export class AssistantGateway {
             content: options.question
         };
 
-        const createStreamResponse = await this.doPost(`${this.baseUrl}/coding-sessions/streaming-ama/create`, payload);
-        const streamId = createStreamResponse.id;
-        const streamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/start/${streamId}/`;
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/create`;
+        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const sourceStreamId = createStreamResponse.id;
+        const streamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/start/${sourceStreamId}/`;
         const eventSource = new EventSource(streamUrl);
 
         const answerStream = new AnswerStream({
+            answerHeader: new AnswerHeader({
+                codingSessionId: options.sessionId,
+                sourceStreamId: sourceStreamId,
+                question: options.question
+            }),
             source: eventSource,
-            messageEventName: "ama-stream-chunk"
+            payloadEventName: "ama-stream-chunk"
         });
 
         return answerStream;

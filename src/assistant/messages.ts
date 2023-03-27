@@ -1,6 +1,14 @@
 export enum MessageType {
+    initialize = "initialize",
     askQuestionRequested = "askQuestionRequested",
     answerFinished = "answerFinished"
+}
+
+export interface IInitialize {
+    type: MessageType.initialize;
+    value: {
+        items: any[];
+    };
 }
 
 export interface IAskQuestionRequested {

@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { EventEmitter } from "vscode";
+import { AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
+
+const initialDelay = 1000;
+const streamingDelay = 80;
 
 export class AssistantGatewayStub {
     async createSession(): Promise<string> {
@@ -55,29 +59,35 @@ fn main() {
 `;
 
         const parts = answer.split(" ").map((word,) => word + " ");
+        const dummyStreamId = uuidv4().toString();
         const eventSource = new EventSourceStub();
-        const answerStream = new AnswerStream({
-            source: eventSource,
-            messageEventName: "chunk"
-        });
 
         let time = 0;
 
         setTimeout(() => {
             eventSource.open();
-        }, time += 1000);
+        }, time += initialDelay);
 
         for (const part of parts) {
             setTimeout(() => {
                 eventSource.emit({ type: "chunk", data: part });
-            }, time += 80);
+            }, time += streamingDelay);
         }
 
+        // Send an empty chunk to indicate the end of the stream.
         setTimeout(() => {
             eventSource.emit({ type: "chunk", data: null });
-        }, time += 1000);
+        }, time += streamingDelay);
 
-        return answerStream;
+        return new AnswerStream({
+            answerHeader: new AnswerHeader({
+                codingSessionId: options.sessionId,
+                sourceStreamId: dummyStreamId,
+                question: options.question
+            }),
+            source: eventSource,
+            payloadEventName: "chunk"
+        });
     }
 }
 

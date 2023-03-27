@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
+import { AnswersRepository } from './assistant/answersRepository';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
 import { AssistantTerms } from './assistant/assistantTerms';
@@ -18,7 +19,6 @@ import { ContractTemplate, TemplatesViewModel } from './templates';
 import { WelcomeViewProvider } from './welcome/welcomeViewProvider';
 import * as workspace from "./workspace";
 import path = require("path");
-
 
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
@@ -63,11 +63,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		memento: context.globalState
 	});
 
+	const answersRepository = new AnswersRepository({ memento: context.globalState });
+
 	const assistantFacade = new AssistantFacade({
 		gateway: assistantGateway,
 		codingSessionProvider: {
 			getCodingSession: () => codingSessionsTreeDataProvider.getSelectedCodingSession()
-		}
+		},
+		answersRepository: answersRepository
 	});
 
 	// Welcome

@@ -37,6 +37,10 @@ async function main() {
         element: window.document.querySelector("#ViewAsk")
     });
 
+    messaging.onInitialize((items: any[]) => {
+        console.log("onInitialize", items);
+    });
+
     onInternalEvent(InternalEvent.askQuestionRequested, async (event: any) => {
         const question = event.detail.question;
         askView.showProgressRing();
@@ -53,6 +57,16 @@ class Messaging {
 
     constructor(vscode: VSCode) {
         this.vscode = vscode;
+    }
+
+    onInitialize(callback: (items: any[]) => void) {
+        window.addEventListener("message", (event: any) => {
+            if (event.data.type !== MessageType.initialize) {
+                return;
+            }
+
+            callback(event.data.value.items);
+        });
     }
 
     sendAskQuestionRequested(question: string) {
@@ -108,6 +122,14 @@ class HistoryView {
     setup(options: { element: any }) {
         this.element = options.element;
     }
+
+    appendItem() {
+
+    }
+}
+
+class HistoryViewItem {
+
 }
 
 function triggerInternalEvent(name: string, data: any) {

@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
+import { AnswerHeader } from "./answer";
 import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
-import { IAnswerFinished, IAskQuestionRequested, MessageType } from "./messages";
+import { IAnswerFinished, IAskQuestionRequested, IInitialize, MessageType } from "./messages";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
     askAnything(options: { question: string }): Promise<AnswerStream>;
+    getPreviousAnswers(): AnswerHeader[];
 }
 
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
@@ -47,14 +49,17 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         };
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
+
+        const items = this.assistant.getPreviousAnswers();
+        await this.messaging.sendInitialize(items);
     }
 
     private async askQuestion(question: string): Promise<void> {
         const answerStream = await this.assistant.askAnything({ question: question });
         await this.answerPanelController.openPanel({ answerStream: answerStream });
 
-        answerStream.onDidFinish(() => {
-            this.messaging.sendAnswerFinished();
+        answerStream.onDidFinish(async () => {
+            await this.messaging.sendAnswerFinished();
         });
     }
 
@@ -74,12 +79,19 @@ class Messaging {
         this.getWebview = options.webviewGetter;
     }
 
-    sendInitialize(_data: any) {
+    async sendInitialize(items: any[]) {
         if (!this.hasWebview()) {
             return;
         }
 
-        // TODO:
+        const message: IInitialize = {
+            type: MessageType.initialize,
+            value: {
+                items: items
+            }
+        };
+
+        await this.getWebview().postMessage(message);
     }
 
     onAskQuestionRequested(callback: (question: string) => void) {
