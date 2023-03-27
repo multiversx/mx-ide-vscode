@@ -41,6 +41,10 @@ async function main() {
         askView.showProgressRing();
         messaging.sendAskQuestionRequested(event.detail);
     });
+
+    messaging.onMessageFinished(() => {
+        askView.hideProgressRing();
+    });
 }
 
 class Messaging {
@@ -57,6 +61,16 @@ class Messaging {
         };
 
         this.vscode.postMessage(message);
+    }
+
+    onMessageFinished(callback: () => void) {
+        window.addEventListener("message", (event: any) => {
+            if (event.data.type !== MessageType.answerFinished) {
+                return;
+            }
+
+            callback();
+        });
     }
 }
 

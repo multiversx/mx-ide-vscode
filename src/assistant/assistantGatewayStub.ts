@@ -42,25 +42,40 @@ fn main() {
 }
 \`\`\`
 
-Bye!
+## Important note
+
+- Foo
+- Bar
+
+\`\`\`rust
+fn main() {
+    println!("Hello, world!");
+}
+\`\`\`
 `;
 
-        const parts = answer.split(" ");
+        const parts = answer.split(" ").map((word,) => word + " ");
         const eventSource = new EventSourceStub();
         const answerStream = new AnswerStream({
             source: eventSource,
             messageEventName: "chunk"
         });
 
+        let time = 0;
+
         setTimeout(() => {
             eventSource.open();
-        }, 1000);
+        }, time += 1000);
 
-        for (let i = 0; i < parts.length; i++) {
+        for (const part of parts) {
             setTimeout(() => {
-                eventSource.emit({ type: "chunk", data: parts[i] });
-            }, 2000 + i * 500);
+                eventSource.emit({ type: "chunk", data: part });
+            }, time += 80);
         }
+
+        setTimeout(() => {
+            eventSource.emit({ type: "chunk", data: null });
+        }, time += 1000);
 
         return answerStream;
     }

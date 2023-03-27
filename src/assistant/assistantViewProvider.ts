@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
+import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
-import { IAskQuestionRequested, MessageType } from "./messages";
+import { IAnswerFinished, IAskQuestionRequested, MessageType } from "./messages";
 const mainHtml = require("./main.html");
 
 interface IAssistant {
@@ -11,6 +12,8 @@ interface IAssistant {
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
     private readonly extensionUri: Uri;
     private readonly assistant: IAssistant;
+    private readonly answerPanelController: AnswerPanelController;
+    private readonly messaging: Messaging;
 
     private _view?: vscode.WebviewView;
 
@@ -20,6 +23,10 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
     }) {
         this.extensionUri = options.extensionUri;
         this.assistant = options.assistant;
+        this.answerPanelController = new AnswerPanelController();
+        this.messaging = new Messaging({
+            webviewGetter: () => this._view?.webview
+        });
     }
 
     async resolveWebviewView(
@@ -29,11 +36,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
     ): Promise<void> {
         this._view = webviewView;
 
-        const messaging = new Messaging({
-            webview: webviewView.webview
-        });
-
-        messaging.onAskQuestionRequested(async question => {
+        this.messaging.onAskQuestionRequested(async question => {
             await this.askQuestion(question);
         });
 
@@ -48,10 +51,10 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
     private async askQuestion(question: string): Promise<void> {
         const answerStream = await this.assistant.askAnything({ question: question });
+        await this.answerPanelController.openPanel({ answerStream: answerStream });
 
-        answerStream.onDidReceivePart(async data => {
-            console.log("data", data);
-            await vscode.window.showInformationMessage(data);
+        answerStream.onDidFinish(() => {
+            this.messaging.sendAnswerFinished();
         });
     }
 
@@ -63,28 +66,52 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 }
 
 class Messaging {
-    private readonly webview: vscode.Webview;
+    private readonly getWebview: () => vscode.Webview;
 
     constructor(options: {
-        webview: vscode.Webview
+        webviewGetter: () => vscode.Webview;
     }) {
-        this.webview = options.webview;
+        this.getWebview = options.webviewGetter;
     }
 
     sendInitialize(data: any) {
-        this.webview.postMessage({
+        if (!this.hasWebview()) {
+            return;
+        }
+
+        this.getWebview().postMessage({
             type: "initialize",
             value: data
         });
     }
 
     onAskQuestionRequested(callback: (question: string) => void) {
-        this.webview.onDidReceiveMessage((message: IAskQuestionRequested) => {
+        if (!this.hasWebview()) {
+            return;
+        }
+
+        this.getWebview().onDidReceiveMessage((message: IAskQuestionRequested) => {
             if (message.type !== MessageType.askQuestionRequested) {
                 return;
             }
 
             callback(message.value.question);
         });
+    }
+
+    sendAnswerFinished() {
+        if (!this.hasWebview()) {
+            return;
+        }
+
+        const message: IAnswerFinished = {
+            type: MessageType.answerFinished
+        };
+
+        this.getWebview().postMessage(message);
+    }
+
+    private hasWebview(): boolean {
+        return this.getWebview() ? true : false;
     }
 }

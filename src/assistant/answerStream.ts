@@ -6,9 +6,9 @@ interface IEventSource {
 }
 
 export class AnswerStream {
-    public readonly _onDidOpen = new EventEmitter<void>();
-    public readonly _onDidReceivePart = new EventEmitter<string>();
-    public readonly _onDidFinish = new EventEmitter<void>();
+    private readonly _onDidOpen = new EventEmitter<void>();
+    private readonly _onDidReceivePart = new EventEmitter<string>();
+    private readonly _onDidFinish = new EventEmitter<void>();
 
     public readonly onDidOpen: Event<void> = this._onDidOpen.event;
     public readonly onDidReceivePart: Event<string> = this._onDidReceivePart.event;

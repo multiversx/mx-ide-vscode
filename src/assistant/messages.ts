@@ -1,5 +1,6 @@
 export enum MessageType {
-    askQuestionRequested = "askQuestionRequested"
+    askQuestionRequested = "askQuestionRequested",
+    answerFinished = "answerFinished"
 }
 
 export interface IAskQuestionRequested {
@@ -7,4 +8,8 @@ export interface IAskQuestionRequested {
     value: {
         question: string;
     };
+}
+
+export interface IAnswerFinished {
+    type: MessageType.answerFinished;
 }
