@@ -6,13 +6,15 @@ interface IEventSource {
 }
 
 export class AnswerStream {
-    private readonly _onDidOpen = new EventEmitter<void>();
-    private readonly _onDidReceivePart = new EventEmitter<string>();
-    private readonly _onDidFinish = new EventEmitter<void>();
+    private parts: string[] = [];
 
-    public readonly onDidOpen: Event<void> = this._onDidOpen.event;
-    public readonly onDidReceivePart: Event<string> = this._onDidReceivePart.event;
-    public readonly onDidFinish: Event<void> = this._onDidFinish.event;
+    private readonly onDidOpenEmitter = new EventEmitter<void>();
+    private readonly onDidReceivePartEmitter = new EventEmitter<string>();
+    private readonly onDidFinishEmitter = new EventEmitter<void>();
+
+    public readonly onDidOpen: Event<void> = this.onDidOpenEmitter.event;
+    public readonly onDidReceivePart: Event<string> = this.onDidReceivePartEmitter.event;
+    public readonly onDidFinish: Event<void> = this.onDidFinishEmitter.event;
 
     constructor(options: {
         source: IEventSource
@@ -25,20 +27,26 @@ export class AnswerStream {
 
             if (!data) {
                 options.source.close();
-                self._onDidFinish.fire();
+                self.onDidFinishEmitter.fire();
                 return;
             }
 
-            self._onDidReceivePart.fire(data);
+            self.parts.push(data);
+            self.onDidReceivePartEmitter.fire(data);
         });
 
         options.source.addEventListener("open", () => {
-            self._onDidOpen.fire();
+            self.parts = [];
+            self.onDidOpenEmitter.fire();
         });
 
         options.source.addEventListener("error", () => {
             options.source.close();
-            self._onDidFinish.fire();
+            self.onDidFinishEmitter.fire();
         });
+    }
+
+    getAnswerUntilNow(): string {
+        return this.parts.join("");
     }
 }

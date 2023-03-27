@@ -38,8 +38,9 @@ async function main() {
     });
 
     onInternalEvent(InternalEvent.askQuestionRequested, async (event: any) => {
+        const question = event.detail.question;
         askView.showProgressRing();
-        messaging.sendAskQuestionRequested(event.detail);
+        messaging.sendAskQuestionRequested(question);
     });
 
     messaging.onMessageFinished(() => {

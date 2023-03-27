@@ -2,9 +2,6 @@ import * as vscode from 'vscode';
 import { AnswerStream } from "./answerStream";
 
 export class AnswerPanelController {
-	constructor() {
-	}
-
 	async openPanel(options: {
 		answerStream: AnswerStream,
 	}) {
@@ -18,19 +15,15 @@ export class AnswerPanelController {
 			}
 		);
 
-		const answerParts: string[] = [];
-
-		options.answerStream.onDidReceivePart(async data => {
-			answerParts.push(data);
-			panel.webview.html = await this.renderHtml(answerParts);
+		options.answerStream.onDidReceivePart(async () => {
+			const answer = options.answerStream.getAnswerUntilNow();
+			panel.webview.html = await this.renderHtml(answer);
 		});
 	}
 
-	private async renderHtml(answerParts: string[]): Promise<string> {
-		const joined = answerParts.join("");
-
+	private async renderHtml(markdown: string): Promise<string> {
 		// https://github.com/microsoft/vscode/issues/75612
-		const rendered = await vscode.commands.executeCommand("markdown.api.render", joined);
+		const rendered = await vscode.commands.executeCommand("markdown.api.render", markdown);
 		const html = `<pre style="white-space: pre-wrap;">${rendered}</pre>`;
 		return html;
 	}

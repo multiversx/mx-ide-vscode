@@ -74,15 +74,12 @@ class Messaging {
         this.getWebview = options.webviewGetter;
     }
 
-    sendInitialize(data: any) {
+    sendInitialize(_data: any) {
         if (!this.hasWebview()) {
             return;
         }
 
-        this.getWebview().postMessage({
-            type: "initialize",
-            value: data
-        });
+        // TODO:
     }
 
     onAskQuestionRequested(callback: (question: string) => void) {
@@ -99,7 +96,7 @@ class Messaging {
         });
     }
 
-    sendAnswerFinished() {
+    async sendAnswerFinished() {
         if (!this.hasWebview()) {
             return;
         }
@@ -108,7 +105,7 @@ class Messaging {
             type: MessageType.answerFinished
         };
 
-        this.getWebview().postMessage(message);
+        await this.getWebview().postMessage(message);
     }
 
     private hasWebview(): boolean {
