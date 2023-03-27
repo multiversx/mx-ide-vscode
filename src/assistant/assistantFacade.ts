@@ -7,7 +7,7 @@ interface IAssistantGateway {
 }
 
 interface ICodingSessionProvider {
-    getCodingSession(): string;
+    getCodingSession(): string | undefined;
 }
 
 interface IAnswersRepository {
@@ -32,13 +32,13 @@ export class AssistantFacade {
     }
 
     async explainCode(options: { code: string }): Promise<string> {
-        const codingSession = this.codingSessionProvider.getCodingSession();
+        const codingSession = this.getCodingSession();
         const explanation = await this.gateway.explainCode({ sessionId: codingSession, code: options.code });
         return explanation;
     }
 
     async askAnything(options: { question: string }): Promise<AnswerStream> {
-        const codingSession = this.codingSessionProvider.getCodingSession();
+        const codingSession = this.getCodingSession();
 
         const answerStream = await this.gateway.askAnything({
             sessionId: codingSession,
@@ -54,7 +54,7 @@ export class AssistantFacade {
     }
 
     getAnswersHeaders(): AnswerHeader[] {
-        const codingSession = this.codingSessionProvider.getCodingSession();
+        const codingSession = this.getCodingSession();
         const headers = this.answersRepository.getAnswersHeaders({ codingSessionId: codingSession });
         return headers;
     }
@@ -62,5 +62,14 @@ export class AssistantFacade {
     getAnswer(options: { sourceStreamId: string }): Answer {
         const body = this.answersRepository.getAnswer(options);
         return body;
+    }
+
+    private getCodingSession(): string {
+        const codingSession = this.codingSessionProvider.getCodingSession();
+        if (!codingSession) {
+            throw new Error("Please select a coding session first.");
+        }
+
+        return codingSession;
     }
 }

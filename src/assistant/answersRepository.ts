@@ -47,13 +47,15 @@ export class AnswersRepository {
         await this.memento.update(this.createBodyKey(item.header), item.body);
     }
 
-    async removeAnswerHeaders(options: { codingSessionId: string }) {
+    async removeAnswer(options: { codingSessionId: string }) {
         const items = this.getAllAnswersHeaders();
         const filtered = items.filter(item => item.codingSessionId !== options.codingSessionId);
 
         await this.memento.update(answerHeadersKey, filtered);
 
-        // TODO: also remove the answer bodies
+        for (const item of filtered) {
+            await this.memento.update(this.createBodyKey(item), undefined);
+        }
     }
 
     private createBodyKey(options: { sourceStreamId: string }) {

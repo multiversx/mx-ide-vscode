@@ -80,8 +80,18 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
     }
 
     async removeCodingSession(identifier: string) {
+        const selectedIdentifier = this.getSelectedCodingSession();
+
+        if (selectedIdentifier === identifier) {
+            await this.resetSelected();
+        }
+
         await this.repository.remove(identifier);
         this.refresh();
+    }
+
+    private async resetSelected() {
+        await this.memento.update("selectedCodingSession", undefined);
     }
 
     private async setSelected(identifier: string) {

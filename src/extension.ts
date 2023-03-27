@@ -104,6 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.removeCodingSession", async (item: { identifier: string }) => {
 		try {
 			await codingSessionsTreeDataProvider.removeCodingSession(item.identifier);
+			await answersRepository.removeAnswer({ codingSessionId: item.identifier });
 		} catch (error: any) {
 			errors.caughtTopLevel(error);
 		}

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
+import * as errors from "../errors";
 import { Answer, AnswerHeader } from "./answer";
 import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
@@ -37,7 +38,17 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         _context: vscode.WebviewViewResolveContext<unknown>,
         _token: vscode.CancellationToken
     ): Promise<void> {
+        try {
+            await this.tryResolveWebviewView(webviewView);
+        } catch (error: any) {
+            errors.caughtTopLevel(error);
+        }
+    }
+
+    private async tryResolveWebviewView(webviewView: vscode.WebviewView): Promise<void> {
         this._view = webviewView;
+
+        const answersHeaders = this.assistant.getAnswersHeaders();
 
         this.messaging.onAskQuestionRequested(async question => {
             await this.askQuestion(question);
@@ -56,7 +67,6 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        const answersHeaders = this.assistant.getAnswersHeaders();
         await this.messaging.sendInitialize(answersHeaders);
     }
 
@@ -100,17 +110,21 @@ class Messaging {
         await this.getWebview().postMessage(message);
     }
 
-    onAskQuestionRequested(callback: (question: string) => void) {
+    onAskQuestionRequested(callback: (question: string) => Promise<void>) {
         if (!this.hasWebview()) {
             return;
         }
 
-        this.getWebview().onDidReceiveMessage((message: IAskQuestionRequested) => {
+        this.getWebview().onDidReceiveMessage(async (message: IAskQuestionRequested) => {
             if (message.type !== MessageType.askQuestionRequested) {
                 return;
             }
 
-            callback(message.value.question);
+            try {
+                await callback(message.value.question);
+            } catch (error: any) {
+                errors.caughtTopLevel(error);
+            }
         });
     }
 
