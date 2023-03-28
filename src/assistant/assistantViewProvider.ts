@@ -11,6 +11,7 @@ interface IAssistant {
     askAnything(options: { question: string }): Promise<AnswerStream>;
     getAnswersHeaders(): AnswerHeader[];
     getAnswer(options: { sourceStreamId: string }): Answer;
+    isAnyCodingSessionOpen(): boolean;
 }
 
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
@@ -48,6 +49,12 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
     private async tryResolveWebviewView(webviewView: vscode.WebviewView): Promise<void> {
         this._view = webviewView;
 
+        webviewView.webview.options = {
+            enableScripts: true,
+            enableForms: true,
+            localResourceRoots: [this.extensionUri],
+        };
+
         this.messaging.onAskQuestionRequested(async question => {
             await this.askQuestion(question);
         });
@@ -56,14 +63,6 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
             const answer = this.assistant.getAnswer(item);
             await this.answerPanelController.displayAnswer({ answer: answer });
         });
-
-        webviewView.webview.options = {
-            enableScripts: true,
-            enableForms: true,
-            localResourceRoots: [this.extensionUri],
-        };
-
-        webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
         await this.refresh();
     }
@@ -78,19 +77,29 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
-        const uriJs = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "assistant.js"]));
-        const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
-        return html;
-    }
-
     async refresh(): Promise<void> {
         if (!this._view) {
             return;
         }
 
+        const webview = this._view.webview;
+        const isAnyCodingSessionOpen = this.assistant.isAnyCodingSessionOpen();
+
+        if (!isAnyCodingSessionOpen) {
+            webview.html = "In the Coding Sessions view, create a coding session (or choose an existing one) in order to interact with the assistant.";
+            return;
+        }
+
+        webview.html = await this.getHtmlForWebview(webview);
+
         const answersHeaders = this.assistant.getAnswersHeaders();
         await this.messaging.sendRefreshHistory(answersHeaders);
+    }
+
+    private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
+        const uriJs = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "assistant.js"]));
+        const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
+        return html;
     }
 }
 

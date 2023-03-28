@@ -19,7 +19,7 @@ export class AssistantGateway {
     }
 
     async createSession(): Promise<string> {
-        const response = await this.doGet(`${this.baseUrl}/coding-sessions/create`);
+        const response = await this.doPost(`${this.baseUrl}/coding-sessions/create`, {});
         const id = response.id;
         return id;
     }

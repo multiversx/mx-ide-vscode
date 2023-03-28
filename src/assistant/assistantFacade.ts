@@ -79,4 +79,9 @@ export class AssistantFacade {
 
         return codingSession;
     }
+
+    isAnyCodingSessionOpen(): boolean {
+        const codingSession = this.codingSessionProvider.getCodingSession();
+        return codingSession ? true : false;
+    }
 }

@@ -35,18 +35,16 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
 
     async refresh() {
         this.models = this.repository.getAll();
-        this.refreshSuperficially();
+        await this.refreshSuperficially();
     }
 
-    private refreshSuperficially() {
+    private async refreshSuperficially() {
         this._onDidChangeTreeData.fire(undefined);
     }
 
     async selectCodingSession(identifier: string) {
         await this.setSelected(identifier);
-        this.refreshSuperficially();
-
-        await vscode.commands.executeCommand("multiversx.refreshAssistant");
+        await this.refreshSuperficially();
     }
 
     getTreeItem(element: CodingSessionsTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -94,13 +92,19 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
 
     private async resetSelected() {
         await this.memento.update("selectedCodingSession", undefined);
+        await this.triggerRefreshAssistant();
     }
 
     private async setSelected(identifier: string) {
         await this.memento.update("selectedCodingSession", identifier);
+        await this.triggerRefreshAssistant();
     }
 
     public getSelectedCodingSession(): string {
         return this.memento.get<string>("selectedCodingSession");
+    }
+
+    private async triggerRefreshAssistant() {
+        await vscode.commands.executeCommand("multiversx.refreshAssistant");
     }
 }
