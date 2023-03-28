@@ -107,12 +107,12 @@
 			},
 			{
 				"command": "multiversx.explainCode",
-				"title": "Explain code (assistant)",
+				"title": "Assistant - explain code",
 				"category": "multiversx"
 			},
 			{
 				"command": "multiversx.reviewCode",
-				"title": "Review code (assistant)",
+				"title": "Assistant - review code",
 				"category": "multiversx"
 			},
 			{
@@ -234,16 +234,26 @@
 				{
 					"command": "multiversx.refreshAssistant",
 					"when": "false"
+				},
+				{
+					"command": "multiversx.reviewCode",
+					"when": "config.multiversx.assistant.reviewCode.enabled"
+				},
+				{
+					"command": "multiversx.explainCode",
+					"when": "config.multiversx.assistant.explainCode.enabled"
 				}
 			],
 			"editor/context": [
 				{
 					"command": "multiversx.explainCode",
-					"group": "multiversx"
+					"group": "multiversx",
+					"when": "config.multiversx.assistant.explainCode.enabled"
 				},
 				{
 					"command": "multiversx.reviewCode",
-					"group": "multiversx"
+					"group": "multiversx",
+					"when": "config.multiversx.assistant.reviewCode.enabled"
 				}
 			],
 			"view/title": [
@@ -309,9 +319,25 @@
 					"type": "string",
 					"default": "~/multiversx-sdk"
 				},
-				"multiversx.assistantApiUrl": {
+				"multiversx.assistant.url": {
 					"type": "string",
-					"default": ""
+					"default": "https://devnet-tools.multiversx.com/xbot"
+				},
+				"multiversx.assistant.askAnything.enabled": {
+					"type": "boolean",
+					"default": false
+				},
+				"multiversx.assistant.reviewCode.enabled": {
+					"type": "boolean",
+					"default": false
+				},
+				"multiversx.assistant.explainCode.enabled": {
+					"type": "boolean",
+					"default": false
+				},
+				"multiversx.assistant.inlineCodeCompletion.enabled": {
+					"type": "boolean",
+					"default": false
 				}
 			}
 		},

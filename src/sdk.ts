@@ -3,7 +3,7 @@ import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace 
 import { Environment } from './environment';
 import { Feedback } from './feedback';
 import * as presenter from './presenter';
-import { MySettings } from './settings';
+import { Settings } from './settings';
 import * as storage from "./storage";
 import { ProcessFacade, sleep } from "./utils";
 import { FreeTextVersion, Version } from './version';
@@ -15,7 +15,7 @@ const DefaultMxpyVersion = Version.parse("5.3.2");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
-    return MySettings.getSdkPath();
+    return Settings.getSdkPath();
 }
 
 function getPrettyPrinterPath() {

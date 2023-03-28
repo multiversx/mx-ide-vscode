@@ -10,12 +10,12 @@ import { InlineCompletionItemProvider } from './assistant/codeCompletion';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
-import * as errors from './errors';
+import { onTopLevelError } from "./errors";
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
 import { Root } from './root';
 import * as sdk from "./sdk";
-import { MySettings } from './settings';
+import { Settings } from './settings';
 import { ContractTemplate, TemplatesViewModel } from './templates';
 import { WelcomeViewProvider } from './welcome/welcomeViewProvider';
 import * as workspace from "./workspace";
@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.refreshContracts", async () => await refreshViewModel(contractsViewModel));
 
 	const assistantGateway = new AssistantGateway({
-		baseUrl: MySettings.getAssistantApiUrl()
+		baseUrl: Settings.getAssistantApiUrl()
 	});
 
 	const assistantTerms = new AssistantTerms({
@@ -98,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		try {
 			await codingSessionsTreeDataProvider.createCodingSession();
 		} catch (error: any) {
-			errors.caughtTopLevel(error);
+			onTopLevelError(error);
 		}
 	});
 
@@ -107,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			await codingSessionsTreeDataProvider.removeCodingSession(item.identifier);
 			await answersRepository.removeAnswer({ codingSessionId: item.identifier });
 		} catch (error: any) {
-			errors.caughtTopLevel(error);
+			onTopLevelError(error);
 		}
 	});
 
@@ -162,7 +162,7 @@ async function installSdk() {
 	try {
 		await sdk.reinstall();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -170,7 +170,7 @@ async function installSdkModule() {
 	try {
 		await sdk.reinstallModule();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -178,7 +178,7 @@ async function installRustDebuggerPrettyPrinterScript() {
 	try {
 		await sdk.installRustDebuggerPrettyPrinterScript();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -186,7 +186,7 @@ async function refreshViewModel(viewModel: any) {
 	try {
 		await viewModel.refresh();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -200,7 +200,7 @@ async function newFromTemplate(template: ContractTemplate) {
 		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -210,7 +210,7 @@ async function gotoContract(contract: SmartContract) {
 		await vscode.commands.executeCommand("vscode.open", uri);
 		await vscode.commands.executeCommand("workbench.files.action.focusFilesExplorer");
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -219,7 +219,7 @@ async function buildContract(contract: any) {
 		let folder = getContractFolder(contract);
 		await sdk.buildContract(folder);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -228,7 +228,7 @@ async function cleanContract(contract: any) {
 		let folder = getContractFolder(contract);
 		await sdk.cleanContract(folder);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -255,7 +255,7 @@ async function runScenarios(item: any) {
 			await sdk.runScenarios((item as SmartContract).getPath());
 		}
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -263,7 +263,7 @@ async function runFreshTestnet(testnetToml: Uri) {
 	try {
 		await sdk.runFreshTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -271,7 +271,7 @@ async function resumeExistingTestnet(testnetToml: Uri) {
 	try {
 		await sdk.resumeExistingTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -279,7 +279,7 @@ async function stopTestnet(testnetToml: Uri) {
 	try {
 		await sdk.stopTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -304,7 +304,7 @@ async function explainCode(_uri: Uri, assistant: AssistantFacade) {
 
 		await controller.displayAnswerStream({ answerStream: answerStream });
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }
 
@@ -324,6 +324,6 @@ async function reviewCode(_uri: Uri, assistant: AssistantFacade) {
 
 		await controller.displayAnswerStream({ answerStream: answerStream });
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		onTopLevelError(error);
 	}
 }

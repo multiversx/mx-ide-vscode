@@ -1,5 +1,5 @@
 import { Feedback } from "./feedback";
 
-export function caughtTopLevel(error: any) {
+export function onTopLevelError(error: any) {
     Feedback.error(error, ["default"]);
 }

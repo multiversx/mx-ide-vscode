@@ -1,23 +1,45 @@
 import * as vscode from "vscode";
 const os = require("os");
 
-export class MySettings {
+export class Settings {
     public static getSdkPath(): string {
-        const folder = MySettings.getConfigurationValue("sdkPath").toString();
+        const folder = this.getConfiguration().get<string>("sdkPath");
         return folder.replace("~", os.homedir);
     }
 
     public static getSdkPathRelativeToHome(): string {
-        return MySettings.getSdkPath().replace(os.homedir, "");
+        return Settings.getSdkPath().replace(os.homedir, "");
     }
 
     public static getAssistantApiUrl(): string {
-        return MySettings.getConfigurationValue("assistantApiUrl").toString();
+        return this.getConfiguration().get<string>("assistant.url");
     }
 
-    private static getConfigurationValue(key: string) {
-        const configuration = vscode.workspace.getConfiguration("multiversx");
-        const value = configuration.get(key);
-        return value;
+    public static isAskAnythingEnabled() {
+        return this.getConfiguration().get<boolean>("assistant.askAnything.enabled");
+    }
+
+    public static isReviewCodeEnabled() {
+        return this.getConfiguration().get<boolean>("assistant.reviewCode.enabled");
+    }
+
+    public static isExplainCodeEnabled() {
+        return this.getConfiguration().get<boolean>("assistant.explainCode.enabled");
+    }
+
+    public static isInlineCodeCompletionEnabled() {
+        return this.getConfiguration().get<boolean>("assistant.inlineCodeCompletion.enabled");
+    }
+
+    public static isAnyAssistantFeatureEnabled() {
+        return this.isAskAnythingEnabled() ||
+            this.isReviewCodeEnabled() ||
+            this.isExplainCodeEnabled() ||
+            this.isInlineCodeCompletionEnabled();
+    }
+
+    private static getConfiguration(): vscode.WorkspaceConfiguration {
+        return vscode.workspace.getConfiguration("multiversx");
     }
 }
+

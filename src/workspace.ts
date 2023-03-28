@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import * as errors from './errors';
+import { onTopLevelError } from "./errors";
 import { Feedback } from "./feedback";
 import path = require("path");
 import fs = require("fs");
@@ -59,7 +59,7 @@ export function getMetadataObjects(): ProjectMetadata[] {
         try {
             result.push(new ProjectMetadata(item));
         } catch (error) {
-            errors.caughtTopLevel(error);
+            onTopLevelError(error);
         }
     });
 

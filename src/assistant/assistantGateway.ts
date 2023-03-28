@@ -148,6 +148,6 @@ export class AssistantGateway {
     }
 
     private handleApiError(error: any, resourceUrl: string) {
-        throw new Error(`Error while accessing ${resourceUrl}: ${error.message}, code = ${error.code}`);
+        throw new Error(`Error while accessing ${resourceUrl}: ${error.message}`);
     }
 }

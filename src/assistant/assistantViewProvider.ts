@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import * as errors from "../errors";
+import { onTopLevelError } from "../errors";
+import { Settings } from "../settings";
 import { Answer, AnswerHeader } from "./answer";
 import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
@@ -42,7 +43,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         try {
             await this.tryResolveWebviewView(webviewView);
         } catch (error: any) {
-            errors.caughtTopLevel(error);
+            onTopLevelError(error);
         }
     }
 
@@ -83,9 +84,13 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
         }
 
         const webview = this._view.webview;
-        const isAnyCodingSessionOpen = this.assistant.isAnyCodingSessionOpen();
 
-        if (!isAnyCodingSessionOpen) {
+        if (!Settings.isAskAnythingEnabled()) {
+            webview.html = "The <strong>ask anything</strong> feature of the assistant is not enabled. Please follow the <strong>Welcome</strong> instructions in order to enable it.";
+            return;
+        }
+
+        if (!this.assistant.isAnyCodingSessionOpen()) {
             webview.html = "In the Coding Sessions view, create a coding session (or choose an existing one) in order to interact with the assistant.";
             return;
         }
@@ -140,7 +145,7 @@ class Messaging {
             try {
                 await callback(message.value.question);
             } catch (error: any) {
-                errors.caughtTopLevel(error);
+                onTopLevelError(error);
             }
         });
     }
