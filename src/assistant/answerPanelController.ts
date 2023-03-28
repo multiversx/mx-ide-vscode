@@ -3,8 +3,6 @@ import { Answer } from './answer';
 import { AnswerStream } from "./answerStream";
 
 export class AnswerPanelController {
-	private currentPanelForDisplayAnswer: vscode.WebviewPanel | undefined;
-
 	async displayAnswerStream(options: { answerStream: AnswerStream }) {
 		const panel = vscode.window.createWebviewPanel(
 			"multiversx",
@@ -23,10 +21,6 @@ export class AnswerPanelController {
 	}
 
 	async displayAnswer(options: { answer: Answer }) {
-		if (this.currentPanelForDisplayAnswer) {
-			this.currentPanelForDisplayAnswer.dispose();
-		}
-
 		const panel = vscode.window.createWebviewPanel(
 			"multiversx",
 			options.answer.header.question,
@@ -39,8 +33,6 @@ export class AnswerPanelController {
 
 		const answerText = options.answer.body.text;
 		panel.webview.html = await this.renderHtml(answerText);
-
-		this.currentPanelForDisplayAnswer = panel;
 	}
 
 	private async renderHtml(markdown: string): Promise<string> {
