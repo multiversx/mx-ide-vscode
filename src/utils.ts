@@ -1,7 +1,6 @@
 import child_process = require('child_process');
 import fs = require('fs');
 import path = require('path');
-import { MyExecError } from './errors';
 import { Feedback } from './feedback';
 
 export class ProcessFacade {
@@ -41,7 +40,7 @@ export class ProcessFacade {
         let subprocess = child_process.spawn(program, args, spawnOptions);
 
         subprocess.on("error", function (error) {
-            reject(new MyExecError({ Program: programName, Message: error.message }));
+            reject(new Error(`${programName} error = ${error.message}`, { cause: error }));
         });
 
         let latestStdout = "";
@@ -92,7 +91,7 @@ export class ProcessFacade {
             if (code == 0) {
                 resolve({ code: code, stdout: stdout });
             } else {
-                reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
+                reject(new Error(`${programName} exited with code = ${code}.`, { cause: latestStderr || latestStdout }));
             }
         });
 

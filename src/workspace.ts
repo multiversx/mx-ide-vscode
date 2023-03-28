@@ -19,7 +19,7 @@ export function getPath() {
     if (workspaceFolder) {
         return workspaceFolder.uri.fsPath;
     } else {
-        throw new errors.MyError({ Message: "Workspace not available." });
+        throw new Error("Workspace not available.");
     }
 }
 
@@ -89,7 +89,7 @@ export class ProjectMetadata {
         this.ProjectName = path.basename(this.ProjectPath);
 
         if (!languages.includes(this.Language)) {
-            throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}. Language not supported: ${this.Language}` });
+            throw new Error(`Bad project metadata: ${metadataFile}. Language not supported: ${this.Language}`);
         }
     }
 }

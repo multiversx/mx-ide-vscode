@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export class Feedback {
-    private static OutputChannels: { [id: string]: vscode.OutputChannel; } = {};
+    private static outputChannels: { [id: string]: vscode.OutputChannel; } = {};
 
     public static programOutput(programName: string, output: string, channels: string[] = ["default"]) {
         let lines = output.split("\n");
@@ -37,24 +37,25 @@ export class Feedback {
         await vscode.window.showInformationMessage(message, { modal: true });
     }
 
-    public static error(summary: string, detailed?: string, channels: string[] = ["default"]) {
-        console.error(detailed);
+    public static error(error: Error, channels: string[] = ["default"]) {
+        console.error(error);
 
         channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`ERROR: ${detailed}`);
+            Feedback.getChannel(tag).appendLine(`${error.stack}`);
         });
 
-        vscode.window.showErrorMessage(`${summary}. See the Output Channels for more details.`, { modal: true });
+        vscode.window.showErrorMessage(error.message);
+        vscode.window.showErrorMessage("See the Output Channels for more details about the error.");
     }
 
     private static getChannel(tag: string): vscode.OutputChannel {
         let channelName: string = `MultiversX: ${tag}`;
 
-        if (!Feedback.OutputChannels[channelName]) {
-            Feedback.OutputChannels[channelName] = vscode.window.createOutputChannel(channelName);
+        if (!Feedback.outputChannels[channelName]) {
+            Feedback.outputChannels[channelName] = vscode.window.createOutputChannel(channelName);
         }
 
-        return Feedback.OutputChannels[channelName];
+        return Feedback.outputChannels[channelName];
     }
 
     public static reveal(tag: string) {

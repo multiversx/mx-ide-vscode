@@ -1,7 +1,6 @@
 import axios from "axios";
 import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace } from 'vscode';
 import { Environment } from './environment';
-import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from './presenter';
 import { MySettings } from './settings';
@@ -129,7 +128,7 @@ export async function fetchTemplates(cacheFile: string) {
 
         Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not fetch templates", Inner: error });
+        throw new Error("Could not fetch templates", { cause: error });
     }
 }
 
@@ -142,7 +141,7 @@ export async function newFromTemplate(folder: string, template: string, name: st
 
         Feedback.info(`Smart Contract [${name}] created, based on template [${template}].`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not create Smart Contract", Inner: error });
+        throw new Error("Could not create Smart Contract", { cause: error });
     }
 }
 
@@ -247,7 +246,7 @@ export async function buildContract(folder: string) {
     try {
         await runInTerminal("build", `${Mxpy} --verbose contract build "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
+        throw new Error("Could not build Smart Contract", { cause: error });
     }
 }
 
@@ -255,7 +254,7 @@ export async function cleanContract(folder: string) {
     try {
         await runInTerminal("build", `${Mxpy} --verbose contract clean "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
+        throw new Error("Could not clean Smart Contract", { cause: error });
     }
 }
 
@@ -264,7 +263,7 @@ export async function runScenarios(folder: string) {
         await ensureInstalledMxpyGroup("vmtools");
         await runInTerminal("scenarios", `run-scenarios "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run scenarios.", Inner: error });
+        throw new Error("Could not run scenarios.", { cause: error });
     }
 }
 
@@ -279,7 +278,7 @@ export async function runFreshTestnet(testnetToml: Uri) {
         await runInTerminal("testnet", `${Mxpy} testnet config`);
         await runInTerminal("testnet", `${Mxpy} testnet start`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new Error("Could not start testnet.", { cause: error });
     }
 }
 
@@ -290,7 +289,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
         await destroyTerminal("testnet");
         await runInTerminal("testnet", `${Mxpy} testnet start`, null, folder);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw Error("Could not start testnet.", { cause: error });
     }
 }
 
@@ -298,7 +297,7 @@ export async function stopTestnet(_testnetToml: Uri) {
     try {
         await killRunningInTerminal("testnet");
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new Error("Could not start testnet.", { cause: error });
     }
 }
 
