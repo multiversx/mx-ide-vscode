@@ -49,6 +49,31 @@ export class AssistantGateway {
         return answerStream;
     }
 
+    async reviewCode(options: { sessionId: string, code: string }): Promise<AnswerStream> {
+        const payload = {
+            coding_session_id: options.sessionId,
+            content: options.code
+        };
+
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-review/create`;
+        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const sourceStreamId = createStreamResponse.id;
+        const streamUrl = `${this.baseUrl}/coding-sessions/streaming-review/start/${sourceStreamId}/`;
+        const eventSource = new EventSource(streamUrl);
+
+        const answerStream = new AnswerStream({
+            answerHeader: new AnswerHeader({
+                codingSessionId: options.sessionId,
+                sourceStreamId: sourceStreamId,
+                question: "Please review this code."
+            }),
+            source: eventSource,
+            payloadEventName: "code-review-stream-chunk"
+        });
+
+        return answerStream;
+    }
+
     async completeCode(options: { sessionId: string, code: string }): Promise<string> {
         const payload = {
             coding_session_id: options.sessionId,

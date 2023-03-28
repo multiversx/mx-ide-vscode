@@ -136,6 +136,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.explainCode", async (uri: Uri) => {
 		await explainCode(uri, assistantFacade);
 	});
+
+	// Assistant: review
+	vscode.commands.registerCommand("multiversx.reviewCode", async (uri: Uri) => {
+		await reviewCode(uri, assistantFacade);
+	});
 }
 
 export function deactivate() {
@@ -296,6 +301,26 @@ async function explainCode(_uri: Uri, assistant: AssistantFacade) {
 		const selection = editor.selection;
 		const code = selection.isEmpty ? document.getText() : document.getText(selection);
 		const answerStream = await assistant.explainCode({ code: code });
+
+		await controller.displayAnswerStream({ answerStream: answerStream });
+	} catch (error) {
+		errors.caughtTopLevel(error);
+	}
+}
+
+async function reviewCode(_uri: Uri, assistant: AssistantFacade) {
+	const controller = new AnswerPanelController();
+
+	try {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+
+		const document = editor.document;
+		const selection = editor.selection;
+		const code = selection.isEmpty ? document.getText() : document.getText(selection);
+		const answerStream = await assistant.reviewCode({ code: code });
 
 		await controller.displayAnswerStream({ answerStream: answerStream });
 	} catch (error) {

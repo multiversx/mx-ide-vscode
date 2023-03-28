@@ -3,6 +3,7 @@ import { AnswerStream } from "./answerStream";
 
 interface IAssistantGateway {
     explainCode(options: { sessionId: string, code: string }): Promise<AnswerStream>;
+    reviewCode(options: { sessionId: string, code: string }): Promise<AnswerStream>;
     completeCode(options: { sessionId: string, code: string }): Promise<string>;
     askAnything(options: { sessionId: string, question: string }): Promise<AnswerStream>;
 }
@@ -36,6 +37,17 @@ export class AssistantFacade {
         const codingSession = this.getCodingSession();
 
         const answerStream = await this.gateway.explainCode({
+            sessionId: codingSession,
+            code: options.code
+        });
+
+        return answerStream;
+    }
+
+    async reviewCode(options: { code: string }): Promise<AnswerStream> {
+        const codingSession = this.getCodingSession();
+
+        const answerStream = await this.gateway.reviewCode({
             sessionId: codingSession,
             code: options.code
         });
