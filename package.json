@@ -184,6 +184,14 @@
 					"command": "multiversx.stopTestnet",
 					"when": "resourceFilename == testnet.toml",
 					"group": "multiversx Testnet"
+				},
+				{
+					"command": "multiversx.reviewCode",
+					"group": "multiversx"
+				},
+				{
+					"command": "multiversx.explainCode",
+					"group": "multiversx"
 				}
 			],
 			"commandPalette": [
