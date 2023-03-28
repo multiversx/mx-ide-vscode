@@ -3,7 +3,6 @@ import { onTopLevelError } from "./errors";
 import { Feedback } from "./feedback";
 import path = require("path");
 import fs = require("fs");
-import _ = require('underscore');
 import glob = require("glob");
 
 let languages = ["rust"];
@@ -43,11 +42,11 @@ export function guardIsOpen(): boolean {
     return true;
 }
 
-export function getLanguages() {
-    let metadataObjects = getMetadataObjects();
-    let languagesInProject = metadataObjects.map(item => item.Language);
-    languagesInProject = _.uniq(languagesInProject);
-    return languagesInProject;
+export function getLanguages(): string[] {
+    const metadataObjects = getMetadataObjects();
+    const languagesInProject = metadataObjects.map(item => item.Language);
+    const set = new Set(languagesInProject);
+    return [...set.values()];
 }
 
 export function getMetadataObjects(): ProjectMetadata[] {
