@@ -61,7 +61,7 @@ export class AnswerStream {
         this.onDidFinishEmitter.fire(answer);
     }
 
-    private getAnswerUntilNow(): Answer {
+    public getAnswerUntilNow(): Answer {
         const text = this.answerBodyParts.join("");
         const body = new AnswerBody({ text: text });
         return new Answer({ header: this.answerHeader, body: body });

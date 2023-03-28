@@ -3,7 +3,6 @@ import { Uri } from "vscode";
 import { onTopLevelError } from "../errors";
 import { Settings } from "../settings";
 import { Answer, AnswerHeader } from "./answer";
-import { AnswerPanelController } from "./answerPanelController";
 import { AnswerStream } from "./answerStream";
 import { IAnswerFinished, IAskQuestionRequested, IDisplayAnswerRequested, IInitialize as IRefreshHistory, MessageType } from "./messages";
 const mainHtml = require("./main.html");
@@ -15,21 +14,27 @@ interface IAssistant {
     isAnyCodingSessionOpen(): boolean;
 }
 
+interface IAnswerPanelController {
+    displayAnswerStream(options: { answerStream: AnswerStream }): Promise<void>;
+    displayAnswer(options: { answer: Answer }): Promise<void>;
+}
+
 export class AssistantViewProvider implements vscode.WebviewViewProvider {
     private readonly extensionUri: Uri;
     private readonly assistant: IAssistant;
-    private readonly answerPanelController: AnswerPanelController;
+    private readonly answerPanelController: IAnswerPanelController;
     private readonly messaging: Messaging;
 
     private _view?: vscode.WebviewView;
 
     constructor(options: {
         extensionUri: Uri;
-        assistant: IAssistant
+        assistant: IAssistant,
+        answerPanelController: IAnswerPanelController
     }) {
         this.extensionUri = options.extensionUri;
         this.assistant = options.assistant;
-        this.answerPanelController = new AnswerPanelController();
+        this.answerPanelController = options.answerPanelController;
         this.messaging = new Messaging({
             webviewGetter: () => this._view?.webview
         });

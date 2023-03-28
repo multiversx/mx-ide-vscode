@@ -4,9 +4,11 @@ import { AnswerStream } from "./answerStream";
 
 export class AnswerPanelController {
 	async displayAnswerStream(options: { answerStream: AnswerStream }) {
+		const title = options.answerStream.getAnswerUntilNow().header.question;
+
 		const panel = vscode.window.createWebviewPanel(
 			"multiversx",
-			"Answer",
+			this.shortenTitle(title),
 			vscode.ViewColumn.Beside,
 			{
 				enableScripts: false,
@@ -21,9 +23,11 @@ export class AnswerPanelController {
 	}
 
 	async displayAnswer(options: { answer: Answer }) {
+		const title = options.answer.header.question;
+
 		const panel = vscode.window.createWebviewPanel(
 			"multiversx",
-			options.answer.header.question,
+			this.shortenTitle(title),
 			vscode.ViewColumn.Beside,
 			{
 				enableScripts: false,
@@ -33,6 +37,11 @@ export class AnswerPanelController {
 
 		const answerText = options.answer.body.text;
 		panel.webview.html = await this.renderHtml(answerText);
+	}
+
+	private shortenTitle(title: string): string {
+		const maxLength = 40;
+		return title.length > maxLength ? title.substring(0, maxLength) + "..." : title;
 	}
 
 	private async renderHtml(markdown: string): Promise<string> {

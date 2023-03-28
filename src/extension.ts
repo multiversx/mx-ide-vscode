@@ -4,6 +4,7 @@ import { AnswerPanelController } from './assistant/answerPanelController';
 import { AnswersRepository } from './assistant/answersRepository';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
+import { AssistantPresenter } from './assistant/assistantPresenter';
 import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { InlineCompletionItemProvider } from './assistant/codeCompletion';
@@ -74,6 +75,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		answersRepository: answersRepository
 	});
 
+	const answerPanelController = new AnswerPanelController();
+
+	const assistantPresenter = new AssistantPresenter({
+		assistant: assistantFacade,
+		answerPanelController: answerPanelController,
+	});
+
 	// Welcome
 	const welcomeViewProvider = new WelcomeViewProvider({
 		extensionUri: context.extensionUri,
@@ -115,6 +123,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const assistantViewProvider = new AssistantViewProvider({
 		extensionUri: context.extensionUri,
 		assistant: assistantFacade,
+		answerPanelController: answerPanelController,
 	});
 
 	vscode.window.registerWebviewViewProvider("multiversx.assistant", assistantViewProvider);
@@ -134,12 +143,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// Assistant: explain
 	vscode.commands.registerCommand("multiversx.explainCode", async (uri: Uri) => {
-		await explainCode(uri, assistantFacade);
+		await assistantPresenter.explainCode(uri);
 	});
 
 	// Assistant: review
 	vscode.commands.registerCommand("multiversx.reviewCode", async (uri: Uri) => {
-		await reviewCode(uri, assistantFacade);
+		await assistantPresenter.reviewCode(uri);
 	});
 }
 
@@ -286,44 +295,4 @@ async function stopTestnet(testnetToml: Uri) {
 async function ensureInstalledBuildchains() {
 	let languages = workspace.getLanguages();
 	await sdk.ensureInstalledBuildchains(languages);
-}
-
-async function explainCode(_uri: Uri, assistant: AssistantFacade) {
-	const controller = new AnswerPanelController();
-
-	try {
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
-			return;
-		}
-
-		const document = editor.document;
-		const selection = editor.selection;
-		const code = selection.isEmpty ? document.getText() : document.getText(selection);
-		const answerStream = await assistant.explainCode({ code: code });
-
-		await controller.displayAnswerStream({ answerStream: answerStream });
-	} catch (error) {
-		onTopLevelError(error);
-	}
-}
-
-async function reviewCode(_uri: Uri, assistant: AssistantFacade) {
-	const controller = new AnswerPanelController();
-
-	try {
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
-			return;
-		}
-
-		const document = editor.document;
-		const selection = editor.selection;
-		const code = selection.isEmpty ? document.getText() : document.getText(selection);
-		const answerStream = await assistant.reviewCode({ code: code });
-
-		await controller.displayAnswerStream({ answerStream: answerStream });
-	} catch (error) {
-		onTopLevelError(error);
-	}
 }
