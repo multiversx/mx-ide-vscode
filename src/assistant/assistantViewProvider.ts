@@ -134,7 +134,7 @@ class Messaging {
             }
         };
 
-        await this.getWebview().postMessage(message);
+        this.getWebview().postMessage(message);
     }
 
     onAskQuestionRequested(callback: (question: string) => Promise<void>) {
@@ -164,7 +164,7 @@ class Messaging {
             type: MessageType.answerFinished
         };
 
-        await this.getWebview().postMessage(message);
+        this.getWebview().postMessage(message);
     }
 
     onDisplayAnswerRequested(callback: (item: any) => void) {

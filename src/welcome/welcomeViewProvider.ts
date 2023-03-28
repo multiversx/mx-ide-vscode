@@ -51,7 +51,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
             }
         });
 
-        await webviewView.webview.postMessage({
+        webviewView.webview.postMessage({
             type: "initialize",
             value: {
                 terms: await this.assistantTerms.areTermsAccepted()
