@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
+import { AnswerPanelController } from './assistant/answerPanelController';
 import { AnswersRepository } from './assistant/answersRepository';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
@@ -283,6 +284,8 @@ async function ensureInstalledBuildchains() {
 }
 
 async function explainCode(_uri: Uri, assistant: AssistantFacade) {
+	const controller = new AnswerPanelController();
+
 	try {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -292,22 +295,9 @@ async function explainCode(_uri: Uri, assistant: AssistantFacade) {
 		const document = editor.document;
 		const selection = editor.selection;
 		const code = selection.isEmpty ? document.getText() : document.getText(selection);
-		const explanation = await assistant.explainCode({ code: code });
+		const answerStream = await assistant.explainCode({ code: code });
 
-		// https://github.com/microsoft/vscode/issues/75612
-		const renderedExplanation = await vscode.commands.executeCommand("markdown.api.render", explanation);
-
-		const panel = vscode.window.createWebviewPanel(
-			"multiversx",
-			"Explanation",
-			vscode.ViewColumn.Beside,
-			{
-				enableScripts: true,
-				retainContextWhenHidden: true,
-			}
-		);
-
-		panel.webview.html = `<pre style="white-space: pre-wrap;">${renderedExplanation}</pre>`;
+		await controller.displayAnswerStream({ answerStream: answerStream });
 	} catch (error) {
 		errors.caughtTopLevel(error);
 	}

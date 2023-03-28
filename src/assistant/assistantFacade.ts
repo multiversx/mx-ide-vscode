@@ -2,7 +2,7 @@ import { Answer, AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 
 interface IAssistantGateway {
-    explainCode(options: { sessionId: string, code: string }): Promise<string>;
+    explainCode(options: { sessionId: string, code: string }): Promise<AnswerStream>;
     completeCode(options: { sessionId: string, code: string }): Promise<string>;
     askAnything(options: { sessionId: string, question: string }): Promise<AnswerStream>;
 }
@@ -32,10 +32,15 @@ export class AssistantFacade {
         this.answersRepository = options.answersRepository;
     }
 
-    async explainCode(options: { code: string }): Promise<string> {
+    async explainCode(options: { code: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
-        const explanation = await this.gateway.explainCode({ sessionId: codingSession, code: options.code });
-        return explanation;
+
+        const answerStream = await this.gateway.explainCode({
+            sessionId: codingSession,
+            code: options.code
+        });
+
+        return answerStream;
     }
 
     async completeCode(options: { code: string }): Promise<string> {

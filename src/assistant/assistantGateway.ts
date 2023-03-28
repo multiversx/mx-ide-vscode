@@ -24,15 +24,29 @@ export class AssistantGateway {
         return id;
     }
 
-    async explainCode(options: { sessionId: string, code: string }): Promise<string> {
+    async explainCode(options: { sessionId: string, code: string }): Promise<AnswerStream> {
         const payload = {
             coding_session_id: options.sessionId,
             content: options.code
         };
 
-        const response = await this.doPost(`${this.baseUrl}/coding-sessions/explain`, payload);
-        const reply = response.reply;
-        return reply;
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/create`;
+        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const sourceStreamId = createStreamResponse.id;
+        const streamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/start/${sourceStreamId}/`;
+        const eventSource = new EventSource(streamUrl);
+
+        const answerStream = new AnswerStream({
+            answerHeader: new AnswerHeader({
+                codingSessionId: options.sessionId,
+                sourceStreamId: sourceStreamId,
+                question: "Please explain this code."
+            }),
+            source: eventSource,
+            payloadEventName: "code-explanation-stream-chunk"
+        });
+
+        return answerStream;
     }
 
     async completeCode(options: { sessionId: string, code: string }): Promise<string> {
