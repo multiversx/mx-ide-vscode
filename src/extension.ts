@@ -8,9 +8,11 @@ import { AssistantPresenter } from './assistant/assistantPresenter';
 import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { InlineCompletionItemProvider } from './assistant/codeCompletion';
+import { NativeAuthenticationProvider } from './auth/nativeAuthenticationProvider';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
+import { CustomUriHandler } from './customUriHandler';
 import { onTopLevelError } from "./errors";
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
@@ -22,10 +24,29 @@ import { WelcomeViewProvider } from './welcome/welcomeViewProvider';
 import * as workspace from "./workspace";
 import path = require("path");
 
+
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
 
 	Root.ExtensionContext = context;
+
+	// Authentication
+	const customUriHandler = new CustomUriHandler();
+	context.subscriptions.push(vscode.window.registerUriHandler(customUriHandler));
+
+	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(
+		NativeAuthenticationProvider.id,
+		NativeAuthenticationProvider.label,
+		new NativeAuthenticationProvider({
+			extensionId: context.extension.id,
+			secretStorage: context.secrets,
+			authenticationReadyEventSource: customUriHandler,
+		}),
+	));
+
+	vscode.commands.registerCommand("multiversx.authentication.loginNative", async () => {
+		await vscode.authentication.getSession(NativeAuthenticationProvider.id, [], { createIfNone: true });
+	});
 
 	const templatesViewModel = new TemplatesViewModel();
 	const contractsViewModel = new SmartContractsViewModel();

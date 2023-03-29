@@ -7,6 +7,18 @@ export class Settings {
         return folder.replace("~", os.homedir);
     }
 
+    public static getNativeAuthWalletUrl(): string {
+        return this.getConfiguration().get<string>("authentication.native.walletUrl");
+    }
+
+    public static getNativeAuthApiUrl(): string {
+        return this.getConfiguration().get<string>("authentication.native.apiUrl");
+    }
+
+    public static getNativeAuthExpirySeconds(): number {
+        return this.getConfiguration().get<number>("authentication.native.expirySeconds");
+    }
+
     public static getSdkPathRelativeToHome(): string {
         return Settings.getSdkPath().replace(os.homedir, "");
     }
