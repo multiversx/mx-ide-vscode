@@ -32,8 +32,8 @@
 				"label": "MultiversX Native Authentication"
 			},
 			{
-				"id": "OpenAISecretKey",
-				"label": "Open AI Secret Key"
+				"id": "OpenAI",
+				"label": "OpenAI (Secret Key)"
 			}
 		],
 		"commands": [
@@ -152,7 +152,7 @@
 				"title": "Login with Native Authentication"
 			},
 			{
-				"command": "multiversx.authentication.provideOpenAISecret",
+				"command": "multiversx.authentication.loginOpenAI",
 				"title": "Provide Open AI secret key"
 			}
 		],
@@ -355,7 +355,7 @@
 				},
 				"multiversx.authentication.native.expirySeconds": {
 					"type": "number",
-					"default": 86400
+					"default": 2592000
 				},
 				"multiversx.assistant.url": {
 					"type": "string",

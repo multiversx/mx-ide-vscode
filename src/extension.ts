@@ -9,6 +9,7 @@ import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { InlineCompletionItemProvider } from './assistant/codeCompletion';
 import { NativeAuthenticationProvider } from './auth/nativeAuthenticationProvider';
+import { OpenAIAuthenticationProvider } from './auth/openAIAuthenticationProvider';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
@@ -23,7 +24,6 @@ import { ContractTemplate, TemplatesViewModel } from './templates';
 import { WelcomeViewProvider } from './welcome/welcomeViewProvider';
 import * as workspace from "./workspace";
 import path = require("path");
-
 
 export async function activate(context: vscode.ExtensionContext) {
 	Feedback.debug("MultiversXIDE.activate()");
@@ -40,12 +40,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		new NativeAuthenticationProvider({
 			extensionId: context.extension.id,
 			secretStorage: context.secrets,
-			authenticationReadyEventSource: customUriHandler,
+			onDidAuthenticateEventEmitter: customUriHandler,
 		}),
 	));
 
 	vscode.commands.registerCommand("multiversx.authentication.loginNative", async () => {
 		await vscode.authentication.getSession(NativeAuthenticationProvider.id, [], { createIfNone: true });
+	});
+
+	vscode.commands.registerCommand("multiversx.authentication.loginOpenAI", async () => {
+		await vscode.authentication.getSession(OpenAIAuthenticationProvider.id, [], { createIfNone: true });
 	});
 
 	const templatesViewModel = new TemplatesViewModel();
