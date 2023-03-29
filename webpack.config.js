@@ -59,7 +59,12 @@ const extensionConfig = {
     },
     module: {
         rules: defaultModuleRules
-    }
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            "window": path.resolve(path.join(__dirname, 'src/polyfills/window')),
+        }),
+    ],
 };
 
 /**

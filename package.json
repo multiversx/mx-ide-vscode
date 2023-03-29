@@ -26,6 +26,16 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"authentication": [
+			{
+				"id": "MultiversX",
+				"label": "MultiversX Native Authentication"
+			},
+			{
+				"id": "OpenAISecretKey",
+				"label": "Open AI Secret Key"
+			}
+		],
 		"commands": [
 			{
 				"command": "multiversx.setupWorkspace",
@@ -136,6 +146,14 @@
 				"title": "Refresh Assistant",
 				"category": "multiversx",
 				"icon": "$(refresh)"
+			},
+			{
+				"command": "multiversx.authentication.loginNative",
+				"title": "Login with Native Authentication"
+			},
+			{
+				"command": "multiversx.authentication.provideOpenAISecret",
+				"title": "Provide Open AI secret key"
 			}
 		],
 		"menus": {
@@ -327,6 +345,18 @@
 					"type": "string",
 					"default": "~/multiversx-sdk"
 				},
+				"multiversx.authentication.native.walletUrl": {
+					"type": "string",
+					"default": "https://testnet-wallet.multiversx.com"
+				},
+				"multiversx.authentication.native.apiUrl": {
+					"type": "string",
+					"default": "https://testnet-api.multiversx.com"
+				},
+				"multiversx.authentication.native.expirySeconds": {
+					"type": "number",
+					"default": 86400
+				},
 				"multiversx.assistant.url": {
 					"type": "string",
 					"default": "https://devnet-tools.multiversx.com/xbot"
@@ -442,7 +472,9 @@
 		"uuid": "8.3.2",
 		"vsce": "2.6.7",
 		"webpack": "5.76.3",
-		"webpack-cli": "5.0.1"
+		"webpack-cli": "5.0.1",
+		"@multiversx/sdk-native-auth-client": "1.0.0",
+		"@multiversx/sdk-wallet": "4.0.0"
 	},
 	"extensionDependencies": []
 }
