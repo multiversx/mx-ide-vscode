@@ -2,14 +2,22 @@ import { Answer, AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 
 interface IAssistantGateway {
-    explainCode(options: { sessionId: string, code: string }): Promise<AnswerStream>;
-    reviewCode(options: { sessionId: string, code: string }): Promise<AnswerStream>;
-    completeCode(options: { sessionId: string, code: string }): Promise<string>;
-    askAnything(options: { sessionId: string, question: string }): Promise<AnswerStream>;
+    getOpenAIKey(options: { accessToken: string }): Promise<string>;
+    setOpenAIKey(options: { key: string, accessToken: string }): Promise<void>;
+    deleteOpenAIKey(options: { accessToken: string }): Promise<void>;
+
+    explainCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream>;
+    reviewCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream>;
+    completeCode(options: { sessionId: string, code: string, accessToken: string }): Promise<string>;
+    askAnything(options: { sessionId: string, question: string, accessToken: string }): Promise<AnswerStream>;
 }
 
 interface ICodingSessionProvider {
     getCodingSession(): string | undefined;
+}
+
+interface INativeAccessTokenProvider {
+    getAccessToken(): string | undefined;
 }
 
 interface IAnswersRepository {
@@ -21,24 +29,29 @@ interface IAnswersRepository {
 export class AssistantFacade {
     private readonly gateway: IAssistantGateway;
     private readonly codingSessionProvider: ICodingSessionProvider;
+    private readonly nativeAccessTokenProvider: INativeAccessTokenProvider;
     private readonly answersRepository: IAnswersRepository;
 
     constructor(options: {
         gateway: IAssistantGateway,
         codingSessionProvider: ICodingSessionProvider,
+        nativeAccessTokenProvider: INativeAccessTokenProvider,
         answersRepository: IAnswersRepository
     }) {
         this.gateway = options.gateway;
         this.codingSessionProvider = options.codingSessionProvider;
+        this.nativeAccessTokenProvider = options.nativeAccessTokenProvider;
         this.answersRepository = options.answersRepository;
     }
 
     async explainCode(options: { code: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
+        const accessToken = this.getAccessToken();
 
         const answerStream = await this.gateway.explainCode({
             sessionId: codingSession,
-            code: options.code
+            code: options.code,
+            accessToken: accessToken
         });
 
         return answerStream;
@@ -46,10 +59,12 @@ export class AssistantFacade {
 
     async reviewCode(options: { code: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
+        const accessToken = this.getAccessToken();
 
         const answerStream = await this.gateway.reviewCode({
             sessionId: codingSession,
-            code: options.code
+            code: options.code,
+            accessToken: accessToken
         });
 
         return answerStream;
@@ -57,16 +72,25 @@ export class AssistantFacade {
 
     async completeCode(options: { code: string }): Promise<string> {
         const codingSession = this.getCodingSession();
-        const completion = await this.gateway.completeCode({ sessionId: codingSession, code: options.code });
+        const accessToken = this.getAccessToken();
+
+        const completion = await this.gateway.completeCode({
+            sessionId: codingSession,
+            code: options.code,
+            accessToken: accessToken
+        });
+
         return completion;
     }
 
     async askAnything(options: { question: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
+        const accessToken = this.getAccessToken();
 
         const answerStream = await this.gateway.askAnything({
             sessionId: codingSession,
-            question: options.question
+            question: options.question,
+            accessToken: accessToken
         });
 
         // When the answer stream is finished, we save the answer.
@@ -100,5 +124,14 @@ export class AssistantFacade {
     isAnyCodingSessionOpen(): boolean {
         const codingSession = this.codingSessionProvider.getCodingSession();
         return codingSession ? true : false;
+    }
+
+    private getAccessToken(): string {
+        const accessToken = this.nativeAccessTokenProvider.getAccessToken();
+        if (!accessToken) {
+            throw new Error("Please sign in first.");
+        }
+
+        return accessToken;
     }
 }

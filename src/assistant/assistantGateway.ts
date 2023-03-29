@@ -4,6 +4,10 @@ import { AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 import EventSource = require("eventsource");
 
+const authTokenHeaderName = "multiversx_token";
+const eventTypeAMA = "ama-stream-chunk";
+const eventTypeCodeReview = "code-review-stream-chunk";
+const eventTypeCodeExplanation = "code-explanation-stream-chunk";
 const defaultTimeout = 60000;
 const defaultAxiosConfig: AxiosRequestConfig = {
     timeout: defaultTimeout,
@@ -18,23 +22,61 @@ export class AssistantGateway {
         this.config = { ...defaultAxiosConfig, ...options.config };
     }
 
+    async getOpenAIKey(options: { accessToken: string }): Promise<string> {
+        const response = await this.doGet({
+            url: `${this.baseUrl}/openai/get_key`,
+            accessToken: options.accessToken
+        });
+
+        const key = response.key;
+        return key;
+    }
+
+    async setOpenAIKey(options: { key: string, accessToken: string }): Promise<void> {
+        await this.doPost({
+            url: `${this.baseUrl}/openai/set_key`,
+            payload: { openai_key: options.key },
+            accessToken: options.accessToken
+        });
+    }
+
+    async deleteOpenAIKey(options: { accessToken: string }): Promise<void> {
+        await this.doDelete({
+            url: `${this.baseUrl}/openai/delete_key`,
+            accessToken: options.accessToken
+        });
+    }
+
     async createSession(): Promise<string> {
-        const response = await this.doPost(`${this.baseUrl}/coding-sessions/create`, {});
+        const response = await this.doPost({
+            url: `${this.baseUrl}/coding-sessions/create`,
+            payload: {},
+            accessToken: ""
+        });
+
         const id = response.id;
         return id;
     }
 
-    async explainCode(options: { sessionId: string, code: string }): Promise<AnswerStream> {
+    async explainCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream> {
         const payload = {
             coding_session_id: options.sessionId,
             content: options.code
         };
 
         const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/create`;
-        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const createStreamResponse = await this.doPost({
+            url: createStreamUrl,
+            payload: payload,
+            accessToken: options.accessToken
+        });
+
         const sourceStreamId = createStreamResponse.id;
         const streamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/start/${sourceStreamId}/`;
-        const eventSource = new EventSource(streamUrl);
+        const eventSource = this.openEventSource({
+            url: streamUrl,
+            accessToken: options.accessToken
+        });
 
         const answerStream = new AnswerStream({
             answerHeader: new AnswerHeader({
@@ -43,23 +85,31 @@ export class AssistantGateway {
                 question: "Please explain this code."
             }),
             source: eventSource,
-            payloadEventName: "code-explanation-stream-chunk"
+            payloadEventName: eventTypeCodeExplanation
         });
 
         return answerStream;
     }
 
-    async reviewCode(options: { sessionId: string, code: string }): Promise<AnswerStream> {
+    async reviewCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream> {
         const payload = {
             coding_session_id: options.sessionId,
             content: options.code
         };
 
         const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-review/create`;
-        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const createStreamResponse = await this.doPost({
+            url: createStreamUrl,
+            payload: payload,
+            accessToken: options.accessToken
+        });
+
         const sourceStreamId = createStreamResponse.id;
         const streamUrl = `${this.baseUrl}/coding-sessions/streaming-review/start/${sourceStreamId}/`;
-        const eventSource = new EventSource(streamUrl);
+        const eventSource = this.openEventSource({
+            url: streamUrl,
+            accessToken: options.accessToken
+        });
 
         const answerStream = new AnswerStream({
             answerHeader: new AnswerHeader({
@@ -68,19 +118,24 @@ export class AssistantGateway {
                 question: "Please review this code."
             }),
             source: eventSource,
-            payloadEventName: "code-review-stream-chunk"
+            payloadEventName: eventTypeCodeReview
         });
 
         return answerStream;
     }
 
-    async completeCode(options: { sessionId: string, code: string }): Promise<string> {
+    async completeCode(options: { sessionId: string, code: string, accessToken: string }): Promise<string> {
         const payload = {
             coding_session_id: options.sessionId,
             content: options.code
         };
 
-        const response = await this.doPost(`${this.baseUrl}/coding-sessions/completion`, payload);
+        const response = await this.doPost({
+            url: `${this.baseUrl}/coding-sessions/completion`,
+            payload: payload,
+            accessToken: options.accessToken
+        });
+
         const reply = response.reply;
         return reply;
     }
@@ -88,6 +143,7 @@ export class AssistantGateway {
     async askAnything(options: {
         sessionId: string,
         question: string
+        accessToken: string
     }): Promise<AnswerStream> {
         const payload = {
             coding_session_id: options.sessionId,
@@ -95,10 +151,18 @@ export class AssistantGateway {
         };
 
         const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/create`;
-        const createStreamResponse = await this.doPost(createStreamUrl, payload);
+        const createStreamResponse = await this.doPost({
+            url: createStreamUrl,
+            payload: payload,
+            accessToken: options.accessToken
+        });
+
         const sourceStreamId = createStreamResponse.id;
         const streamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/start/${sourceStreamId}/`;
-        const eventSource = new EventSource(streamUrl);
+        const eventSource = this.openEventSource({
+            url: streamUrl,
+            accessToken: options.accessToken
+        });
 
         const answerStream = new AnswerStream({
             answerHeader: new AnswerHeader({
@@ -107,47 +171,76 @@ export class AssistantGateway {
                 question: options.question
             }),
             source: eventSource,
-            payloadEventName: "ama-stream-chunk"
+            payloadEventName: eventTypeAMA
         });
 
         return answerStream;
     }
 
-    private async doGet(url: string): Promise<any> {
-        const config = this.prepareConfig();
+    private async doGet(options: { url: string, accessToken?: string }): Promise<any> {
+        const config = this.prepareConfig({ accessToken: options.accessToken });
 
         try {
-            const response = await axios.get(url, config);
+            const response = await axios.get(options.url, config);
             return response.data;
         } catch (error) {
-            this.handleApiError(error, url);
+            this.handleApiError(error, options.url);
             throw error;
         }
     }
 
-    private async doPost(url: string, payload: any): Promise<any> {
-        const config = this.prepareConfig();
+    private async doPost(options: { url: string, payload: any, accessToken?: string }): Promise<any> {
+        const config = this.prepareConfig({ accessToken: options.accessToken });
 
         try {
-            const response = await axios.post(url, payload, config);
+            const response = await axios.post(options.url, options.payload, config);
             return response.data;
         } catch (error) {
-            this.handleApiError(error, url);
+            this.handleApiError(error, options.url);
             throw error;
         }
     }
 
-    private prepareConfig() {
+    private async doDelete(options: { url: string, accessToken?: string }): Promise<any> {
+        const config = this.prepareConfig({ accessToken: options.accessToken });
+
+        try {
+            const response = await axios.delete(options.url, config);
+            return response.data;
+        } catch (error) {
+            this.handleApiError(error, options.url);
+            throw error;
+        }
+    }
+
+    private openEventSource(options: { url: string, accessToken?: string }): EventSource {
+        const eventSource = new EventSource(options.url, {
+            headers: {
+                authTokenHeaderName: options.accessToken
+            }
+        });
+
+        return eventSource;
+    }
+
+    private prepareConfig(options: { accessToken?: string } = {}): AxiosRequestConfig {
+        const customHeaders: any = {};
+
+        if (options.accessToken) {
+            customHeaders[authTokenHeaderName] = options.accessToken;
+        }
+
         return {
             ...this.config,
             headers: {
                 "Content-Type": "application/json",
+                ...customHeaders,
                 ...this.config.headers,
             }
         };
     }
 
     private handleApiError(error: any, resourceUrl: string) {
-        throw new Error(`Error while accessing ${resourceUrl}: ${error.message}`);
+        throw new Error(`Error while interacting with ${resourceUrl}: ${error.message}`);
     }
 }
