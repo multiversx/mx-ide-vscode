@@ -28,12 +28,8 @@
 	"contributes": {
 		"authentication": [
 			{
-				"id": "MultiversX",
-				"label": "MultiversX Native Authentication"
-			},
-			{
-				"id": "OpenAI",
-				"label": "OpenAI (Secret Key)"
+				"id": "MultiversXAssistant",
+				"label": "MultiversX Assistant (Native Authentication)"
 			}
 		],
 		"commands": [
@@ -134,11 +130,13 @@
 			{
 				"command": "multiversx.createCodingSession",
 				"title": "Create Coding Session",
+				"category": "multiversx",
 				"icon": "$(add)"
 			},
 			{
 				"command": "multiversx.removeCodingSession",
 				"title": "Remove Coding Session",
+				"category": "multiversx",
 				"icon": "$(trash)"
 			},
 			{
@@ -148,12 +146,14 @@
 				"icon": "$(refresh)"
 			},
 			{
-				"command": "multiversx.authentication.loginNative",
-				"title": "Login with Native Authentication"
+				"command": "multiversx.authentication.loginAssistant",
+				"title": "Login to Assistant (MultiversX Native Authentication)",
+				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.authentication.loginOpenAI",
-				"title": "Provide Open AI secret key"
+				"command": "multiversx.authentication.connectOpenAISecretKey",
+				"title": "Connect OpenAI secret key",
+				"category": "multiversx"
 			}
 		],
 		"menus": {

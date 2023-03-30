@@ -8,8 +8,7 @@ import { AssistantPresenter } from './assistant/assistantPresenter';
 import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { InlineCompletionItemProvider } from './assistant/codeCompletion';
-import { NativeAuthenticationProvider } from './auth/nativeAuthenticationProvider';
-import { OpenAIAuthenticationProvider } from './auth/openAIAuthenticationProvider';
+import { AssistantAuthenticationProvider } from './auth/assistantAuthenticationProvider';
 import { CodingSessionsRepository } from './codingSessions/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './codingSessions/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
@@ -30,27 +29,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	Root.ExtensionContext = context;
 
-	// Authentication
+	// Register a custom URI handler for the authentication flow(s).
 	const customUriHandler = new CustomUriHandler();
 	context.subscriptions.push(vscode.window.registerUriHandler(customUriHandler));
-
-	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(
-		NativeAuthenticationProvider.id,
-		NativeAuthenticationProvider.label,
-		new NativeAuthenticationProvider({
-			extensionId: context.extension.id,
-			secretStorage: context.secrets,
-			onDidAuthenticateEventEmitter: customUriHandler,
-		}),
-	));
-
-	vscode.commands.registerCommand("multiversx.authentication.loginNative", async () => {
-		await vscode.authentication.getSession(NativeAuthenticationProvider.id, [], { createIfNone: true });
-	});
-
-	vscode.commands.registerCommand("multiversx.authentication.loginOpenAI", async () => {
-		await vscode.authentication.getSession(OpenAIAuthenticationProvider.id, [], { createIfNone: true });
-	});
 
 	const templatesViewModel = new TemplatesViewModel();
 	const contractsViewModel = new SmartContractsViewModel();
@@ -97,6 +78,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		codingSessionProvider: {
 			getCodingSession: () => codingSessionsTreeDataProvider.getSelectedCodingSession()
 		},
+		nativeAccessTokenProvider: {
+			getAccessToken: async () => {
+				const session = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: true });
+				console.assert(session !== undefined, "Session should always be available at this point (created if missing).");
+				return session.accessToken;
+			}
+		},
 		answersRepository: answersRepository
 	});
 
@@ -107,6 +95,30 @@ export async function activate(context: vscode.ExtensionContext) {
 		answerPanelController: answerPanelController,
 	});
 
+	// Assistant: authentication
+	const assistantAuthenticationProvider = new AssistantAuthenticationProvider({
+		extensionId: context.extension.id,
+		secretStorage: context.secrets,
+		openAIKeysHolder: assistantGateway,
+		onDidAuthenticateEventEmitter: customUriHandler,
+	});
+
+	context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(
+		AssistantAuthenticationProvider.id,
+		AssistantAuthenticationProvider.label,
+		assistantAuthenticationProvider
+	));
+
+	vscode.commands.registerCommand("multiversx.authentication.loginAssistant", async () => {
+		// Only one session is supported (as of now):
+		// https://github.com/microsoft/vscode/pull/177036
+		await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: true });
+	});
+
+	vscode.commands.registerCommand("multiversx.authentication.connectOpenAISecretKey", async () => {
+		await assistantAuthenticationProvider.connectOpenAISecretKey();
+	});
+
 	// Welcome
 	const welcomeViewProvider = new WelcomeViewProvider({
 		extensionUri: context.extensionUri,
@@ -115,7 +127,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.registerWebviewViewProvider("multiversx.welcome", welcomeViewProvider);
 
-	// Coding sessions
+	// Assistant: coding sessions management
 	vscode.window.registerTreeDataProvider("multiversx.codingSessions", codingSessionsTreeDataProvider);
 	await codingSessionsTreeDataProvider.refresh();
 
@@ -144,7 +156,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	// Asistant (chat)
+	// Asistant: chat (ask anything)
 	const assistantViewProvider = new AssistantViewProvider({
 		extensionUri: context.extensionUri,
 		assistant: assistantFacade,

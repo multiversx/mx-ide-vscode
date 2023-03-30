@@ -4,7 +4,7 @@ import { AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 import EventSource = require("eventsource");
 
-const authTokenHeaderName = "multiversx_token";
+const authTokenHeaderName = "token";
 const eventTypeAMA = "ama-stream-chunk";
 const eventTypeCodeReview = "code-review-stream-chunk";
 const eventTypeCodeExplanation = "code-explanation-stream-chunk";

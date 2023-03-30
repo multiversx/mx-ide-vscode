@@ -2,10 +2,6 @@ import { Answer, AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 
 interface IAssistantGateway {
-    getOpenAIKey(options: { accessToken: string }): Promise<string>;
-    setOpenAIKey(options: { key: string, accessToken: string }): Promise<void>;
-    deleteOpenAIKey(options: { accessToken: string }): Promise<void>;
-
     explainCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream>;
     reviewCode(options: { sessionId: string, code: string, accessToken: string }): Promise<AnswerStream>;
     completeCode(options: { sessionId: string, code: string, accessToken: string }): Promise<string>;
@@ -17,7 +13,7 @@ interface ICodingSessionProvider {
 }
 
 interface INativeAccessTokenProvider {
-    getAccessToken(): string | undefined;
+    getAccessToken(): Promise<string>;
 }
 
 interface IAnswersRepository {
@@ -46,7 +42,7 @@ export class AssistantFacade {
 
     async explainCode(options: { code: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
-        const accessToken = this.getAccessToken();
+        const accessToken = await this.getAccessToken();
 
         const answerStream = await this.gateway.explainCode({
             sessionId: codingSession,
@@ -59,7 +55,7 @@ export class AssistantFacade {
 
     async reviewCode(options: { code: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
-        const accessToken = this.getAccessToken();
+        const accessToken = await this.getAccessToken();
 
         const answerStream = await this.gateway.reviewCode({
             sessionId: codingSession,
@@ -72,7 +68,7 @@ export class AssistantFacade {
 
     async completeCode(options: { code: string }): Promise<string> {
         const codingSession = this.getCodingSession();
-        const accessToken = this.getAccessToken();
+        const accessToken = await this.getAccessToken();
 
         const completion = await this.gateway.completeCode({
             sessionId: codingSession,
@@ -85,7 +81,7 @@ export class AssistantFacade {
 
     async askAnything(options: { question: string }): Promise<AnswerStream> {
         const codingSession = this.getCodingSession();
-        const accessToken = this.getAccessToken();
+        const accessToken = await this.getAccessToken();
 
         const answerStream = await this.gateway.askAnything({
             sessionId: codingSession,
@@ -126,12 +122,8 @@ export class AssistantFacade {
         return codingSession ? true : false;
     }
 
-    private getAccessToken(): string {
-        const accessToken = this.nativeAccessTokenProvider.getAccessToken();
-        if (!accessToken) {
-            throw new Error("Please sign in first.");
-        }
-
+    private async getAccessToken(): Promise<string> {
+        const accessToken = await this.nativeAccessTokenProvider.getAccessToken();
         return accessToken;
     }
 }
