@@ -1,4 +1,5 @@
 import { Event, EventEmitter, Uri, UriHandler } from "vscode";
+import { urlSegmentOnNativeAuthenticationReady } from "./constants";
 
 export class CustomUriHandler implements UriHandler {
     private readonly onDidAuthenticateEventEmitter = new EventEmitter<Uri>();
@@ -6,7 +7,7 @@ export class CustomUriHandler implements UriHandler {
     public readonly onDidAuthenticate: Event<Uri> = this.onDidAuthenticateEventEmitter.event;
 
     public handleUri(uri: Uri) {
-        if (uri.path === "/on-native-authentication-ready") {
+        if (uri.path === urlSegmentOnNativeAuthenticationReady) {
             this.onDidAuthenticateEventEmitter.fire(uri);
         }
     }

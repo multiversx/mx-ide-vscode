@@ -1,7 +1,9 @@
 import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import * as vscode from 'vscode';
 import { AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationSession, Event, EventEmitter, SecretStorage, Uri } from "vscode";
+import { urlSegmentOnNativeAuthenticationReady } from "../constants";
 import { Settings } from "../settings";
+import * as textResources from "../textResources";
 
 interface IOnDidAuthenticateEventEmitter {
     onDidAuthenticate: Event<Uri>;
@@ -93,6 +95,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         }
 
         await this.openAIKeysHolder.setOpenAIKey({ key, accessToken: options.authToken });
+        await vscode.window.showInformationMessage(`OpenAI key connected to ${options.address}`);
     }
 
     async removeSession(sessionId: string): Promise<void> {
@@ -100,11 +103,9 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const sessions = await this.loadSessions();
         const sessionToRemove = sessions[address];
         delete sessions[address];
-        await this.storeSessions(sessions);
 
-        // On "Sign out", we delete the OpenAI secret key (if any) associated with this address.
-        // Users can always re-login and re-add the key if they want to use the assistant again.
-        await this.openAIKeysHolder.deleteOpenAIKey({ accessToken: sessionToRemove.accessToken });
+        await this.storeSessions(sessions);
+        await vscode.window.showInformationMessage(`Signed out of ${sessionToRemove.account.label}`);
     }
 
     async login(): Promise<void> {
@@ -125,7 +126,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         };
 
         const returnUriPayloadEncoded = Buffer.from(JSON.stringify(returnUriPayload)).toString("hex");
-        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/on-native-authentication-ready?payload=${returnUriPayloadEncoded}`));
+        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/${urlSegmentOnNativeAuthenticationReady}?payload=${returnUriPayloadEncoded}`));
         const returnUriEncoded = encodeURIComponent(returnUri.toString());
         const loginUrl = vscode.Uri.parse(`${Settings.getNativeAuthWalletUrl()}/hook/login?token=${initData}&callbackUrl=${returnUriEncoded}`);
 
@@ -160,41 +161,27 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 }
 
 async function askConfirmOverrideOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = "Yes, override key";
-    const answerSkip = "No, keep existing key";
-    const question = `
-It seems that you already have an OpenAI secret key connected to your MultiversX address ${shortenAddress(address)}.
-
-Would you like to override the existing OpenAI key with the new one?
-`;
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerSkip);
+    const answerYes = textResources.ConfirmOverrideOpenAIKey.answerYes;
+    const answerNo = textResources.ConfirmOverrideOpenAIKey.answerNo;
+    const question = textResources.ConfirmOverrideOpenAIKey.getMessage(shortenAddress(address));
+    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
     return answer === answerYes;
 }
 
 async function askConfirmConnectOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = "Yes, provide key";
-    const answerSkip = "Skip for now";
-    const question = `
-Optionally, you can provide your OpenAI secret key (if you own one), and connect it with your MultiversX address: ${shortenAddress(address)}.
-
-This OpenAI secret key will be sent to the server on which the MultiversX assistant is running, and it will be used to resolve the answers to your requests. 
-
-The key will not be stored on this device.
-
-Would you like to provide your OpenAI secret key, and connect it to your MultiversX address ${shortenAddress(address)}?
-
-If you choose to skip this step, you can always provide the key later, by invoking the command "Connect OpenAI secret key".
-`;
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerSkip);
+    const answerYes = textResources.ConfirmConnectOpenAIKey.answerYes;
+    const answerNo = textResources.ConfirmConnectOpenAIKey.answerNo;
+    const question = textResources.ConfirmConnectOpenAIKey.getMessage(shortenAddress(address));
+    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
     return answer === answerYes;
 }
 
 async function askOpenAISecretKey(): Promise<string> {
     const result = await vscode.window.showInputBox({
-        prompt: "Enter your OpenAI secret key",
+        prompt: textResources.EnterOpenAISecretKey.prompt,
         ignoreFocusOut: true,
         validateInput: text => {
-            return text.length > 0 ? null : "Should not be empty.";
+            return text.length > 0 ? null : textResources.EnterOpenAISecretKey.validationShouldNotBeEmpty;
         }
     });
 

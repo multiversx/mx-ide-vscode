@@ -30,11 +30,8 @@ export class AssistantGateway {
 
             return response.key;
         } catch (error: any) {
-            if (this.isNotFoundError(error)) {
-                return "";
-            }
-
-            throw error;
+            console.error("Error while getting OpenAI key", error);
+            return "";
         }
     }
 
@@ -257,9 +254,9 @@ export class AssistantGateway {
         };
     }
 
-    private isNotFoundError(error: any): boolean {
+    private isErrorForbidden(error: any): boolean {
         const originalError = error.cause || error;
         const status = originalError.response?.status;
-        return status === 404;
+        return status === 403;
     }
 }
