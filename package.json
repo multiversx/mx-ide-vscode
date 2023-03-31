@@ -154,6 +154,11 @@
 				"command": "multiversx.authentication.connectOpenAISecretKey",
 				"title": "Connect OpenAI secret key",
 				"category": "multiversx"
+			},
+			{
+				"command": "multiversx.authentication.disconnectOpenAISecretKey",
+				"title": "Disconnect OpenAI secret key",
+				"category": "multiversx"
 			}
 		],
 		"menus": {

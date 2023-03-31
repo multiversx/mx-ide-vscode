@@ -76,7 +76,10 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     async connectOpenAISecretKey(options: { address: string, authToken: string }): Promise<void> {
         const existingKey = await this.openAIKeysHolder.getOpenAIKey({ accessToken: options.authToken });
         if (existingKey) {
-            return;
+            const answer = await askConfirmOverrideOpenAIKey(options.address);
+            if (!answer) {
+                return;
+            }
         }
 
         const answer = await askConfirmConnectOpenAIKey(options.address);
@@ -154,6 +157,18 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const serialized = JSON.stringify(obj);
         await this.secretStorage.store(AssistantAuthenticationProvider.storageKeyOfSessions, serialized);
     }
+}
+
+async function askConfirmOverrideOpenAIKey(address: string): Promise<boolean> {
+    const answerYes = "Yes, override key";
+    const answerSkip = "No, keep existing key";
+    const question = `
+It seems that you already have an OpenAI secret key connected to your MultiversX address ${shortenAddress(address)}.
+
+Would you like to override the existing OpenAI key with the new one?
+`;
+    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerSkip);
+    return answer === answerYes;
 }
 
 async function askConfirmConnectOpenAIKey(address: string): Promise<boolean> {

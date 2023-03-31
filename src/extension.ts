@@ -119,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.authentication.loginAssistant", async () => {
 		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
 		if (anySession) {
-			await vscode.window.showInformationMessage("You are already logged in. Sign out first if you want to log in with a different account");
+			await vscode.window.showInformationMessage("You are already logged in. Sign out first if you want to log in with a different account.");
 			return;
 		}
 
@@ -129,7 +129,28 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand("multiversx.authentication.connectOpenAISecretKey", async () => {
-		await assistantAuthenticationProvider.connectOpenAISecretKey();
+		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
+		if (!anySession) {
+			await vscode.window.showInformationMessage("You are not yet logged in. Sign in using the command 'MultiversX: Login to Assistant' first.");
+			return;
+		}
+
+		await assistantAuthenticationProvider.connectOpenAISecretKey({
+			address: anySession.account.id,
+			authToken: anySession.accessToken
+		});
+	});
+
+	vscode.commands.registerCommand("multiversx.authentication.disconnectOpenAISecretKey", async () => {
+		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
+		if (!anySession) {
+			await vscode.window.showInformationMessage("You are not yet logged in. Sign in using the command 'MultiversX: Login to Assistant' first.");
+			return;
+		}
+
+		await assistantGateway.deleteOpenAIKey({
+			accessToken: anySession.accessToken
+		});
 	});
 
 	// Welcome
