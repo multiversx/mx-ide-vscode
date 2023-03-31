@@ -4,7 +4,6 @@ import { AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 import EventSource = require("eventsource");
 
-const authTokenHeaderName = "token";
 const eventTypeAMA = "ama-stream-chunk";
 const eventTypeCodeReview = "code-review-stream-chunk";
 const eventTypeCodeExplanation = "code-explanation-stream-chunk";
@@ -41,8 +40,8 @@ export class AssistantGateway {
 
     async setOpenAIKey(options: { key: string, accessToken: string }): Promise<void> {
         await this.doPost({
-            url: `${this.baseUrl}/openai/set_key?openai_key=${options.key}`,
-            payload: {},
+            url: `${this.baseUrl}/openai/set_key/`,
+            payload: { key: options.key },
             accessToken: options.accessToken
         });
     }
@@ -185,6 +184,8 @@ export class AssistantGateway {
     }
 
     private async doGet(options: { url: string, accessToken?: string }): Promise<any> {
+        console.info("AssistantGateway.doGet:", options.url);
+
         const config = this.prepareConfig({ accessToken: options.accessToken });
 
         try {
@@ -198,6 +199,8 @@ export class AssistantGateway {
     }
 
     private async doPost(options: { url: string, payload: any, accessToken?: string }): Promise<any> {
+        console.info("AssistantGateway.doPost:", options.url);
+
         const config = this.prepareConfig({ accessToken: options.accessToken });
 
         try {
@@ -211,6 +214,8 @@ export class AssistantGateway {
     }
 
     private async doDelete(options: { url: string, accessToken?: string }): Promise<any> {
+        console.info("AssistantGateway.doDelete:", options.url);
+
         const config = this.prepareConfig({ accessToken: options.accessToken });
 
         try {
@@ -224,9 +229,11 @@ export class AssistantGateway {
     }
 
     private openEventSource(options: { url: string, accessToken?: string }): EventSource {
+        console.info("AssistantGateway.openEventSource:", options.url);
+
         const eventSource = new EventSource(options.url, {
             headers: {
-                authTokenHeaderName: options.accessToken
+                "token": options.accessToken
             }
         });
 
@@ -237,7 +244,7 @@ export class AssistantGateway {
         const customHeaders: any = {};
 
         if (options.accessToken) {
-            customHeaders[authTokenHeaderName] = options.accessToken;
+            customHeaders["token"] = options.accessToken;
         }
 
         return {

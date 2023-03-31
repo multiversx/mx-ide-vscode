@@ -45,7 +45,9 @@ export class AnswerStream {
             self.onDidOpenEmitter.fire();
         });
 
-        options.source.addEventListener("error", () => {
+        options.source.addEventListener("error", (error: any) => {
+            console.error("Error while receiving answer stream", error);
+
             options.source.close();
             self.emitFinish();
         });
