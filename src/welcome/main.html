@@ -5,37 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Welcome!</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+    </style>
 </head>
 
 <body>
     <p>
         The MultiversX extension for Visual Studio Code offers support for developing Smart
-        Contracts. It also integrates an assistant powered by <strong>Open AI</strong>, able to explain code, answer
-        questions and provide <em>inline</em> suggestions.
+        Contracts. It also integrates an assistant powered by <strong>Open AI</strong>, able to review and explain code,
+        answer questions, and provide <em>inline</em> code suggestions.
     </p>
 
     <h2>Using the assistant</h2>
     <div>
-        <p>
-            Before using the assistant, you must read and accept the
-            <vscode-link href="#">Terms of Service</vscode-link> and the
-            <vscode-link href="#">Privacy Statement</vscode-link>.
-        </p>
+        <!-- The section on "terms of service" and "privacy statement" is currently hidden, since we'll use a pre-login dialog at first. -->
+        <div class="hidden">
+            <p>
+                Before using the assistant, you must read and accept the
+                <vscode-link href="#">Terms of Service</vscode-link> and the
+                <vscode-link href="#">Privacy Statement</vscode-link>.
+            </p>
 
-        <div>
-            <fieldset>
-                <div>
-                    <vscode-checkbox id="CheckboxAssistantTermsOfService">
-                        I agree to the <strong>Terms of Service</strong>
-                    </vscode-checkbox>
-                </div>
-                <div>
-                    <vscode-checkbox id="CheckboxAssistantPrivacyStatement">
-                        I agree to the <strong>Privacy Statement</strong>
-                    </vscode-checkbox>
-                </div>
-            </fieldset>
+            <div>
+                <fieldset>
+                    <div>
+                        <vscode-checkbox id="CheckboxAssistantTermsOfService">
+                            I agree to the <strong>Terms of Service</strong>
+                        </vscode-checkbox>
+                    </div>
+                    <div>
+                        <vscode-checkbox id="CheckboxAssistantPrivacyStatement">
+                            I agree to the <strong>Privacy Statement</strong>
+                        </vscode-checkbox>
+                    </div>
+                </fieldset>
+            </div>
         </div>
+
+
+        <h3>Code reviews</h3>
+
+        <h3>Code explaining</h3>
+
+        <h3>Coding questions</h3>
 
         <h3>Inline suggestions</h3>
         <p>
@@ -62,25 +78,30 @@
         </p>
     </div>
 
-    <h2>Environment variables</h2>
-    <div>
-        <p>
-            Since version <vscode-link
-                href="https://github.com/multiversx/mx-ide-vscode/releases/tag/v0.18.0">v0.18.0</vscode-link>,
-            the extension does not automatically patch the Visual Studio Code settings anymore.
-        </p>
+    <!-- The section about environment variables is temporarily hidden, but it will display in a future release. -->
 
-        <p>
-            It's the responsibility of the user to adjust <kbd>.vscode/settings.json</kbd> and include the
-            necessary environment variables and <kbd>PATH</kbd> components (for using <strong>mxpy</strong> and
-            <strong>Rust Analyzer</strong>).
-        </p>
+    <div class="hidden">
+        <h2>Environment variables</h2>
+        <div>
+            <p>
+                Since version <vscode-link
+                    href="https://github.com/multiversx/mx-ide-vscode/releases/tag/v0.18.0">v0.18.0</vscode-link>,
+                the extension does not automatically patch the Visual Studio Code settings anymore.
+            </p>
 
-        <p>
-            For examples of how to set the necessary environment variables, please follow <vscode-link
-                href="https://github.com/multiversx/mx-ide-vscode/releases/tag/v0.18.0">this</vscode-link>.
-        </p>
+            <p>
+                It's the responsibility of the user to adjust <kbd>.vscode/settings.json</kbd> and include the
+                necessary environment variables and <kbd>PATH</kbd> components (for using <strong>mxpy</strong> and
+                <strong>Rust Analyzer</strong>).
+            </p>
+
+            <p>
+                For examples of how to set the necessary environment variables, please follow <vscode-link
+                    href="https://github.com/multiversx/mx-ide-vscode/releases/tag/v0.18.0">this</vscode-link>.
+            </p>
+        </div>
     </div>
+
 
     <script type="module" src="{{uriJs}}"></script>
 </body>

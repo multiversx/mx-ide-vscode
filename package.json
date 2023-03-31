@@ -151,13 +151,13 @@
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.authentication.connectOpenAISecretKey",
-				"title": "Connect OpenAI secret key",
+				"command": "multiversx.authentication.linkOpenAISecretKey",
+				"title": "Link OpenAI secret key to current account",
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.authentication.disconnectOpenAISecretKey",
-				"title": "Disconnect OpenAI secret key",
+				"command": "multiversx.authentication.unlinkOpenAISecretKey",
+				"title": "Unlink OpenAI secret key from current account",
 				"category": "multiversx"
 			}
 		],

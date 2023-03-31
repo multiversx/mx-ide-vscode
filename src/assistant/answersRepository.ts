@@ -47,10 +47,13 @@ export class AnswersRepository {
         await this.memento.update(this.createBodyKey(item.header), item.body);
     }
 
-    async removeAnswer(options: { codingSessionId: string }) {
+    async removeAnswers(options: { codingSessionId?: string }) {
         const items = this.getAllAnswersHeaders();
-        const itemsToKeep = items.filter(item => item.codingSessionId !== options.codingSessionId);
-        const itemsToRemove = items.filter(item => item.codingSessionId === options.codingSessionId);
+        const itemsOfGivenCodingSession = items.filter(item => item.codingSessionId === options.codingSessionId);
+        const itemsOfOtherCodingSessions = items.filter(item => item.codingSessionId !== options.codingSessionId);
+
+        const itemsToKeep = options.codingSessionId ? itemsOfOtherCodingSessions : [];
+        const itemsToRemove = options.codingSessionId ? itemsOfGivenCodingSession : items;
 
         await this.memento.update(answerHeadersKey, itemsToKeep);
 

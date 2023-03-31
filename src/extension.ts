@@ -107,6 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		extensionId: context.extension.id,
 		secretStorage: context.secrets,
 		openAIKeysHolder: assistantGateway,
+		codingSessionsRepository: codingSessionsRepository,
 		onDidAuthenticateEventEmitter: customUriHandler,
 	});
 
@@ -128,20 +129,20 @@ export async function activate(context: vscode.ExtensionContext) {
 		await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: true });
 	});
 
-	vscode.commands.registerCommand("multiversx.authentication.connectOpenAISecretKey", async () => {
+	vscode.commands.registerCommand("multiversx.authentication.linkOpenAISecretKey", async () => {
 		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
 		if (!anySession) {
 			await vscode.window.showInformationMessage("You are not yet logged in. Sign in using the command 'MultiversX: Login to Assistant' first.");
 			return;
 		}
 
-		await assistantAuthenticationProvider.connectOpenAISecretKey({
+		await assistantAuthenticationProvider.linkOpenAISecretKey({
 			address: anySession.account.id,
 			authToken: anySession.accessToken
 		});
 	});
 
-	vscode.commands.registerCommand("multiversx.authentication.disconnectOpenAISecretKey", async () => {
+	vscode.commands.registerCommand("multiversx.authentication.unlinkOpenAISecretKey", async () => {
 		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
 		if (!anySession) {
 			await vscode.window.showInformationMessage("You are not yet logged in. Sign in using the command 'MultiversX: Login to Assistant' first.");
@@ -184,7 +185,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.removeCodingSession", async (item: { identifier: string }) => {
 		try {
 			await codingSessionsTreeDataProvider.removeCodingSession(item.identifier);
-			await answersRepository.removeAnswer({ codingSessionId: item.identifier });
+			await answersRepository.removeAnswers({ codingSessionId: item.identifier });
 		} catch (error: any) {
 			onTopLevelError(error);
 		}

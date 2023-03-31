@@ -26,4 +26,8 @@ export class CodingSessionsRepository {
     async remove(identifier: string) {
         await this.memento.update("codingSessions", this.getAll().filter(item => item.identifier !== identifier));
     }
+
+    async removeAll() {
+        await this.memento.update("codingSessions", []);
+    }
 }

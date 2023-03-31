@@ -3,16 +3,20 @@ import * as vscode from 'vscode';
 import { AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationSession, Event, EventEmitter, SecretStorage, Uri } from "vscode";
 import { urlSegmentOnNativeAuthenticationReady } from "../constants";
 import { Settings } from "../settings";
-import * as textResources from "../textResources";
-
-interface IOnDidAuthenticateEventEmitter {
-    onDidAuthenticate: Event<Uri>;
-}
+import * as text from "../text";
 
 interface IOpenAIKeysHolder {
     getOpenAIKey(options: { accessToken: string }): Promise<string>;
     setOpenAIKey(options: { key: string, accessToken: string }): Promise<void>;
     deleteOpenAIKey(options: { accessToken: string }): Promise<void>;
+}
+
+interface ICodingSessionsRepository {
+    removeAll(): Promise<void>;
+}
+
+interface IOnDidAuthenticateEventEmitter {
+    onDidAuthenticate: Event<Uri>;
 }
 
 export class AssistantAuthenticationProvider implements AuthenticationProvider {
@@ -23,6 +27,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     private readonly extensionId: string;
     private readonly secretStorage: SecretStorage;
     private readonly openAIKeysHolder: IOpenAIKeysHolder;
+    private readonly codingSessionsRepository: ICodingSessionsRepository;
     private readonly onDidAuthenticateEventEmitter: IOnDidAuthenticateEventEmitter;
 
     private _onDidChangeSessions = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
@@ -32,11 +37,13 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         extensionId: string;
         secretStorage: SecretStorage;
         openAIKeysHolder: IOpenAIKeysHolder;
+        codingSessionsRepository: ICodingSessionsRepository;
         onDidAuthenticateEventEmitter: IOnDidAuthenticateEventEmitter;
     }) {
         this.extensionId = options.extensionId;
         this.secretStorage = options.secretStorage;
         this.openAIKeysHolder = options.openAIKeysHolder;
+        this.codingSessionsRepository = options.codingSessionsRepository;
         this.onDidAuthenticateEventEmitter = options.onDidAuthenticateEventEmitter;
     }
 
@@ -71,11 +78,11 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         sessions[session.id] = session;
         await this.storeSessions(sessions);
 
-        await this.connectOpenAISecretKey({ address, authToken });
+        await this.linkOpenAISecretKey({ address, authToken });
         return session;
     }
 
-    async connectOpenAISecretKey(options: { address: string, authToken: string }): Promise<void> {
+    async linkOpenAISecretKey(options: { address: string, authToken: string }): Promise<void> {
         const existingKey = await this.openAIKeysHolder.getOpenAIKey({ accessToken: options.authToken });
         if (existingKey) {
             const answer = await askConfirmOverrideOpenAIKey(options.address);
@@ -95,6 +102,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         }
 
         await this.openAIKeysHolder.setOpenAIKey({ key, accessToken: options.authToken });
+
         await vscode.window.showInformationMessage(`OpenAI key connected to ${options.address}`);
     }
 
@@ -102,10 +110,22 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const address = sessionId;
         const sessions = await this.loadSessions();
         const sessionToRemove = sessions[address];
-        delete sessions[address];
+        const openAIKeyPreview = await this.openAIKeysHolder.getOpenAIKey({ accessToken: sessionToRemove.accessToken });
 
+        const answer = await askConfirmSignOut({
+            address: shortenAddress(address),
+            openAIKeyPreview: openAIKeyPreview
+        });
+
+        if (!answer) {
+            throw new Error("User cancelled");
+        }
+
+        delete sessions[address];
         await this.storeSessions(sessions);
-        await vscode.window.showInformationMessage(`Signed out of ${sessionToRemove.account.label}`);
+        await this.codingSessionsRepository.removeAll();
+
+        await vscode.window.showInformationMessage(`Signed out of ${sessionToRemove.account.label}.`);
     }
 
     async login(): Promise<void> {
@@ -161,27 +181,27 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 }
 
 async function askConfirmOverrideOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = textResources.ConfirmOverrideOpenAIKey.answerYes;
-    const answerNo = textResources.ConfirmOverrideOpenAIKey.answerNo;
-    const question = textResources.ConfirmOverrideOpenAIKey.getMessage(shortenAddress(address));
+    const answerYes = text.ConfirmOverrideOpenAIKey.answerYes;
+    const answerNo = text.ConfirmOverrideOpenAIKey.answerNo;
+    const question = text.ConfirmOverrideOpenAIKey.getMessage(shortenAddress(address));
     const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
     return answer === answerYes;
 }
 
 async function askConfirmConnectOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = textResources.ConfirmConnectOpenAIKey.answerYes;
-    const answerNo = textResources.ConfirmConnectOpenAIKey.answerNo;
-    const question = textResources.ConfirmConnectOpenAIKey.getMessage(shortenAddress(address));
+    const answerYes = text.ConfirmConnectOpenAIKey.answerYes;
+    const answerNo = text.ConfirmConnectOpenAIKey.answerNo;
+    const question = text.ConfirmConnectOpenAIKey.getMessage(shortenAddress(address));
     const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
     return answer === answerYes;
 }
 
 async function askOpenAISecretKey(): Promise<string> {
     const result = await vscode.window.showInputBox({
-        prompt: textResources.EnterOpenAISecretKey.prompt,
+        prompt: text.EnterOpenAISecretKey.prompt,
         ignoreFocusOut: true,
-        validateInput: text => {
-            return text.length > 0 ? null : textResources.EnterOpenAISecretKey.validationShouldNotBeEmpty;
+        validateInput: input => {
+            return input.length > 0 ? null : text.EnterOpenAISecretKey.validationShouldNotBeEmpty;
         }
     });
 
@@ -190,6 +210,18 @@ async function askOpenAISecretKey(): Promise<string> {
     }
 
     return result;
+}
+
+async function askConfirmSignOut(options: { address: string, openAIKeyPreview: string }): Promise<boolean> {
+    const answerYes = text.ConfirmSignOut.answerYes;
+    const answerNo = text.ConfirmSignOut.answerNo;
+    const question = text.ConfirmSignOut.getMessage({
+        address: options.address,
+        openAIKeyPreview: options.openAIKeyPreview
+    });
+
+    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
+    return answer === answerYes;
 }
 
 function shortenAddress(address: string): string {
