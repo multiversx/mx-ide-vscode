@@ -66,7 +66,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	const codingSessionsRepository = new CodingSessionsRepository({ memento: context.globalState });
 
 	const codingSessionsTreeDataProvider = new CodingSessionsTreeDataProvider({
-		creator: assistantGateway,
+		creator: {
+			createSession: async () => {
+				const session = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: true });
+				console.assert(session !== undefined, "Session should always be available at this point (created if missing).");
+				const codingSession = await assistantGateway.createSession({ accessToken: session.accessToken });
+				return codingSession;
+			}
+		},
 		repository: codingSessionsRepository,
 		memento: context.globalState
 	});
@@ -110,6 +117,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	));
 
 	vscode.commands.registerCommand("multiversx.authentication.loginAssistant", async () => {
+		const anySession = await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: false });
+		if (anySession) {
+			await vscode.window.showInformationMessage("You are already logged in. Sign out first if you want to log in with a different account");
+			return;
+		}
+
 		// Only one session is supported (as of now):
 		// https://github.com/microsoft/vscode/pull/177036
 		await vscode.authentication.getSession(AssistantAuthenticationProvider.id, [], { createIfNone: true });

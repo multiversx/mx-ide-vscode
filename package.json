@@ -347,19 +347,19 @@
 				},
 				"multiversx.authentication.native.walletUrl": {
 					"type": "string",
-					"default": "https://testnet-wallet.multiversx.com"
+					"default": "https://devnet-wallet.multiversx.com"
 				},
 				"multiversx.authentication.native.apiUrl": {
 					"type": "string",
-					"default": "https://testnet-api.multiversx.com"
+					"default": "https://devnet-api.multiversx.com"
 				},
 				"multiversx.authentication.native.expirySeconds": {
 					"type": "number",
-					"default": 2592000
+					"default": 864000
 				},
 				"multiversx.assistant.url": {
 					"type": "string",
-					"default": "https://devnet-tools.multiversx.com/xbot"
+					"default": "https://devnet-tools.multiversx.com/xbot/api"
 				},
 				"multiversx.assistant.askAnything.enabled": {
 					"type": "boolean",

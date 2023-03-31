@@ -53,14 +53,15 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const payloadEncoded = query.get("payload");
         const payload = JSON.parse(Buffer.from(payloadEncoded, "hex").toString("utf8"));
         const tokenPart = payload.tokenPart;
+        const tokenPartEncoded = Buffer.from(tokenPart).toString("base64");
 
         const addressEncoded = Buffer.from(address).toString("base64");
-        const authToken = `${addressEncoded}.${tokenPart}.${signature}`;
+        const authToken = `${addressEncoded}.${tokenPartEncoded}.${signature}`;
 
         const session: AuthenticationSession = {
             id: address,
             accessToken: authToken,
-            account: { id: address, label: this.shortenAddress(address) },
+            account: { id: address, label: shortenAddress(address) },
             scopes: []
         };
 
@@ -68,17 +69,17 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         sessions[session.id] = session;
         await this.storeSessions(sessions);
 
-        await this.connectOpenAISecretKey(authToken);
+        await this.connectOpenAISecretKey({ address, authToken });
         return session;
     }
 
-    async connectOpenAISecretKey(authToken: string): Promise<void> {
-        const existingKey = await this.openAIKeysHolder.getOpenAIKey({ accessToken: authToken });
+    async connectOpenAISecretKey(options: { address: string, authToken: string }): Promise<void> {
+        const existingKey = await this.openAIKeysHolder.getOpenAIKey({ accessToken: options.authToken });
         if (existingKey) {
             return;
         }
 
-        const answer = await askConfirmConnectOpenAIKey(authToken);
+        const answer = await askConfirmConnectOpenAIKey(options.address);
         if (!answer) {
             return;
         }
@@ -88,7 +89,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
             return;
         }
 
-        await this.openAIKeysHolder.setOpenAIKey({ key, accessToken: authToken });
+        await this.openAIKeysHolder.setOpenAIKey({ key, accessToken: options.authToken });
     }
 
     async removeSession(sessionId: string): Promise<void> {
@@ -112,18 +113,20 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
             expirySeconds: Settings.getNativeAuthExpirySeconds()
         });
 
-        const initData = await nativeAuthClient.initialize();
+        const initData = await nativeAuthClient.initialize({
+            timestamp: Date.now().valueOf()
+        });
 
         const returnUriPayload = {
             tokenPart: initData
         };
 
         const returnUriPayloadEncoded = Buffer.from(JSON.stringify(returnUriPayload)).toString("hex");
-        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/on-native-authentication-ready&payload=${returnUriPayloadEncoded}`));
-        const returnUriEncoded = returnUri.toString();
+        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/on-native-authentication-ready?payload=${returnUriPayloadEncoded}`));
+        const returnUriEncoded = encodeURIComponent(returnUri.toString());
         const loginUrl = vscode.Uri.parse(`${Settings.getNativeAuthWalletUrl()}/hook/login?token=${initData}&callbackUrl=${returnUriEncoded}`);
 
-        console.info("NativeAuthenticationProvider.returnUri", returnUri.toString(true));
+        console.info("NativeAuthenticationProvider.returnUri", returnUriEncoded);
         console.info("NativeAuthenticationProvider.loginUrl", loginUrl.toString(true));
 
         await vscode.env.openExternal(loginUrl);
@@ -151,23 +154,19 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const serialized = JSON.stringify(obj);
         await this.secretStorage.store(AssistantAuthenticationProvider.storageKeyOfSessions, serialized);
     }
-
-    private shortenAddress(address: string): string {
-        return `${address.substring(0, 8)}...${address.substring(address.length - 8)}`;
-    }
 }
 
 async function askConfirmConnectOpenAIKey(address: string): Promise<boolean> {
     const answerYes = "Yes, provide key";
     const answerSkip = "Skip for now";
     const question = `
-Optionally, you can provide your OpenAI secret key (if you own one), and connect it with your MultiversX address: ${address}.
+Optionally, you can provide your OpenAI secret key (if you own one), and connect it with your MultiversX address: ${shortenAddress(address)}.
 
 This OpenAI secret key will be sent to the server on which the MultiversX assistant is running, and it will be used to resolve the answers to your requests. 
 
-The key will not be stored on the device.
+The key will not be stored on this device.
 
-Would you like to provide your OpenAI secret key, and connect it to your MultiversX address ${address}?
+Would you like to provide your OpenAI secret key, and connect it to your MultiversX address ${shortenAddress(address)}?
 
 If you choose to skip this step, you can always provide the key later, by invoking the command "Connect OpenAI secret key".
 `;
@@ -189,4 +188,8 @@ async function askOpenAISecretKey(): Promise<string> {
     }
 
     return result;
+}
+
+function shortenAddress(address: string): string {
+    return `${address.substring(0, 8)}...${address.substring(address.length - 8)}`;
 }

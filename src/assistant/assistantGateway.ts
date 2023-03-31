@@ -23,35 +23,42 @@ export class AssistantGateway {
     }
 
     async getOpenAIKey(options: { accessToken: string }): Promise<string> {
-        const response = await this.doGet({
-            url: `${this.baseUrl}/openai/get_key`,
-            accessToken: options.accessToken
-        });
+        try {
+            const response = await this.doGet({
+                url: `${this.baseUrl}/openai/get_key/`,
+                accessToken: options.accessToken
+            });
 
-        const key = response.key;
-        return key;
+            return response.key;
+        } catch (error: any) {
+            if (this.isNotFoundError(error)) {
+                return "";
+            }
+
+            throw error;
+        }
     }
 
     async setOpenAIKey(options: { key: string, accessToken: string }): Promise<void> {
         await this.doPost({
-            url: `${this.baseUrl}/openai/set_key`,
-            payload: { openai_key: options.key },
+            url: `${this.baseUrl}/openai/set_key?openai_key=${options.key}`,
+            payload: {},
             accessToken: options.accessToken
         });
     }
 
     async deleteOpenAIKey(options: { accessToken: string }): Promise<void> {
         await this.doDelete({
-            url: `${this.baseUrl}/openai/delete_key`,
+            url: `${this.baseUrl}/openai/delete_key/`,
             accessToken: options.accessToken
         });
     }
 
-    async createSession(): Promise<string> {
+    async createSession(options: { accessToken: string }): Promise<string> {
         const response = await this.doPost({
-            url: `${this.baseUrl}/coding-sessions/create`,
+            url: `${this.baseUrl}/coding-sessions/create/`,
             payload: {},
-            accessToken: ""
+            accessToken: options.accessToken
         });
 
         const id = response.id;
@@ -64,7 +71,7 @@ export class AssistantGateway {
             content: options.code
         };
 
-        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/create`;
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-explanation/create/`;
         const createStreamResponse = await this.doPost({
             url: createStreamUrl,
             payload: payload,
@@ -97,7 +104,7 @@ export class AssistantGateway {
             content: options.code
         };
 
-        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-review/create`;
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-review/create/`;
         const createStreamResponse = await this.doPost({
             url: createStreamUrl,
             payload: payload,
@@ -131,7 +138,7 @@ export class AssistantGateway {
         };
 
         const response = await this.doPost({
-            url: `${this.baseUrl}/coding-sessions/completion`,
+            url: `${this.baseUrl}/coding-sessions/completion/`,
             payload: payload,
             accessToken: options.accessToken
         });
@@ -150,7 +157,7 @@ export class AssistantGateway {
             content: options.question
         };
 
-        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/create`;
+        const createStreamUrl = `${this.baseUrl}/coding-sessions/streaming-ama/create/`;
         const createStreamResponse = await this.doPost({
             url: createStreamUrl,
             payload: payload,
@@ -183,9 +190,10 @@ export class AssistantGateway {
         try {
             const response = await axios.get(options.url, config);
             return response.data;
-        } catch (error) {
-            this.handleApiError(error, options.url);
-            throw error;
+        } catch (error: any) {
+            throw new Error(`Error on GET from ${options.url}: ${error.message}`, {
+                cause: error,
+            });
         }
     }
 
@@ -195,9 +203,10 @@ export class AssistantGateway {
         try {
             const response = await axios.post(options.url, options.payload, config);
             return response.data;
-        } catch (error) {
-            this.handleApiError(error, options.url);
-            throw error;
+        } catch (error: any) {
+            throw new Error(`Error on POST to ${options.url}: ${error.message}`, {
+                cause: error,
+            });
         }
     }
 
@@ -207,9 +216,10 @@ export class AssistantGateway {
         try {
             const response = await axios.delete(options.url, config);
             return response.data;
-        } catch (error) {
-            this.handleApiError(error, options.url);
-            throw error;
+        } catch (error: any) {
+            throw new Error(`Error on DELETE of ${options.url}: ${error.message}`, {
+                cause: error,
+            });
         }
     }
 
@@ -240,7 +250,9 @@ export class AssistantGateway {
         };
     }
 
-    private handleApiError(error: any, resourceUrl: string) {
-        throw new Error(`Error while interacting with ${resourceUrl}: ${error.message}`);
+    private isNotFoundError(error: any): boolean {
+        const originalError = error.cause || error;
+        const status = originalError.response?.status;
+        return status === 404;
     }
 }
