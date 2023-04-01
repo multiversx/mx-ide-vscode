@@ -1,13 +1,14 @@
 import * as vscode from "vscode";
-import { Memento } from "vscode";
 import { CodingSession } from "./codingSession";
 import { askCodingSessionName } from "./codingSessionPresenter";
 import { CodingSessionsTreeItem } from "./codingSessionsTreeItem";
 
-interface IRepository {
-    getAll(): CodingSession[];
-    add(item: CodingSession): Promise<void>;
-    remove(identifier: string): Promise<void>;
+interface IStorage {
+    getAllCodingSessions(): CodingSession[];
+    addCodingSession(item: CodingSession): Promise<void>;
+    removeCodingSession(identifier: string): Promise<void>;
+    setSelectedCodingSessionId(identifier: string | undefined): Promise<void>;
+    getSelectedCodingSessionId(): string | undefined;
 }
 
 interface ICreator {
@@ -16,8 +17,7 @@ interface ICreator {
 
 export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<CodingSessionsTreeItem> {
     private readonly creator: ICreator;
-    private readonly repository: IRepository;
-    private readonly memento: Memento;
+    private readonly storage: IStorage;
     private models: CodingSession[] = [];
 
     private readonly _onDidChangeTreeData: vscode.EventEmitter<CodingSessionsTreeItem | undefined> = new vscode.EventEmitter<CodingSessionsTreeItem | undefined>();
@@ -25,16 +25,14 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
 
     constructor(options: {
         creator: ICreator,
-        repository: IRepository,
-        memento: Memento
+        storage: IStorage,
     }) {
         this.creator = options.creator;
-        this.repository = options.repository;
-        this.memento = options.memento;
+        this.storage = options.storage;
     }
 
     async refresh() {
-        this.models = this.repository.getAll();
+        this.models = this.storage.getAllCodingSessions();
         await this.refreshSuperficially();
     }
 
@@ -72,7 +70,7 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
 
         const identifier = await this.creator.createSession();
         const session = new CodingSession({ name: name, identifier: identifier });
-        await this.repository.add(session);
+        await this.storage.addCodingSession(session);
         await this.setSelected(identifier);
         await this.refresh();
 
@@ -86,22 +84,22 @@ export class CodingSessionsTreeDataProvider implements vscode.TreeDataProvider<C
             await this.resetSelected();
         }
 
-        await this.repository.remove(identifier);
+        await this.storage.removeCodingSession(identifier);
         this.refresh();
     }
 
     private async resetSelected() {
-        await this.memento.update("selectedCodingSession", undefined);
+        await this.storage.setSelectedCodingSessionId(undefined);
         await this.triggerRefreshAssistant();
     }
 
     private async setSelected(identifier: string) {
-        await this.memento.update("selectedCodingSession", identifier);
+        await this.storage.setSelectedCodingSessionId(identifier);
         await this.triggerRefreshAssistant();
     }
 
     public getSelectedCodingSession(): string {
-        return this.memento.get<string>("selectedCodingSession");
+        return this.storage.getSelectedCodingSessionId();
     }
 
     private async triggerRefreshAssistant() {

@@ -16,8 +16,8 @@ interface INativeAccessTokenProvider {
     getAccessToken(): Promise<string>;
 }
 
-interface IAnswersRepository {
-    add(item: Answer): Promise<void>;
+interface IStorage {
+    addAnswer(item: Answer): Promise<void>;
     getAnswersHeaders(options: { codingSessionId: string }): AnswerHeader[];
     getAnswer(options: { sourceStreamId: string }): Answer;
 }
@@ -26,18 +26,18 @@ export class AssistantFacade {
     private readonly gateway: IAssistantGateway;
     private readonly codingSessionProvider: ICodingSessionProvider;
     private readonly nativeAccessTokenProvider: INativeAccessTokenProvider;
-    private readonly answersRepository: IAnswersRepository;
+    private readonly storage: IStorage;
 
     constructor(options: {
         gateway: IAssistantGateway,
         codingSessionProvider: ICodingSessionProvider,
         nativeAccessTokenProvider: INativeAccessTokenProvider,
-        answersRepository: IAnswersRepository
+        storage: IStorage
     }) {
         this.gateway = options.gateway;
         this.codingSessionProvider = options.codingSessionProvider;
         this.nativeAccessTokenProvider = options.nativeAccessTokenProvider;
-        this.answersRepository = options.answersRepository;
+        this.storage = options.storage;
     }
 
     async explainCode(options: { code: string }): Promise<AnswerStream> {
@@ -91,7 +91,7 @@ export class AssistantFacade {
 
         // When the answer stream is finished, we save the answer.
         answerStream.onDidFinish(async (answer: Answer) => {
-            await this.answersRepository.add(answer);
+            await this.storage.addAnswer(answer);
         });
 
         return answerStream;
@@ -99,12 +99,12 @@ export class AssistantFacade {
 
     getAnswersHeaders(): AnswerHeader[] {
         const codingSession = this.getCodingSession();
-        const headers = this.answersRepository.getAnswersHeaders({ codingSessionId: codingSession });
+        const headers = this.storage.getAnswersHeaders({ codingSessionId: codingSession });
         return headers;
     }
 
     getAnswer(options: { sourceStreamId: string }): Answer {
-        const body = this.answersRepository.getAnswer(options);
+        const body = this.storage.getAnswer(options);
         return body;
     }
 

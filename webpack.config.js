@@ -114,7 +114,7 @@ const welcomeWebViewConfig = createWebViewConfig({
 });
 
 const assistantWebViewConfig = createWebViewConfig({
-    entry: "./src/assistant/main.ts",
+    entry: "./src/assistant/assistant.ts",
     outputName: "assistant.js"
 });
 

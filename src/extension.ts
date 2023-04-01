@@ -1,15 +1,14 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { AnswerPanelController } from './assistant/answerPanelController';
-import { AnswersRepository } from './assistant/answersRepository';
 import { AssistantAuthenticationProvider } from './assistant/assistantAuthenticationProvider';
 import { AssistantFacade } from './assistant/assistantFacade';
 import { AssistantGateway } from './assistant/assistantGateway';
 import { AssistantPresenter } from './assistant/assistantPresenter';
+import { AssistantStorage } from './assistant/assistantStorage';
 import { AssistantTerms } from './assistant/assistantTerms';
 import { AssistantViewProvider } from './assistant/assistantViewProvider';
 import { InlineCompletionItemProvider } from './assistant/codeCompletion';
-import { CodingSessionsRepository } from './assistant/codingSessionsRepository';
 import { CodingSessionsTreeDataProvider } from './assistant/codingSessionsTreeDataProvider';
 import { SmartContract, SmartContractsViewModel } from './contracts';
 import { CustomUriHandler } from './customUriHandler';
@@ -63,7 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		memento: context.globalState
 	});
 
-	const codingSessionsRepository = new CodingSessionsRepository({ memento: context.globalState });
+	const assistantStorage = new AssistantStorage({ memento: context.globalState });
 
 	const codingSessionsTreeDataProvider = new CodingSessionsTreeDataProvider({
 		creator: {
@@ -74,11 +73,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				return codingSession;
 			}
 		},
-		repository: codingSessionsRepository,
-		memento: context.globalState
+		storage: assistantStorage
 	});
-
-	const answersRepository = new AnswersRepository({ memento: context.globalState });
 
 	const assistantFacade = new AssistantFacade({
 		gateway: assistantGateway,
@@ -92,7 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				return session.accessToken;
 			}
 		},
-		answersRepository: answersRepository
+		storage: assistantStorage
 	});
 
 	const answerPanelController = new AnswerPanelController();
@@ -107,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		extensionId: context.extension.id,
 		secretStorage: context.secrets,
 		openAIKeysHolder: assistantGateway,
-		codingSessionsRepository: codingSessionsRepository,
+		storage: assistantStorage,
 		onDidAuthenticateEventEmitter: customUriHandler,
 	});
 
@@ -185,7 +181,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.removeCodingSession", async (item: { identifier: string }) => {
 		try {
 			await codingSessionsTreeDataProvider.removeCodingSession(item.identifier);
-			await answersRepository.removeAnswers({ codingSessionId: item.identifier });
+			await assistantStorage.removeAnswers({ codingSessionId: item.identifier });
 		} catch (error: any) {
 			onTopLevelError(error);
 		}

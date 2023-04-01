@@ -5,14 +5,14 @@ import { urlSegmentOnNativeAuthenticationReady } from "../constants";
 import { Settings } from "../settings";
 import * as text from "../text";
 
+interface IStorage {
+    removeAll(): Promise<void>;
+}
+
 interface IOpenAIKeysHolder {
     getOpenAIKey(options: { accessToken: string }): Promise<string>;
     setOpenAIKey(options: { key: string, accessToken: string }): Promise<void>;
     deleteOpenAIKey(options: { accessToken: string }): Promise<void>;
-}
-
-interface ICodingSessionsRepository {
-    removeAll(): Promise<void>;
 }
 
 interface IOnDidAuthenticateEventEmitter {
@@ -26,8 +26,8 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 
     private readonly extensionId: string;
     private readonly secretStorage: SecretStorage;
+    private readonly storage: IStorage;
     private readonly openAIKeysHolder: IOpenAIKeysHolder;
-    private readonly codingSessionsRepository: ICodingSessionsRepository;
     private readonly onDidAuthenticateEventEmitter: IOnDidAuthenticateEventEmitter;
 
     private _onDidChangeSessions = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
@@ -36,14 +36,14 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     constructor(options: {
         extensionId: string;
         secretStorage: SecretStorage;
+        storage: IStorage;
         openAIKeysHolder: IOpenAIKeysHolder;
-        codingSessionsRepository: ICodingSessionsRepository;
         onDidAuthenticateEventEmitter: IOnDidAuthenticateEventEmitter;
     }) {
         this.extensionId = options.extensionId;
         this.secretStorage = options.secretStorage;
+        this.storage = options.storage;
         this.openAIKeysHolder = options.openAIKeysHolder;
-        this.codingSessionsRepository = options.codingSessionsRepository;
         this.onDidAuthenticateEventEmitter = options.onDidAuthenticateEventEmitter;
     }
 
@@ -123,7 +123,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 
         delete sessions[address];
         await this.storeSessions(sessions);
-        await this.codingSessionsRepository.removeAll();
+        await this.storage.removeAll();
 
         await vscode.window.showInformationMessage(`Signed out of ${sessionToRemove.account.label}.`);
     }

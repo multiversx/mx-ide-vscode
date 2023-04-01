@@ -21,31 +21,31 @@
     </p>
 
     <h2>Using the assistant</h2>
+
+    <p>
+        Please read the
+        <vscode-link href="#">Terms of Service</vscode-link> and the
+        <vscode-link href="#">Privacy Statement</vscode-link>.
+
+        You will be asked to agree to these terms before using the assistant, when signing into the service.
+    </p>
+
     <div>
         <!-- The section on "terms of service" and "privacy statement" is currently hidden, since we'll use a pre-login dialog at first. -->
         <div class="hidden">
-            <p>
-                Before using the assistant, you must read and accept the
-                <vscode-link href="#">Terms of Service</vscode-link> and the
-                <vscode-link href="#">Privacy Statement</vscode-link>.
-            </p>
-
-            <div>
-                <fieldset>
-                    <div>
-                        <vscode-checkbox id="CheckboxAssistantTermsOfService">
-                            I agree to the <strong>Terms of Service</strong>
-                        </vscode-checkbox>
-                    </div>
-                    <div>
-                        <vscode-checkbox id="CheckboxAssistantPrivacyStatement">
-                            I agree to the <strong>Privacy Statement</strong>
-                        </vscode-checkbox>
-                    </div>
-                </fieldset>
-            </div>
+            <fieldset>
+                <div>
+                    <vscode-checkbox id="CheckboxAssistantTermsOfService">
+                        I agree to the <strong>Terms of Service</strong>
+                    </vscode-checkbox>
+                </div>
+                <div>
+                    <vscode-checkbox id="CheckboxAssistantPrivacyStatement">
+                        I agree to the <strong>Privacy Statement</strong>
+                    </vscode-checkbox>
+                </div>
+            </fieldset>
         </div>
-
 
         <h3>Code reviews</h3>
 

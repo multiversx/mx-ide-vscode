@@ -5,7 +5,7 @@ import { Settings } from "../settings";
 import { Answer, AnswerHeader } from "./answer";
 import { AnswerStream } from "./answerStream";
 import { IAnswerFinished, IAskQuestionRequested, IDisplayAnswerRequested, IInitialize as IRefreshHistory, MessageType } from "./messages";
-const mainHtml = require("./main.html");
+const webviewHtml = require("./assistant.html");
 
 interface IAssistant {
     askAnything(options: { question: string }): Promise<AnswerStream>;
@@ -108,7 +108,7 @@ export class AssistantViewProvider implements vscode.WebviewViewProvider {
 
     private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
         const uriJs = webview.asWebviewUri(Uri.joinPath(this.extensionUri, ...["dist", "assistant.js"]));
-        const html = mainHtml.replace("{{uriJs}}", uriJs.toString());
+        const html = webviewHtml.replace("{{uriJs}}", uriJs.toString());
         return html;
     }
 }
