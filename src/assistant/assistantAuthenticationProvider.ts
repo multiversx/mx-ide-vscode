@@ -2,6 +2,7 @@ import { NativeAuthClient } from "@multiversx/sdk-native-auth-client";
 import * as vscode from 'vscode';
 import { AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationSession, Event, EventEmitter, SecretStorage, Uri } from "vscode";
 import { urlSegmentOnNativeAuthenticationReady } from "../constants";
+import { Feedback } from "../feedback";
 import { Settings } from "../settings";
 import { AssistantAuthenticationPresenter, shortenAddress } from "./assistantAuthenticationPresenter";
 
@@ -88,7 +89,13 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         sessions[session.id] = session;
         await this.storeSessions(sessions);
 
-        await this.linkOpenAISecretKey({ address, authToken });
+        try {
+            await this.linkOpenAISecretKey({ address, authToken });
+        } catch (error: any) {
+            // Not a critical error, session is created anyway.
+            await Feedback.error(error);
+        }
+
         return session;
     }
 
@@ -109,8 +116,8 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const returnUriEncoded = encodeURIComponent(returnUri.toString());
         const loginUrl = vscode.Uri.parse(`${Settings.getNativeAuthWalletUrl()}/hook/login?token=${initData}&callbackUrl=${returnUriEncoded}`);
 
-        console.info("NativeAuthenticationProvider.returnUri", returnUriEncoded);
-        console.info("NativeAuthenticationProvider.loginUrl", loginUrl.toString(true));
+        await Feedback.debug(`NativeAuthenticationProvider.returnUri: ${returnUriEncoded}`);
+        await Feedback.debug(`NativeAuthenticationProvider.loginUrl: ${loginUrl.toString(true)}`);
 
         await vscode.env.openExternal(loginUrl);
     }
@@ -144,7 +151,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 
         await this.openAIKeysHolder.setOpenAIKey({ key, accessToken: options.authToken });
 
-        await vscode.window.showInformationMessage(`OpenAI key connected to ${options.address}`);
+        await Feedback.info(`OpenAI key connected to ${options.address}`);
     }
 
     async removeSession(sessionId: string): Promise<void> {

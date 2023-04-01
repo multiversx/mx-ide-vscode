@@ -1,1 +1,1 @@
-export const urlSegmentOnNativeAuthenticationReady = "/on-native-authentication-ready";
+export const urlSegmentOnNativeAuthenticationReady = "on-native-authentication-ready";

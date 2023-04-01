@@ -27,7 +27,8 @@ export class ConfirmConnectOpenAIKey {
         return `
 Optionally, you can provide your OpenAI secret key (if you own one), and connect it with your MultiversX address: ${address}.
 
-This OpenAI secret key will be sent to the server on which the MultiversX assistant is running, and it will be used to resolve the answers to your requests. 
+This OpenAI secret key will be sent to the MultiversX assistant service, \
+and it will be used to resolve the answers to your requests. 
 
 The key will not be stored on this device.
 

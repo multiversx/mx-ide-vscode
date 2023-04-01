@@ -122,7 +122,6 @@ export async function fetchTemplates(cacheFile: string) {
         await ProcessFacade.execute({
             program: Mxpy,
             args: ["contract", "templates"],
-            doNotDumpStdout: true,
             stdoutToFile: cacheFile
         });
 

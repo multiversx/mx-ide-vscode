@@ -13,29 +13,11 @@ export class ProcessFacade {
 
         let program = options.program;
         let programName = path.basename(program);
-        let workingDirectory = options.workingDirectory;
         let args = options.args;
-        let environment = options.environment;
-        let channels = options.channels || ["default"];
         let stdoutToFile = options.stdoutToFile;
-        let doNotDumpStdout = options.doNotDumpStdout;
-        let collectStdOut = options.collectStdOut;
+        let spawnOptions: child_process.SpawnOptions = {};
 
-        let spawnOptions: child_process.SpawnOptions = {
-            cwd: workingDirectory,
-            env: environment
-        };
-
-        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`, channels);
-
-        if (workingDirectory) {
-            Feedback.debug(`Working directory: ${workingDirectory}`, channels);
-        }
-
-        if (environment) {
-            Feedback.debug(`Environment variables:`, channels);
-            Feedback.debug(JSON.stringify(environment, null, 4), channels);
-        }
+        Feedback.debug(`Execute [${program}] with arguments ${JSON.stringify(args)}`);
 
         let subprocess = child_process.spawn(program, args, spawnOptions);
 
@@ -56,39 +38,20 @@ export class ProcessFacade {
 
         subprocess.stdout.on("data", function (data) {
             latestStdout = data;
-
-            if (collectStdOut) {
-                collectedStdout += data;
-            }
-
-            if (!doNotDumpStdout) {
-                Feedback.programOutput(programName, data, channels);
-            }
-
-            if (options.onOutput) {
-                options.onOutput(data);
-            }
         });
 
         subprocess.stderr.on("data", function (data) {
             latestStderr = data;
-            Feedback.programOutput(programName, data, channels);
-
-            if (options.onError) {
-                options.onError(data);
-            }
+            Feedback.debug(programName);
+            Feedback.debug(data);
         });
 
         subprocess.on("close", function (code) {
-            Feedback.debug(`[${programName}] exists, exit code = ${code}.`, channels);
+            Feedback.debug(`[${programName}] exits, exit code = ${code}.`);
 
             let stdout = (collectedStdout || latestStdout).trim();
 
-            if (options.onClose) {
-                options.onClose(code, stdout);
-            }
-
-            if (code == 0) {
+            if (code === 0) {
                 resolve({ code: code, stdout: stdout });
             } else {
                 reject(new Error(`${programName} exited with code = ${code}.`, { cause: latestStderr || latestStdout }));
