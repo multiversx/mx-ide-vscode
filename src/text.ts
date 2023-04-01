@@ -3,6 +3,22 @@ export class CommandsLabels {
     static unlinkOpenAISecretKey = "Unlink OpenAI secret key from current account";
 }
 
+export class ConfirmTerms {
+    static answerYes = "I agree";
+    static answerNo = "I don't agree";
+
+    static getMessage() {
+        return `\
+In order to use the assistant, you need to first read and agree to the following terms \
+(see the "Welcome" panel for clickable links):
+
+Terms of Service: https://multiversx.com
+MultiversX Privacy Statement: https://multiversx.com
+
+Do you agree to the terms?`;
+    }
+}
+
 export class ConfirmConnectOpenAIKey {
     static answerYes = "Yes, provide key";
     static answerNo = "Skip for now";

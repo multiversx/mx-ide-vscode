@@ -53,6 +53,11 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     }
 
     async createSession(_scopes: readonly string[]): Promise<AuthenticationSession> {
+        const confirmTerms = await askConfirmTerms();
+        if (!confirmTerms) {
+            return Promise.reject("User declined to accept terms of service.");
+        }
+
         await this.login();
 
         const uri = await this.awaitAuthenticationRedirect();
@@ -109,11 +114,25 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     async removeSession(sessionId: string): Promise<void> {
         const address = sessionId;
         const sessions = await this.loadSessions();
+
+        // At the moment, we only support one session anyway.
         const sessionToRemove = sessions[address];
-        const openAIKeyPreview = await this.openAIKeysHolder.getOpenAIKey({ accessToken: sessionToRemove.accessToken });
+
+        if (!sessionToRemove) {
+            // Unexpected condition, let's just clear everything.
+            await this.storeSessions({});
+            await this.storage.removeAll();
+            return;
+        }
+
+        // If the user has previously linked an OpenAI key,
+        // she will get additional information in the confirmation dialog (below).
+        const openAIKeyPreview = await this.openAIKeysHolder.getOpenAIKey({
+            accessToken: sessionToRemove.accessToken
+        });
 
         const answer = await askConfirmSignOut({
-            address: shortenAddress(address),
+            address: address,
             openAIKeyPreview: openAIKeyPreview
         });
 
@@ -121,11 +140,8 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
             throw new Error("User cancelled");
         }
 
-        delete sessions[address];
-        await this.storeSessions(sessions);
+        await this.storeSessions({});
         await this.storage.removeAll();
-
-        await vscode.window.showInformationMessage(`Signed out of ${sessionToRemove.account.label}.`);
     }
 
     async login(): Promise<void> {
@@ -180,6 +196,14 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     }
 }
 
+async function askConfirmTerms(): Promise<boolean> {
+    const answerYes = text.ConfirmTerms.answerYes;
+    const answerNo = text.ConfirmTerms.answerNo;
+    const question = text.ConfirmTerms.getMessage();
+    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
+    return answer === answerYes;
+}
+
 async function askConfirmOverrideOpenAIKey(address: string): Promise<boolean> {
     const answerYes = text.ConfirmOverrideOpenAIKey.answerYes;
     const answerNo = text.ConfirmOverrideOpenAIKey.answerNo;
@@ -216,7 +240,7 @@ async function askConfirmSignOut(options: { address: string, openAIKeyPreview: s
     const answerYes = text.ConfirmSignOut.answerYes;
     const answerNo = text.ConfirmSignOut.answerNo;
     const question = text.ConfirmSignOut.getMessage({
-        address: options.address,
+        address: shortenAddress(options.address),
         openAIKeyPreview: options.openAIKeyPreview
     });
 
