@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationSession, Event, EventEmitter, SecretStorage, Uri } from "vscode";
 import { urlSegmentOnNativeAuthenticationReady } from "../constants";
 import { Settings } from "../settings";
-import * as text from "../text";
+import { AssistantAuthenticationPresenter, shortenAddress } from "./assistantAuthenticationPresenter";
 
 interface IStorage {
     removeAll(): Promise<void>;
@@ -29,6 +29,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     private readonly storage: IStorage;
     private readonly openAIKeysHolder: IOpenAIKeysHolder;
     private readonly onDidAuthenticateEventEmitter: IOnDidAuthenticateEventEmitter;
+    private readonly presenter: AssistantAuthenticationPresenter;
 
     private _onDidChangeSessions = new EventEmitter<AuthenticationProviderAuthenticationSessionsChangeEvent>();
     readonly onDidChangeSessions: Event<AuthenticationProviderAuthenticationSessionsChangeEvent> = this._onDidChangeSessions.event;
@@ -45,6 +46,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         this.storage = options.storage;
         this.openAIKeysHolder = options.openAIKeysHolder;
         this.onDidAuthenticateEventEmitter = options.onDidAuthenticateEventEmitter;
+        this.presenter = new AssistantAuthenticationPresenter();
     }
 
     async getSessions(_scopes?: readonly string[]): Promise<readonly AuthenticationSession[]> {
@@ -53,7 +55,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     }
 
     async createSession(_scopes: readonly string[]): Promise<AuthenticationSession> {
-        const confirmTerms = await askConfirmTerms();
+        const confirmTerms = await this.presenter.askConfirmTerms();
         if (!confirmTerms) {
             return Promise.reject("User declined to accept terms of service.");
         }
@@ -75,7 +77,10 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         const session: AuthenticationSession = {
             id: address,
             accessToken: authToken,
-            account: { id: address, label: shortenAddress(address) },
+            account: {
+                id: address,
+                label: shortenAddress(address)
+            },
             scopes: []
         };
 
@@ -87,21 +92,52 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
         return session;
     }
 
+    async login(): Promise<void> {
+        const extensionBaseUrl = `${vscode.env.uriScheme}://${this.extensionId}`;
+
+        const nativeAuthClient = new NativeAuthClient({
+            origin: extensionBaseUrl,
+            apiUrl: Settings.getNativeAuthApiUrl(),
+            expirySeconds: Settings.getNativeAuthExpirySeconds()
+        });
+
+        const timestamp = Date.now().valueOf();
+        const initData = await nativeAuthClient.initialize({ timestamp });
+        const returnUriPayload = { tokenPart: initData };
+        const returnUriPayloadEncoded = Buffer.from(JSON.stringify(returnUriPayload)).toString("hex");
+        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/${urlSegmentOnNativeAuthenticationReady}?payload=${returnUriPayloadEncoded}`));
+        const returnUriEncoded = encodeURIComponent(returnUri.toString());
+        const loginUrl = vscode.Uri.parse(`${Settings.getNativeAuthWalletUrl()}/hook/login?token=${initData}&callbackUrl=${returnUriEncoded}`);
+
+        console.info("NativeAuthenticationProvider.returnUri", returnUriEncoded);
+        console.info("NativeAuthenticationProvider.loginUrl", loginUrl.toString(true));
+
+        await vscode.env.openExternal(loginUrl);
+    }
+
+    private async awaitAuthenticationRedirect(): Promise<Uri> {
+        return new Promise<Uri>(resolve => {
+            this.onDidAuthenticateEventEmitter.onDidAuthenticate(uri => {
+                resolve(uri);
+            });
+        });
+    }
+
     async linkOpenAISecretKey(options: { address: string, authToken: string }): Promise<void> {
         const existingKey = await this.openAIKeysHolder.getOpenAIKey({ accessToken: options.authToken });
         if (existingKey) {
-            const answer = await askConfirmOverrideOpenAIKey(options.address);
+            const answer = await this.presenter.askConfirmOverrideOpenAIKey(options.address);
             if (!answer) {
                 return;
             }
         }
 
-        const answer = await askConfirmConnectOpenAIKey(options.address);
+        const answer = await this.presenter.askConfirmConnectOpenAIKey(options.address);
         if (!answer) {
             return;
         }
 
-        const key = await askOpenAISecretKey();
+        const key = await this.presenter.askOpenAISecretKey();
         if (!key) {
             return;
         }
@@ -131,7 +167,7 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
             accessToken: sessionToRemove.accessToken
         });
 
-        const answer = await askConfirmSignOut({
+        const answer = await this.presenter.askConfirmSignOut({
             address: address,
             openAIKeyPreview: openAIKeyPreview
         });
@@ -142,42 +178,6 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
 
         await this.storeSessions({});
         await this.storage.removeAll();
-    }
-
-    async login(): Promise<void> {
-        const extensionBaseUrl = `${vscode.env.uriScheme}://${this.extensionId}`;
-
-        const nativeAuthClient = new NativeAuthClient({
-            origin: extensionBaseUrl,
-            apiUrl: Settings.getNativeAuthApiUrl(),
-            expirySeconds: Settings.getNativeAuthExpirySeconds()
-        });
-
-        const initData = await nativeAuthClient.initialize({
-            timestamp: Date.now().valueOf()
-        });
-
-        const returnUriPayload = {
-            tokenPart: initData
-        };
-
-        const returnUriPayloadEncoded = Buffer.from(JSON.stringify(returnUriPayload)).toString("hex");
-        const returnUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${extensionBaseUrl}/${urlSegmentOnNativeAuthenticationReady}?payload=${returnUriPayloadEncoded}`));
-        const returnUriEncoded = encodeURIComponent(returnUri.toString());
-        const loginUrl = vscode.Uri.parse(`${Settings.getNativeAuthWalletUrl()}/hook/login?token=${initData}&callbackUrl=${returnUriEncoded}`);
-
-        console.info("NativeAuthenticationProvider.returnUri", returnUriEncoded);
-        console.info("NativeAuthenticationProvider.loginUrl", loginUrl.toString(true));
-
-        await vscode.env.openExternal(loginUrl);
-    }
-
-    private async awaitAuthenticationRedirect(): Promise<Uri> {
-        return new Promise<Uri>(resolve => {
-            this.onDidAuthenticateEventEmitter.onDidAuthenticate(uri => {
-                resolve(uri);
-            });
-        });
     }
 
     private async loadSessions(): Promise<Record<string, AuthenticationSession>> {
@@ -196,58 +196,3 @@ export class AssistantAuthenticationProvider implements AuthenticationProvider {
     }
 }
 
-async function askConfirmTerms(): Promise<boolean> {
-    const answerYes = text.ConfirmTerms.answerYes;
-    const answerNo = text.ConfirmTerms.answerNo;
-    const question = text.ConfirmTerms.getMessage();
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
-    return answer === answerYes;
-}
-
-async function askConfirmOverrideOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = text.ConfirmOverrideOpenAIKey.answerYes;
-    const answerNo = text.ConfirmOverrideOpenAIKey.answerNo;
-    const question = text.ConfirmOverrideOpenAIKey.getMessage(shortenAddress(address));
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
-    return answer === answerYes;
-}
-
-async function askConfirmConnectOpenAIKey(address: string): Promise<boolean> {
-    const answerYes = text.ConfirmConnectOpenAIKey.answerYes;
-    const answerNo = text.ConfirmConnectOpenAIKey.answerNo;
-    const question = text.ConfirmConnectOpenAIKey.getMessage(shortenAddress(address));
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
-    return answer === answerYes;
-}
-
-async function askOpenAISecretKey(): Promise<string> {
-    const result = await vscode.window.showInputBox({
-        prompt: text.EnterOpenAISecretKey.prompt,
-        ignoreFocusOut: true,
-        validateInput: input => {
-            return input.length > 0 ? null : text.EnterOpenAISecretKey.validationShouldNotBeEmpty;
-        }
-    });
-
-    if (result === undefined) {
-        return null;
-    }
-
-    return result;
-}
-
-async function askConfirmSignOut(options: { address: string, openAIKeyPreview: string }): Promise<boolean> {
-    const answerYes = text.ConfirmSignOut.answerYes;
-    const answerNo = text.ConfirmSignOut.answerNo;
-    const question = text.ConfirmSignOut.getMessage({
-        address: shortenAddress(options.address),
-        openAIKeyPreview: options.openAIKeyPreview
-    });
-
-    const answer = await vscode.window.showInformationMessage(question, { modal: true }, answerYes, answerNo);
-    return answer === answerYes;
-}
-
-function shortenAddress(address: string): string {
-    return `${address.substring(0, 8)}...${address.substring(address.length - 8)}`;
-}
