@@ -2,14 +2,14 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "MultiversX IDE",
 	"description": "MultiversX IDE for developing Smart Contracts",
-	"version": "0.18.0",
+	"version": "0.19.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/multiversx/mx-ide-vscode.git"
 	},
 	"engines": {
-		"vscode": "^1.64.0"
+		"vscode": "^1.76.2"
 	},
 	"categories": [
 		"Programming Languages",
@@ -19,11 +19,9 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"onCommand:multiversx.setupWorkspace",
-		"onCommand:multiversx.installRustDebuggerPrettyPrinterScript",
 		"workspaceContains:**/multiversx.workspace.json"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -245,7 +243,7 @@
 			"activitybar": [
 				{
 					"id": "multiversx",
-					"title": "MultiversX Workspace Explorer",
+					"title": "MultiversX",
 					"icon": "content/logo-monochrome.png"
 				}
 			]
@@ -276,36 +274,47 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"package": "vsce package",
-		"deploy": "vsce publish",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
+		"vscode:package": "vsce package",
+		"vscode:prepublish": "npm run package",
+		"vscode:publish": "vsce publish",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"test-compile": "tsc -p ./",
 		"test": "node ./out/test/runTest.js",
 		"unit-tests": "mocha",
-		"lint": "tslint --project ."
+		"lint": "eslint src --ext ts"
 	},
 	"devDependencies": {
+		"@multiversx/sdk-native-auth-client": "1.0.0",
+		"@multiversx/sdk-wallet": "4.0.0",
 		"@types/chai": "4.2.11",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "9.1.0",
-		"@types/node": "13.13.2",
-		"@types/underscore": "^1.10.1",
-		"@types/vscode": "1.64.0",
-		"chai": "4.2.0",
-		"mocha": "9.2.2",
-		"ts-node": "9.1.1",
-		"tslint": "6.1.3",
-		"typescript": "^4.4.4",
-		"vsce": "2.6.7"
-	},
-	"dependencies": {
-		"glob": "8.1.0",
-		"ps-list": "7.2.0",
-		"underscore": "1.12.1",
+		"@types/eventsource": "1.1.11",
+		"@types/glob": "7.1.3",
+		"@types/mocha": "10.0.1",
+		"@types/node": "18.15.10",
+		"@types/uuid": "9.0.1",
+		"@types/vscode": "1.76.0",
+		"@typescript-eslint/eslint-plugin": "5.56.0",
+		"@typescript-eslint/parser": "5.56.0",
+		"@vscode/codicons": "0.0.32",
+		"@vscode/webview-ui-toolkit": "1.2.2",
 		"axios": "0.24.0",
-		"semver": "7.3.8"
+		"chai": "4.2.0",
+		"copy-webpack-plugin": "11.0.0",
+		"eslint": "8.36.0",
+		"eventsource": "2.0.2",
+		"glob": "8.1.0",
+		"html-loader": "4.2.0",
+		"mocha": "10.2.0",
+		"semver": "7.3.8",
+		"ts-loader": "9.4.2",
+		"ts-node": "10.9.1",
+		"typescript": "4.9.5",
+		"uuid": "8.3.2",
+		"vsce": "2.15.0",
+		"webpack": "5.76.3",
+		"webpack-cli": "5.0.1"
 	},
 	"extensionDependencies": []
 }
