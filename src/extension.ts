@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { SmartContract, SmartContractsViewModel } from './contracts';
-import * as errors from './errors';
+import { onTopLevelError } from "./errors";
 import { Feedback } from './feedback';
 import * as presenter from "./presenter";
 import { Root } from './root';
@@ -10,9 +10,8 @@ import { ContractTemplate, TemplatesViewModel } from './templates';
 import * as workspace from "./workspace";
 import path = require("path");
 
-
 export async function activate(context: vscode.ExtensionContext) {
-	Feedback.debug("MultiversXIDE.activate()");
+	Feedback.debug({ message: "MultiversX extension activated." });
 
 	Root.ExtensionContext = context;
 
@@ -39,25 +38,30 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	Feedback.debug("MultiversXIDE.deactivate()");
+	Feedback.debug({ message: "MultiversX extension deactivated." });
 }
 
 async function setupWorkspace() {
-	if (!workspace.guardIsOpen()) {
+	if (!workspace.isOpen()) {
+		await presenter.askOpenWorkspace();
 		return;
 	}
 
 	await workspace.setup();
 	await sdk.ensureInstalled();
 	await ensureInstalledBuildchains();
-	await Feedback.infoModal("Workspace has been set up.");
+
+	await Feedback.info({
+		message: "Workspace has been set up.",
+		display: true
+	});
 }
 
 async function installSdk() {
 	try {
 		await sdk.reinstall();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -65,7 +69,7 @@ async function installSdkModule() {
 	try {
 		await sdk.reinstallModule();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -73,7 +77,7 @@ async function installRustDebuggerPrettyPrinterScript() {
 	try {
 		await sdk.installRustDebuggerPrettyPrinterScript();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -81,7 +85,7 @@ async function refreshViewModel(viewModel: any) {
 	try {
 		await viewModel.refresh();
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -95,7 +99,7 @@ async function newFromTemplate(template: ContractTemplate) {
 		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -105,7 +109,7 @@ async function gotoContract(contract: SmartContract) {
 		await vscode.commands.executeCommand("vscode.open", uri);
 		await vscode.commands.executeCommand("workbench.files.action.focusFilesExplorer");
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -114,7 +118,7 @@ async function buildContract(contract: any) {
 		let folder = getContractFolder(contract);
 		await sdk.buildContract(folder);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -123,7 +127,7 @@ async function cleanContract(contract: any) {
 		let folder = getContractFolder(contract);
 		await sdk.cleanContract(folder);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -150,7 +154,7 @@ async function runScenarios(item: any) {
 			await sdk.runScenarios((item as SmartContract).getPath());
 		}
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -158,7 +162,7 @@ async function runFreshTestnet(testnetToml: Uri) {
 	try {
 		await sdk.runFreshTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -166,7 +170,7 @@ async function resumeExistingTestnet(testnetToml: Uri) {
 	try {
 		await sdk.resumeExistingTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 
@@ -174,7 +178,7 @@ async function stopTestnet(testnetToml: Uri) {
 	try {
 		await sdk.stopTestnet(testnetToml);
 	} catch (error) {
-		errors.caughtTopLevel(error);
+		await onTopLevelError(error);
 	}
 }
 

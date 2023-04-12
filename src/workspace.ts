@@ -1,25 +1,28 @@
 import * as vscode from "vscode";
-import * as errors from './errors';
-import { Feedback } from "./feedback";
+import { onTopLevelError } from "./errors";
 import path = require("path");
 import fs = require("fs");
-import _ = require('underscore');
 import glob = require("glob");
 
 let languages = ["rust"];
 
 export function isOpen(): boolean {
-    return getPath() ? true : false;
+    return getFirstWorkspaceFolder() ? true : false;
+}
+
+function getFirstWorkspaceFolder() {
+    const folders = vscode.workspace.workspaceFolders;
+    const workspaceFolder: vscode.WorkspaceFolder = folders ? folders[0] : null;
+    return workspaceFolder;
 }
 
 export function getPath() {
-    let folders = vscode.workspace.workspaceFolders;
-    let workspaceFolder: vscode.WorkspaceFolder = folders ? folders[0] : null;
+    const workspaceFolder = getFirstWorkspaceFolder();
 
     if (workspaceFolder) {
         return workspaceFolder.uri.fsPath;
     } else {
-        throw new errors.MyError({ Message: "Workspace not available." });
+        throw new Error("Workspace not available.");
     }
 }
 
@@ -34,20 +37,11 @@ function ensureWorkspaceDefinitionFile() {
     }
 }
 
-export function guardIsOpen(): boolean {
-    if (!isOpen()) {
-        Feedback.infoModal("No folder open in your workspace. Please open a folder.");
-        return false;
-    }
-
-    return true;
-}
-
-export function getLanguages() {
-    let metadataObjects = getMetadataObjects();
-    let languagesInProject = metadataObjects.map(item => item.Language);
-    languagesInProject = _.uniq(languagesInProject);
-    return languagesInProject;
+export function getLanguages(): string[] {
+    const metadataObjects = getMetadataObjects();
+    const languagesInProject = metadataObjects.map(item => item.Language);
+    const set = new Set(languagesInProject);
+    return [...set.values()];
 }
 
 export function getMetadataObjects(): ProjectMetadata[] {
@@ -59,7 +53,7 @@ export function getMetadataObjects(): ProjectMetadata[] {
         try {
             result.push(new ProjectMetadata(item));
         } catch (error) {
-            errors.caughtTopLevel(error);
+            onTopLevelError(error);
         }
     });
 
@@ -89,7 +83,7 @@ export class ProjectMetadata {
         this.ProjectName = path.basename(this.ProjectPath);
 
         if (!languages.includes(this.Language)) {
-            throw new errors.MyError({ Message: `Bad project metadata: ${metadataFile}. Language not supported: ${this.Language}` });
+            throw new Error(`Bad project metadata: ${metadataFile}. Language not supported: ${this.Language}`);
         }
     }
 }

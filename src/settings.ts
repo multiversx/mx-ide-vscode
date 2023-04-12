@@ -1,19 +1,17 @@
 import * as vscode from "vscode";
 const os = require("os");
 
-export class MySettings {
+export class Settings {
     public static getSdkPath(): string {
-        let folder = MySettings.getConfigurationValue("sdkPath").toString();
+        const folder = this.getConfiguration().get<string>("sdkPath");
         return folder.replace("~", os.homedir);
     }
 
     public static getSdkPathRelativeToHome(): string {
-        return MySettings.getSdkPath().replace(os.homedir, "");
+        return Settings.getSdkPath().replace(os.homedir, "");
     }
 
-    private static getConfigurationValue(key: string) {
-        let configuration = vscode.workspace.getConfiguration("multiversx");
-        let value = configuration.get(key);
-        return value;
+    private static getConfiguration(): vscode.WorkspaceConfiguration {
+        return vscode.workspace.getConfiguration("multiversx");
     }
 }

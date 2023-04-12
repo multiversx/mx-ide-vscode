@@ -1,9 +1,9 @@
 import path = require("path");
-import { MySettings } from "./settings";
+import { Settings } from "./settings";
 
 export class Environment {
     static getForTerminal(): any {
-        let sdkPath = path.join("${env:HOME}", MySettings.getSdkPathRelativeToHome());
+        let sdkPath = path.join("${env:HOME}", Settings.getSdkPathRelativeToHome());
         let vmToolsFolder = path.join(sdkPath, "vmtools");
         let rustFolder = path.join(sdkPath, "vendor-rust");
         let rustBinFolder = path.join(rustFolder, "bin");

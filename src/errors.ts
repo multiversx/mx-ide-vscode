@@ -1,56 +1,15 @@
 import { Feedback } from "./feedback";
 
-export class MyError {
-    public Message: string;
-    public Code: string;
-    public Inner: MyError;
-
-    public constructor(init?: Partial<MyError>) {
-        Object.assign(this, init);
-    }
-
-    public getPretty(): string {
-        return this.Message;
-    }
-}
-
-export class MyExecError extends MyError {
-    public Program: string;
-
-    public constructor(init?: Partial<MyExecError>) {
-        super();
-        Object.assign(this, init);
-    }
-
-    public getPretty(): string {
-        return `[${this.Program}] said ${this.Message} (code = ${this.Code})`;
-    }
-}
-
-export function caughtTopLevel(originalError: any) {
-    if (originalError instanceof Error) {
-        Feedback.error(originalError.message);
-        return;
-    }
-
-    let chain: MyError[] = [];
-    chain.push(originalError);
-
-    let error = originalError;
-    while (error.Inner) {
-        error = error.Inner;
-        chain.push(error);
-    }
-
-    let summary = originalError.getPretty();
-    let detailedBuilder: string[] = [];
-
-    chain.forEach(function (item) {
-        let errorType = item.constructor.name;
-        let pretty = item.getPretty();
-        detailedBuilder.push(`[${errorType}]: ${pretty}`);
+/**
+ * This function should be called when a top-level error occurs.
+ * Examples of top-level errors are:
+ * - errors that occur as a result of a executing a command of the extension
+ * - errors that occur on a call initiated by VSCode's view rendering logic (e.g. errors when preparing data for tree views).
+ */
+export async function onTopLevelError(error: any): Promise<void> {
+    await Feedback.error({
+        message: error.message,
+        error: error,
+        display: true
     });
-
-    let detailed = detailedBuilder.join("...\n");
-    Feedback.error(summary, detailed, ["default"]);
 }

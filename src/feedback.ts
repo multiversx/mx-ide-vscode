@@ -1,64 +1,86 @@
 import * as vscode from 'vscode';
+import { withoutEndingPeriod } from './text';
 
+/**
+ * Utility class for writing messages to the console and to a VSCode "output channel".
+ * Optionally, messages are also displayed to the user, as simple VSCode notifications or as modal dialogs.
+ */
 export class Feedback {
-    private static OutputChannels: { [id: string]: vscode.OutputChannel; } = {};
+    private static outputChannels: { [id: string]: vscode.OutputChannel; } = {};
 
-    public static programOutput(programName: string, output: string, channels: string[] = ["default"]) {
-        let lines = output.split("\n");
+    public static async debug(options: { message: string, items?: any[] }) {
+        const items = options.items || [];
 
-        channels.forEach(function (tag) {
-            lines.forEach(function (line) {
-                if (line) {
-                    Feedback.getChannel(tag).appendLine(`[${programName}]: ${line}`);
-                }
-            });
-        });
+        console.debug(options.message, ...items);
+
+        this.appendLogMessage("DEBUG", options.message);
+        this.writeArbitraryItems(items);
     }
 
-    public static debug(message: string, channels: string[] = ["default"]) {
-        channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`DEBUG: ${message}`);
-        });
+    public static async info(options: { message: string, items?: any[], display?: boolean, modal?: boolean }) {
+        const items = options.items || [];
+
+        console.info(options.message, ...items);
+
+        this.appendLogMessage("INFO", options.message);
+        this.writeArbitraryItems(items);
+
+        if (options.display) {
+            await vscode.window.showInformationMessage(options.message, { modal: options.modal || false });
+        }
     }
 
-    public static info(message: string, channels: string[] = ["default"]) {
-        channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`INFO: ${message}`);
-        });
+    public static async error(options: { message: string, error: any, items?: any[], display?: boolean }) {
+        const items = options.items || [];
 
-        vscode.window.showInformationMessage(message);
+        console.error(options.message, options.error, ...items);
+
+        this.appendLogMessage("ERROR", options.message);
+        this.writeArbitraryItems([options.error, ...items]);
+
+        if (options.display) {
+            const message = `
+${withoutEndingPeriod(options.message)}.
+To see more details, pick "MultiversX" in vscode's "Output" panels.
+`;
+            const messageOptions: vscode.MessageOptions = {};
+            await vscode.window.showErrorMessage(message, messageOptions, "Got it!");
+        }
     }
 
-    public static async infoModal(message: string, channels: string[] = ["default"]) {
-        channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`INFO: ${message}`);
-        });
-
-        await vscode.window.showInformationMessage(message, { modal: true });
+    private static appendLogMessage(level: string, message: string) {
+        const time = new Date().toISOString();
+        this.getChannel().appendLine(`${level} [${time}]: ${message}`);
     }
 
-    public static error(summary: string, detailed?: string, channels: string[] = ["default"]) {
-        console.error(detailed);
+    private static getChannel(): vscode.OutputChannel {
+        const channelName = `MultiversX`;
 
-        channels.forEach(function (tag) {
-            Feedback.getChannel(tag).appendLine(`ERROR: ${detailed}`);
-        });
-
-        vscode.window.showErrorMessage(`${summary}. See the Output Channels for more details.`, { modal: true });
-    }
-
-    private static getChannel(tag: string): vscode.OutputChannel {
-        let channelName: string = `MultiversX: ${tag}`;
-
-        if (!Feedback.OutputChannels[channelName]) {
-            Feedback.OutputChannels[channelName] = vscode.window.createOutputChannel(channelName);
+        if (!this.outputChannels[channelName]) {
+            this.outputChannels[channelName] = vscode.window.createOutputChannel(channelName);
         }
 
-        return Feedback.OutputChannels[channelName];
+        return this.outputChannels[channelName];
     }
 
-    public static reveal(tag: string) {
-        let channel = Feedback.getChannel(tag);
-        channel.show(true);
+    private static writeArbitraryItems(items: any[]) {
+        const channel = this.getChannel();
+
+        for (const item of items) {
+            const line = this.itemToString(item);
+            channel.appendLine(line);
+        }
+    }
+
+    private static itemToString(item: any): string {
+        if (item instanceof Error) {
+            return item.stack;
+        }
+
+        if (item instanceof Object) {
+            return JSON.stringify(item, null, 4);
+        }
+
+        return item.toString();
     }
 }

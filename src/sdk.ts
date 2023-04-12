@@ -1,10 +1,9 @@
 import axios from "axios";
 import { ConfigurationTarget, InputBoxOptions, Terminal, Uri, window, workspace } from 'vscode';
 import { Environment } from './environment';
-import * as errors from './errors';
 import { Feedback } from './feedback';
 import * as presenter from './presenter';
-import { MySettings } from './settings';
+import { Settings } from './settings';
 import * as storage from "./storage";
 import { ProcessFacade, sleep } from "./utils";
 import { FreeTextVersion, Version } from './version';
@@ -16,7 +15,7 @@ const DefaultMxpyVersion = Version.parse("5.3.2");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
-    return MySettings.getSdkPath();
+    return Settings.getSdkPath();
 }
 
 function getPrettyPrinterPath() {
@@ -104,14 +103,23 @@ export async function reinstallMxpy(version: Version) {
 
     await runInTerminal("installer", mxpyUpCommand);
 
-    Feedback.info("mxpy installation has been started. Please wait for installation to finish.");
+    Feedback.info({
+        message: "mxpy installation has been started. Please wait for installation to finish.",
+        display: true
+    });
 
     do {
-        Feedback.debug("Waiting for the installer to finish.");
+        Feedback.debug({
+            message: "Waiting for the installer to finish."
+        });
         await sleep(5000);
     } while ((!await isMxpyInstalled(version)));
 
-    await Feedback.infoModal("mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).");
+    await Feedback.info({
+        message: "mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).",
+        display: true,
+        modal: true
+    });
 }
 
 function getMxpyUpUrl(version: Version) {
@@ -123,13 +131,14 @@ export async function fetchTemplates(cacheFile: string) {
         await ProcessFacade.execute({
             program: Mxpy,
             args: ["contract", "templates"],
-            doNotDumpStdout: true,
             stdoutToFile: cacheFile
         });
 
-        Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
+        Feedback.debug({
+            message: `Templates fetched, saved to ${cacheFile}.`
+        });
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not fetch templates", Inner: error });
+        throw new Error("Could not fetch templates", { cause: error });
     }
 }
 
@@ -140,9 +149,12 @@ export async function newFromTemplate(folder: string, template: string, name: st
             args: ["contract", "new", "--directory", folder, "--template", template, name],
         });
 
-        Feedback.info(`Smart Contract [${name}] created, based on template [${template}].`);
+        Feedback.info({
+            message: `Smart Contract [${name}] created, based on template [${template}].`,
+            display: true
+        });
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not create Smart Contract", Inner: error });
+        throw new Error("Could not create Smart Contract", { cause: error });
     }
 }
 
@@ -231,23 +243,34 @@ export async function reinstallModule(): Promise<void> {
 }
 
 async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
-    Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
+    Feedback.info({
+        message: `Installation of ${group} has been started. Please wait for installation to finish.`,
+        display: true
+    });
+
     let tagArgument = version.isSpecified() ? `--tag=${version}` : "";
     await runInTerminal("installer", `${Mxpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
 
     do {
-        Feedback.debug("Waiting for the installer to finish.");
+        Feedback.debug({
+            message: "Waiting for the installer to finish."
+        });
+
         await sleep(5000);
     } while ((!await isMxpyGroupInstalled(group)));
 
-    await Feedback.infoModal(`${group} has been installed.`);
+    await Feedback.info({
+        message: `${group} has been installed.`,
+        display: true,
+        modal: true
+    });
 }
 
 export async function buildContract(folder: string) {
     try {
         await runInTerminal("build", `${Mxpy} --verbose contract build "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
+        throw new Error("Could not build Smart Contract", { cause: error });
     }
 }
 
@@ -255,7 +278,7 @@ export async function cleanContract(folder: string) {
     try {
         await runInTerminal("build", `${Mxpy} --verbose contract clean "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
+        throw new Error("Could not clean Smart Contract", { cause: error });
     }
 }
 
@@ -264,7 +287,7 @@ export async function runScenarios(folder: string) {
         await ensureInstalledMxpyGroup("vmtools");
         await runInTerminal("scenarios", `run-scenarios "${folder}"`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not run scenarios.", Inner: error });
+        throw new Error("Could not run scenarios.", { cause: error });
     }
 }
 
@@ -279,7 +302,7 @@ export async function runFreshTestnet(testnetToml: Uri) {
         await runInTerminal("testnet", `${Mxpy} testnet config`);
         await runInTerminal("testnet", `${Mxpy} testnet start`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new Error("Could not start testnet.", { cause: error });
     }
 }
 
@@ -290,7 +313,7 @@ export async function resumeExistingTestnet(testnetToml: Uri) {
         await destroyTerminal("testnet");
         await runInTerminal("testnet", `${Mxpy} testnet start`, null, folder);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw Error("Could not start testnet.", { cause: error });
     }
 }
 
@@ -298,7 +321,7 @@ export async function stopTestnet(_testnetToml: Uri) {
     try {
         await killRunningInTerminal("testnet");
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new Error("Could not start testnet.", { cause: error });
     }
 }
 
@@ -330,7 +353,11 @@ export async function installRustDebuggerPrettyPrinterScript() {
     let commands = [`command script import ${prettyPrinterPath}`];
     await lldbConfig.update("launch.initCommands", commands, ConfigurationTarget.Global);
 
-    await Feedback.infoModal(`The rust debugger pretty printer script has been installed.`);
+    await Feedback.info({
+        message: "The rust debugger pretty printer script has been installed.",
+        display: true,
+        modal: true
+    });
 }
 
 async function showInputBoxWithDefault(options: InputBoxOptions & { defaultInput: string }) {
@@ -348,7 +375,10 @@ async function showInputBoxWithDefault(options: InputBoxOptions & { defaultInput
 async function downloadFile(path: fs.PathLike, url: string) {
     let fileData = await downloadRawData(url);
     fs.writeFileSync(path, fileData);
-    Feedback.debug(`Downloaded file from ${url} to ${path}.`);
+
+    Feedback.debug({
+        message: `Downloaded file from ${url} to ${path}.`
+    });
 }
 
 async function downloadRawData(url: string): Promise<string> {
