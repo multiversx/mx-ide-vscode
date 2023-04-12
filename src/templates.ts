@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
-import fs = require("fs");
-import path = require("path");
+import { askOpenWorkspace } from './presenter';
 import * as sdk from "./sdk";
 import * as storage from "./storage";
+import * as workspace from "./workspace";
+import fs = require("fs");
+import path = require("path");
 
 export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTemplate> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContractTemplate | undefined> = new vscode.EventEmitter<ContractTemplate | undefined>();
@@ -12,7 +14,13 @@ export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTempl
     }
 
     async refresh() {
-        await sdk.fetchTemplates(this.getCacheFile());
+        if (!workspace.isOpen()) {
+            await askOpenWorkspace();
+            return;
+        }
+
+        const cacheFile = this.getCacheFile();
+        await sdk.fetchTemplates(cacheFile);
         this._onDidChangeTreeData.fire(null);
     }
 
@@ -21,17 +29,20 @@ export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTempl
     }
 
     getChildren(element?: ContractTemplate): vscode.ProviderResult<ContractTemplate[]> {
+        if (!workspace.isOpen()) {
+            return [];
+        }
         if (element) {
             return [];
         }
 
-        let cacheFile = this.getCacheFile();
+        const cacheFile = this.getCacheFile();
         if (!fs.existsSync(cacheFile)) {
             return [];
         }
 
-        let templatesJson = fs.readFileSync(cacheFile, { encoding: "utf8" });
-        let templatesPlain = JSON.parse(templatesJson) as any[];
+        const templatesJson = fs.readFileSync(cacheFile, { encoding: "utf8" });
+        const templatesPlain = JSON.parse(templatesJson) as any[];
         return templatesPlain.map(item => new ContractTemplate(item));
     }
 

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
-import path = require("path");
+import { askOpenWorkspace } from "./presenter";
 import * as workspace from "./workspace";
+import path = require("path");
 
 export class SmartContractsViewModel implements vscode.TreeDataProvider<SmartContract> {
     private _onDidChangeTreeData: vscode.EventEmitter<SmartContract | undefined> = new vscode.EventEmitter<SmartContract | undefined>();
@@ -10,6 +11,11 @@ export class SmartContractsViewModel implements vscode.TreeDataProvider<SmartCon
     }
 
     async refresh() {
+        if (!workspace.isOpen()) {
+            await askOpenWorkspace();
+            return;
+        }
+
         this._onDidChangeTreeData.fire(null);
     }
 
@@ -18,12 +24,15 @@ export class SmartContractsViewModel implements vscode.TreeDataProvider<SmartCon
     }
 
     getChildren(element?: SmartContract): vscode.ProviderResult<SmartContract[]> {
+        if (!workspace.isOpen()) {
+            return [];
+        }
         if (element) {
             return [];
         }
 
-        let metadataObjects = workspace.getMetadataObjects();
-        let contracts = metadataObjects.map(metadata => new SmartContract(metadata));
+        const metadataObjects = workspace.getMetadataObjects();
+        const contracts = metadataObjects.map(metadata => new SmartContract(metadata));
         return contracts;
     }
 }
