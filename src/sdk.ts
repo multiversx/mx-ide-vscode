@@ -245,7 +245,7 @@ async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `${Mxpy} --verbose contract build --path "${folder}"`);
+        await runInTerminal("build", `${Mxpy} contract build --path "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
