@@ -12,7 +12,7 @@ import path = require("path");
 import fs = require('fs');
 
 const Mxpy = "mxpy";
-const DefaultMxpyVersion = Version.parse("5.3.2");
+const DefaultMxpyVersion = Version.parse("8.1.0");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
@@ -245,7 +245,7 @@ async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `${Mxpy} --verbose contract build "${folder}"`);
+        await runInTerminal("build", `${Mxpy} --verbose contract build --path "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
