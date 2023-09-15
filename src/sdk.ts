@@ -118,21 +118,6 @@ function getMxpyUpUrl(version: Version) {
     return `https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/${version.vValue}/mxpy-up.py`;
 }
 
-export async function fetchTemplates(cacheFile: string) {
-    try {
-        await ProcessFacade.execute({
-            program: Mxpy,
-            args: ["contract", "templates"],
-            doNotDumpStdout: true,
-            stdoutToFile: cacheFile
-        });
-
-        Feedback.debug(`Templates fetched, saved to ${cacheFile}.`);
-    } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not fetch templates", Inner: error });
-    }
-}
-
 export async function newFromTemplate(folder: string, template: string, name: string) {
     try {
         await ProcessFacade.execute({
