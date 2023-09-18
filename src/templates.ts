@@ -1,10 +1,90 @@
 import * as vscode from 'vscode';
-import { askOpenWorkspace } from './presenter';
-import * as sdk from "./sdk";
-import * as storage from "./storage";
-import * as workspace from "./workspace";
-import fs = require("fs");
 import path = require("path");
+
+// Contract templates cannot be fetched from mxpy v8 easily, since the stdout of "mxpy contract templates" includes non-JSON data.
+// Here, we hardcode the list of templates, in expectation of the new way to get the templates (e.g. via "sc-meta" or directly from a file on GitHub).
+const CONTRACT_TEMPLATES = [
+    {
+        "name": "adder",
+        "language": "rust"
+    },
+    {
+        "name": "bonding-curve-contract",
+        "language": "rust"
+    },
+    {
+        "name": "check-pause",
+        "language": "rust"
+    },
+    {
+        "name": "crowdfunding-esdt",
+        "language": "rust"
+    },
+    {
+        "name": "crypto-bubbles",
+        "language": "rust"
+    },
+    {
+        "name": "crypto-zombies",
+        "language": "rust"
+    },
+    {
+        "name": "digital-cash",
+        "language": "rust"
+    },
+    {
+        "name": "empty",
+        "language": "rust"
+    },
+    {
+        "name": "esdt-transfer-with-fee",
+        "language": "rust"
+    },
+    {
+        "name": "factorial",
+        "language": "rust"
+    },
+    {
+        "name": "fractional-nfts",
+        "language": "rust"
+    },
+    {
+        "name": "lottery-esdt",
+        "language": "rust"
+    },
+    {
+        "name": "multisig",
+        "language": "rust"
+    },
+    {
+        "name": "nft-minter",
+        "language": "rust"
+    },
+    {
+        "name": "nft-storage-prepay",
+        "language": "rust"
+    },
+    {
+        "name": "ping-pong-egld",
+        "language": "rust"
+    },
+    {
+        "name": "proxy-pause",
+        "language": "rust"
+    },
+    {
+        "name": "rewards-distribution",
+        "language": "rust"
+    },
+    {
+        "name": "seed-nft-minter",
+        "language": "rust"
+    },
+    {
+        "name": "token-release",
+        "language": "rust"
+    }
+];
 
 export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTemplate> {
     private _onDidChangeTreeData: vscode.EventEmitter<ContractTemplate | undefined> = new vscode.EventEmitter<ContractTemplate | undefined>();
@@ -14,13 +94,6 @@ export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTempl
     }
 
     async refresh() {
-        if (!workspace.isOpen()) {
-            await askOpenWorkspace();
-            return;
-        }
-
-        const cacheFile = this.getCacheFile();
-        await sdk.fetchTemplates(cacheFile);
         this._onDidChangeTreeData.fire(null);
     }
 
@@ -29,25 +102,11 @@ export class TemplatesViewModel implements vscode.TreeDataProvider<ContractTempl
     }
 
     getChildren(element?: ContractTemplate): vscode.ProviderResult<ContractTemplate[]> {
-        if (!workspace.isOpen()) {
-            return [];
-        }
         if (element) {
             return [];
         }
 
-        const cacheFile = this.getCacheFile();
-        if (!fs.existsSync(cacheFile)) {
-            return [];
-        }
-
-        const templatesJson = fs.readFileSync(cacheFile, { encoding: "utf8" });
-        const templatesPlain = JSON.parse(templatesJson) as any[];
-        return templatesPlain.map(item => new ContractTemplate(item));
-    }
-
-    private getCacheFile(): string {
-        return storage.getPathTo("templates.json");
+        return CONTRACT_TEMPLATES.map(item => new ContractTemplate(item));
     }
 }
 
