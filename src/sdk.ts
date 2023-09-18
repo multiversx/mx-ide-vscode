@@ -11,12 +11,15 @@ import { FreeTextVersion, Version } from './version';
 import path = require("path");
 import fs = require('fs');
 
-const Mxpy = "mxpy";
-const DefaultMxpyVersion = Version.parse("8.1.0");
+const DefaultMxpyVersion = Version.parse("8.1.1");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
     return MySettings.getSdkPath();
+}
+
+function getMxpyPath() {
+    return path.join(getPath(), "mxpy");
 }
 
 function getPrettyPrinterPath() {
@@ -63,7 +66,7 @@ async function ensureMxpy() {
 }
 
 async function isMxpyInstalled(exactVersion?: Version): Promise<boolean> {
-    let [cliVersionString, ok] = await getOneLineStdout(Mxpy, ["--version"]);
+    let [cliVersionString, ok] = await getOneLineStdout(getMxpyPath(), ["--version"]);
     if (!cliVersionString || !ok) {
         return false;
     }
@@ -97,10 +100,7 @@ export async function reinstallMxpy(version: Version) {
     const mxpyUpUrl = getMxpyUpUrl(version);
     await downloadFile(mxpyUp, mxpyUpUrl);
 
-    const isV6OrNewer = version.isNewerOrSameAs(Version.parse("6.0.0-alpha.0"));
-    const mxpyUpCommand = isV6OrNewer ?
-        `python3 "${mxpyUp}" --exact-version=${version.value} --not-interactive` :
-        `python3 "${mxpyUp}" --no-modify-path --exact-version=${version}`;
+    const mxpyUpCommand = `python3 "${mxpyUp}" --exact-version=${version.value} --not-interactive`;
 
     await runInTerminal("installer", mxpyUpCommand);
 
@@ -121,7 +121,7 @@ function getMxpyUpUrl(version: Version) {
 export async function newFromTemplate(folder: string, template: string, name: string) {
     try {
         await ProcessFacade.execute({
-            program: Mxpy,
+            program: getMxpyPath(),
             args: ["contract", "new", "--directory", folder, "--template", template, name],
         });
 
@@ -197,7 +197,7 @@ async function ensureInstalledMxpyGroup(group: string) {
 }
 
 async function isMxpyGroupInstalled(group: string): Promise<boolean> {
-    let [_, ok] = await getOneLineStdout(Mxpy, ["deps", "check", group]);
+    let [_, ok] = await getOneLineStdout(getMxpyPath(), ["deps", "check", group]);
     return ok;
 }
 
@@ -218,7 +218,7 @@ export async function reinstallModule(): Promise<void> {
 async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
     Feedback.info(`Installation of ${group} has been started. Please wait for installation to finish.`);
     let tagArgument = version.isSpecified() ? `--tag=${version}` : "";
-    await runInTerminal("installer", `${Mxpy} --verbose deps install ${group} --overwrite ${tagArgument}`);
+    await runInTerminal("installer", `${getMxpyPath()} --verbose deps install ${group} --overwrite ${tagArgument}`);
 
     do {
         Feedback.debug("Waiting for the installer to finish.");
@@ -230,7 +230,7 @@ async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
 
 export async function buildContract(folder: string) {
     try {
-        await runInTerminal("build", `${Mxpy} contract build --path "${folder}"`);
+        await runInTerminal("build", `${getMxpyPath()} contract build --path "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not build Smart Contract", Inner: error });
     }
@@ -238,7 +238,7 @@ export async function buildContract(folder: string) {
 
 export async function cleanContract(folder: string) {
     try {
-        await runInTerminal("build", `${Mxpy} --verbose contract clean "${folder}"`);
+        await runInTerminal("build", `${getMxpyPath()} --verbose contract clean --path "${folder}"`);
     } catch (error: any) {
         throw new errors.MyError({ Message: "Could not clean Smart Contract", Inner: error });
     }
@@ -253,37 +253,35 @@ export async function runScenarios(folder: string) {
     }
 }
 
-export async function runFreshTestnet(testnetToml: Uri) {
+export async function runFreshLocalnet(localnetToml: Uri) {
     try {
-        let folder = path.dirname(testnetToml.fsPath);
+        let folder = path.dirname(localnetToml.fsPath);
 
         await ensureInstalledMxpyGroup("golang");
-        await destroyTerminal("testnet");
-        await runInTerminal("testnet", `${Mxpy} testnet clean`, null, folder);
-        await runInTerminal("testnet", `${Mxpy} testnet prerequisites`);
-        await runInTerminal("testnet", `${Mxpy} testnet config`);
-        await runInTerminal("testnet", `${Mxpy} testnet start`);
+        await destroyTerminal("localnet");
+        await runInTerminal("localnet", `${getMxpyPath()} localnet setup`, null, folder);
+        await runInTerminal("localnet", `${getMxpyPath()} localnet start`);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new errors.MyError({ Message: "Could not start localnet.", Inner: error });
     }
 }
 
-export async function resumeExistingTestnet(testnetToml: Uri) {
+export async function resumeExistingLocalnet(localnetToml: Uri) {
     try {
-        let folder = path.dirname(testnetToml.fsPath);
+        let folder = path.dirname(localnetToml.fsPath);
 
-        await destroyTerminal("testnet");
-        await runInTerminal("testnet", `${Mxpy} testnet start`, null, folder);
+        await destroyTerminal("localnet");
+        await runInTerminal("localnet", `${getMxpyPath()} localnet start`, null, folder);
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new errors.MyError({ Message: "Could not start localnet.", Inner: error });
     }
 }
 
-export async function stopTestnet(_testnetToml: Uri) {
+export async function stopLocalnet(_localnetToml: Uri) {
     try {
-        await killRunningInTerminal("testnet");
+        await killRunningInTerminal("localnet");
     } catch (error: any) {
-        throw new errors.MyError({ Message: "Could not start testnet.", Inner: error });
+        throw new errors.MyError({ Message: "Could not start localnet.", Inner: error });
     }
 }
 
