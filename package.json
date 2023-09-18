@@ -305,7 +305,7 @@
 		"ps-list": "7.2.0",
 		"underscore": "1.12.1",
 		"axios": "0.24.0",
-		"semver": "7.3.8"
+		"semver": "7.5.2"
 	},
 	"extensionDependencies": []
 }
