@@ -2,7 +2,7 @@
 	"name": "vscode-elrond-ide",
 	"displayName": "MultiversX IDE",
 	"description": "MultiversX IDE for developing Smart Contracts",
-	"version": "0.18.0",
+	"version": "0.19.0",
 	"publisher": "Elrond",
 	"repository": {
 		"type": "git",
@@ -90,18 +90,18 @@
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.runFreshTestnet",
-				"title": "Start Fresh Testnet",
+				"command": "multiversx.runFreshLocalnet",
+				"title": "Start Fresh Localnet",
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.resumeExistingTestnet",
-				"title": "Resume Testnet",
+				"command": "multiversx.resumeExistingLocalnet",
+				"title": "Resume Localnet",
 				"category": "multiversx"
 			},
 			{
-				"command": "multiversx.stopTestnet",
-				"title": "Stop Testnet",
+				"command": "multiversx.stopLocalnet",
+				"title": "Stop Localnet",
 				"category": "multiversx"
 			}
 		],
@@ -138,19 +138,19 @@
 					"group": "multiversx"
 				},
 				{
-					"command": "multiversx.runFreshTestnet",
-					"when": "resourceFilename == testnet.toml",
-					"group": "multiversx Testnet"
+					"command": "multiversx.runFreshLocalnet",
+					"when": "resourceFilename == localnet.toml",
+					"group": "multiversx Localnet"
 				},
 				{
-					"command": "multiversx.resumeExistingTestnet",
-					"when": "resourceFilename == testnet.toml",
-					"group": "multiversx Testnet"
+					"command": "multiversx.resumeExistingLocalnet",
+					"when": "resourceFilename == localnet.toml",
+					"group": "multiversx Localnet"
 				},
 				{
-					"command": "multiversx.stopTestnet",
-					"when": "resourceFilename == testnet.toml",
-					"group": "multiversx Testnet"
+					"command": "multiversx.stopLocalnet",
+					"when": "resourceFilename == localnet.toml",
+					"group": "multiversx Localnet"
 				}
 			],
 			"commandPalette": [
@@ -183,15 +183,15 @@
 					"when": "false"
 				},
 				{
-					"command": "multiversx.runFreshTestnet",
+					"command": "multiversx.runFreshLocalnet",
 					"when": "false"
 				},
 				{
-					"command": "multiversx.resumeExistingTestnet",
+					"command": "multiversx.resumeExistingLocalnet",
 					"when": "false"
 				},
 				{
-					"command": "multiversx.stopTestnet",
+					"command": "multiversx.stopLocalnet",
 					"when": "false"
 				}
 			],
