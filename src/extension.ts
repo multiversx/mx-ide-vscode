@@ -27,9 +27,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("multiversx.gotoContract", gotoContract);
 	vscode.commands.registerCommand("multiversx.buildContract", buildContract);
 	vscode.commands.registerCommand("multiversx.runScenarios", runScenarios);
-	vscode.commands.registerCommand("multiversx.runFreshTestnet", runFreshTestnet);
-	vscode.commands.registerCommand("multiversx.resumeExistingTestnet", resumeExistingTestnet);
-	vscode.commands.registerCommand("multiversx.stopTestnet", stopTestnet);
+	vscode.commands.registerCommand("multiversx.runFreshLocalnet", runFreshLocalnet);
+	vscode.commands.registerCommand("multiversx.resumeExistingLocalnet", resumeExistingLocalnet);
+	vscode.commands.registerCommand("multiversx.stopLocalnet", stopLocalnet);
 
 	vscode.commands.registerCommand("multiversx.cleanContract", cleanContract);
 	vscode.commands.registerCommand("multiversx.refreshTemplates", async () => await refreshViewModel(templatesViewModel));
@@ -158,25 +158,25 @@ async function runScenarios(item: any) {
 	}
 }
 
-async function runFreshTestnet(testnetToml: Uri) {
+async function runFreshLocalnet(localnetToml: Uri) {
 	try {
-		await sdk.runFreshTestnet(testnetToml);
+		await sdk.runFreshLocalnet(localnetToml);
 	} catch (error) {
 		await onTopLevelError(error);
 	}
 }
 
-async function resumeExistingTestnet(testnetToml: Uri) {
+async function resumeExistingLocalnet(localnetToml: Uri) {
 	try {
-		await sdk.resumeExistingTestnet(testnetToml);
+		await sdk.resumeExistingLocalnet(localnetToml);
 	} catch (error) {
 		await onTopLevelError(error);
 	}
 }
 
-async function stopTestnet(testnetToml: Uri) {
+async function stopLocalnet(localnetToml: Uri) {
 	try {
-		await sdk.stopTestnet(testnetToml);
+		await sdk.stopLocalnet(localnetToml);
 	} catch (error) {
 		await onTopLevelError(error);
 	}
