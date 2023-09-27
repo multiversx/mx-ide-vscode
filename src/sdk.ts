@@ -10,7 +10,7 @@ import { FreeTextVersion, Version } from './version';
 import path = require("path");
 import fs = require('fs');
 
-const DefaultMxpyVersion = Version.parse("8.1.1");
+const DefaultMxpyVersion = Version.parse("8.1.2");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
