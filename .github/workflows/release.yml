@@ -31,7 +31,7 @@ jobs:
 
         sleep 5
 
-        npm run package
+        npm run vscode:package
         gh release upload $RELEASE_TAG $(find . -type f -name "*.vsix")        
 
     - name: Publish on Marketplace
