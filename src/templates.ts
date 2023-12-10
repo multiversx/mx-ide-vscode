@@ -9,27 +9,7 @@ const CONTRACT_TEMPLATES = [
         "language": "rust"
     },
     {
-        "name": "bonding-curve-contract",
-        "language": "rust"
-    },
-    {
-        "name": "check-pause",
-        "language": "rust"
-    },
-    {
-        "name": "crowdfunding-esdt",
-        "language": "rust"
-    },
-    {
-        "name": "crypto-bubbles",
-        "language": "rust"
-    },
-    {
         "name": "crypto-zombies",
-        "language": "rust"
-    },
-    {
-        "name": "digital-cash",
         "language": "rust"
     },
     {
@@ -37,51 +17,7 @@ const CONTRACT_TEMPLATES = [
         "language": "rust"
     },
     {
-        "name": "esdt-transfer-with-fee",
-        "language": "rust"
-    },
-    {
-        "name": "factorial",
-        "language": "rust"
-    },
-    {
-        "name": "fractional-nfts",
-        "language": "rust"
-    },
-    {
-        "name": "lottery-esdt",
-        "language": "rust"
-    },
-    {
-        "name": "multisig",
-        "language": "rust"
-    },
-    {
-        "name": "nft-minter",
-        "language": "rust"
-    },
-    {
-        "name": "nft-storage-prepay",
-        "language": "rust"
-    },
-    {
         "name": "ping-pong-egld",
-        "language": "rust"
-    },
-    {
-        "name": "proxy-pause",
-        "language": "rust"
-    },
-    {
-        "name": "rewards-distribution",
-        "language": "rust"
-    },
-    {
-        "name": "seed-nft-minter",
-        "language": "rust"
-    },
-    {
-        "name": "token-release",
         "language": "rust"
     }
 ];
