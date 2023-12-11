@@ -10,7 +10,7 @@ import { FreeTextVersion, Version } from './version';
 import path = require("path");
 import fs = require('fs');
 
-const DefaultMxpyVersion = Version.parse("8.1.2");
+const DefaultMxpyVersion = Version.parse("9.0.2");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
@@ -130,7 +130,7 @@ export async function newFromTemplate(folder: string, template: string, name: st
     try {
         await ProcessFacade.execute({
             program: getMxpyPath(),
-            args: ["contract", "new", "--directory", folder, "--template", template, name],
+            args: ["contract", "new", "--path", folder, "--template", template, "--name", name],
         });
 
         Feedback.info({
