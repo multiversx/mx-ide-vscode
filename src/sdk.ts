@@ -10,7 +10,7 @@ import { FreeTextVersion, Version } from './version';
 import path = require("path");
 import fs = require('fs');
 
-const DefaultMxpyVersion = Version.parse("9.0.2");
+const DefaultMxpyVersion = Version.parse("9.4.1");
 const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
 
 export function getPath() {
@@ -18,7 +18,9 @@ export function getPath() {
 }
 
 function getMxpyPath() {
-    return path.join(getPath(), "mxpy");
+    // If mxpy is installed using pipx or mxpy-up, it should be in the PATH.
+    // If mxpy is installed using the extension, it's in ~/multiversx-sdk, which is also added to the PATH - see "environment.ts".
+    return "mxpy";
 }
 
 function getPrettyPrinterPath() {
