@@ -19,7 +19,7 @@
 	],
 	"icon": "content/logo.png",
 	"activationEvents": [
-		"workspaceContains:**/multiversx.workspace.json"
+		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -31,7 +31,7 @@
 			},
 			{
 				"command": "multiversx.installSdk",
-				"title": "Install SDK",
+				"title": "Install mxpy",
 				"category": "multiversx"
 			},
 			{

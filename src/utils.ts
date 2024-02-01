@@ -18,7 +18,11 @@ export class ProcessFacade {
         let spawnOptions: child_process.SpawnOptions = {};
 
         Feedback.debug({
-            message: `Execute [${program}] with arguments ${JSON.stringify(args)}`,
+            message: `External command will be executed:
+\`\`\`
+$ ${programName} ${args.join(" ")}
+\`\`\`
+`,
         });
 
         let subprocess = child_process.spawn(program, args, spawnOptions);

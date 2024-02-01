@@ -10,15 +10,17 @@ import { FreeTextVersion, Version } from './version';
 import path = require("path");
 import fs = require('fs');
 
-const DefaultMxpyVersion = Version.parse("9.0.2");
-const LatestMxpyReleaseUrl = "https://api.github.com/repos/multiversx/mx-sdk-py-cli/releases/latest";
+const minMxpyVersion = Version.parse("9.4.1");
+const mxpyUpUrl = "https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/main/mxpy-up.py";
 
 export function getPath() {
     return Settings.getSdkPath();
 }
 
 function getMxpyPath() {
-    return path.join(getPath(), "mxpy");
+    // If mxpy is installed using pipx or mxpy-up, it should be in the PATH.
+    // If mxpy is installed using the extension, it's in ~/multiversx-sdk, which is also added to the PATH - see "environment.ts".
+    return "mxpy";
 }
 
 function getPrettyPrinterPath() {
@@ -26,59 +28,27 @@ function getPrettyPrinterPath() {
 }
 
 export async function reinstall() {
-    let latestVersion = await getLatestKnownMxpyVersion();
-    let version = await presenter.askMxpyVersion(latestVersion);
-    if (!version) {
-        return;
-    }
-
-    await reinstallMxpy(version);
-}
-
-/** 
- * Fetch the latest known version from Github, or fallback to the IDE-configured default version, if the fetch fails.
- */
-async function getLatestKnownMxpyVersion(): Promise<Version> {
-    try {
-        let response = await axios.get(LatestMxpyReleaseUrl);
-        return Version.parse(response.data.tag_name);
-    } catch {
-        return DefaultMxpyVersion;
-    }
+    await reinstallMxpy();
 }
 
 export async function ensureInstalled() {
     await ensureMxpy();
 }
 
-async function ensureMxpy() {
-    let isEdpyInstalled = await isMxpyInstalled();
-    if (isEdpyInstalled) {
-        return;
-    }
-
-    let latestMxpyVersion = await getLatestKnownMxpyVersion();
-    let answer = await presenter.askInstallMxpy(latestMxpyVersion);
-    if (answer) {
-        await reinstallMxpy(latestMxpyVersion);
-    }
-}
-
-async function isMxpyInstalled(exactVersion?: Version): Promise<boolean> {
+export async function ensureMxpy(): Promise<boolean> {
     let [cliVersionString, ok] = await getOneLineStdout(getMxpyPath(), ["--version"]);
     if (!cliVersionString || !ok) {
         return false;
     }
 
     let installedVersion = Version.parse(cliVersionString);
-
-    if (exactVersion) {
-        return installedVersion.isSameAs(exactVersion);
+    let isInstalled = installedVersion.isNewerOrSameAs(minMxpyVersion);
+    if (isInstalled) {
+        return true;
     }
 
-    // No exact version specified (desired).
-    let latestKnownVersion = await getLatestKnownMxpyVersion();
-    return installedVersion.isNewerOrSameAs(latestKnownVersion);
+    await presenter.askInstallMxpy(minMxpyVersion.vValue);
+    return false;
 }
 
 async function getOneLineStdout(program: string, args: string[]): Promise<[string, boolean]> {
@@ -94,36 +64,20 @@ async function getOneLineStdout(program: string, args: string[]): Promise<[strin
     }
 }
 
-export async function reinstallMxpy(version: Version) {
+export async function reinstallMxpy() {
     const mxpyUp = storage.getPathTo("mxpy-up.py");
-    const mxpyUpUrl = getMxpyUpUrl(version);
     await downloadFile(mxpyUp, mxpyUpUrl);
 
-    const mxpyUpCommand = `python3 "${mxpyUp}" --exact-version=${version.value} --not-interactive`;
+    const mxpyUpCommand = `python3 "${mxpyUp}" --not-interactive`;
 
     await runInTerminal("installer", mxpyUpCommand);
 
     Feedback.info({
-        message: "mxpy installation has been started. Please wait for installation to finish.",
+        message: `"mxpy" installation has been started.
+Please wait for installation to finish.
+Once finished, please close all Visual Studio Code terminals and then reopen them (as needed).`,
         display: true
     });
-
-    do {
-        Feedback.debug({
-            message: "Waiting for the installer to finish."
-        });
-        await sleep(5000);
-    } while ((!await isMxpyInstalled(version)));
-
-    await Feedback.info({
-        message: "mxpy has been installed. Please close all Visual Studio Code terminals and then reopen them (as needed).",
-        display: true,
-        modal: true
-    });
-}
-
-function getMxpyUpUrl(version: Version) {
-    return `https://raw.githubusercontent.com/multiversx/mx-sdk-py-cli/${version.vValue}/mxpy-up.py`;
 }
 
 export async function newFromTemplate(folder: string, template: string, name: string) {
@@ -190,21 +144,13 @@ async function killRunningInTerminal(name: string) {
     terminal.sendText("\u0003");
 }
 
-export async function ensureInstalledBuildchains(languages: string[]) {
-    for (let i = 0; i < languages.length; i++) {
-        await ensureInstalledMxpyGroup(languages[i]);
-    }
-}
-
-async function ensureInstalledMxpyGroup(group: string) {
+async function ensureInstalledMxpyGroup(group: string): Promise<boolean> {
     if (await isMxpyGroupInstalled(group)) {
-        return;
+        return true;
     }
 
-    let answer = await presenter.askInstallMxpyGroup(group);
-    if (answer) {
-        await reinstallMxpyGroup(group, FreeTextVersion.unspecified());
-    }
+    await presenter.askInstallMxpyGroup(group);
+    return false;
 }
 
 async function isMxpyGroupInstalled(group: string): Promise<boolean> {
@@ -234,23 +180,13 @@ async function reinstallMxpyGroup(group: string, version: FreeTextVersion) {
 
     let tagArgument = version.isSpecified() ? `--tag=${version}` : "";
     await runInTerminal("installer", `${getMxpyPath()} --verbose deps install ${group} --overwrite ${tagArgument}`);
-
-    do {
-        Feedback.debug({
-            message: "Waiting for the installer to finish."
-        });
-
-        await sleep(5000);
-    } while ((!await isMxpyGroupInstalled(group)));
-
-    await Feedback.info({
-        message: `${group} has been installed.`,
-        display: true,
-        modal: true
-    });
 }
 
 export async function buildContract(folder: string) {
+    if (!await ensureMxpy()) {
+        return;
+    }
+
     try {
         await runInTerminal("build", `${getMxpyPath()} contract build --path "${folder}"`);
     } catch (error: any) {
@@ -259,6 +195,10 @@ export async function buildContract(folder: string) {
 }
 
 export async function cleanContract(folder: string) {
+    if (!await ensureMxpy()) {
+        return;
+    }
+
     try {
         await runInTerminal("build", `${getMxpyPath()} --verbose contract clean --path "${folder}"`);
     } catch (error: any) {
@@ -267,6 +207,15 @@ export async function cleanContract(folder: string) {
 }
 
 export async function runScenarios(folder: string) {
+    if (!await ensureMxpy()) {
+        return;
+    }
+
+    // This will change very soon, once "mx-scenarios-go" (installable by "sc-meta") is released.
+    if (!await ensureInstalledMxpyGroup("vmtools")) {
+        return;
+    }
+
     try {
         await ensureInstalledMxpyGroup("vmtools");
         await runInTerminal("scenarios", `run-scenarios "${folder}"`);
@@ -276,6 +225,10 @@ export async function runScenarios(folder: string) {
 }
 
 export async function runFreshLocalnet(localnetToml: Uri) {
+    if (!await ensureMxpy()) {
+        return;
+    }
+
     try {
         let folder = path.dirname(localnetToml.fsPath);
 
@@ -289,6 +242,10 @@ export async function runFreshLocalnet(localnetToml: Uri) {
 }
 
 export async function resumeExistingLocalnet(localnetToml: Uri) {
+    if (!await ensureMxpy()) {
+        return;
+    }
+
     try {
         let folder = path.dirname(localnetToml.fsPath);
 
