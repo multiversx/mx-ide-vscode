@@ -42,17 +42,8 @@ export function deactivate() {
 }
 
 async function setupWorkspace() {
-	if (!workspace.isOpen()) {
-		await presenter.askOpenWorkspace();
-		return;
-	}
-
-	await workspace.setup();
-	await sdk.ensureInstalled();
-	await ensureInstalledBuildchains();
-
 	await Feedback.info({
-		message: "Workspace has been set up.",
+		message: `The command "MultiversX: Setup Workspace" is deprecated, and will be removed in a future release.`,
 		display: true
 	});
 }
@@ -96,7 +87,6 @@ async function newFromTemplate(template: ContractTemplate) {
 		let contractName = await presenter.askContractName();
 
 		await sdk.newFromTemplate(parentFolder, templateName, contractName);
-		await ensureInstalledBuildchains();
 		vscode.commands.executeCommand("workbench.files.action.refreshFilesExplorer");
 	} catch (error) {
 		await onTopLevelError(error);
@@ -180,9 +170,4 @@ async function stopLocalnet(localnetToml: Uri) {
 	} catch (error) {
 		await onTopLevelError(error);
 	}
-}
-
-async function ensureInstalledBuildchains() {
-	let languages = workspace.getLanguages();
-	await sdk.ensureInstalledBuildchains(languages);
 }

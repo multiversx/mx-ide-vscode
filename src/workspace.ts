@@ -26,17 +26,6 @@ export function getPath() {
     }
 }
 
-export async function setup() {
-    ensureWorkspaceDefinitionFile();
-}
-
-function ensureWorkspaceDefinitionFile() {
-    const filePath = path.join(getPath(), "multiversx.workspace.json");
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "{}");
-    }
-}
-
 export function getLanguages(): string[] {
     const metadataObjects = getMetadataObjects();
     const languagesInProject = metadataObjects.map(item => item.Language);

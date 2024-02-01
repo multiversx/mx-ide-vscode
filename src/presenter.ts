@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FreeTextVersion, Version } from './version';
+import { FreeTextVersion } from './version';
 
 export async function askOpenWorkspace() {
     const message = "No folder open in your workspace. Please open a folder.";
@@ -31,34 +31,30 @@ export async function askContractName() {
     return result;
 }
 
-export async function askInstallMxpy(requiredVersion: Version): Promise<boolean> {
-    let answer = await askYesNo(`MultiversX IDE requires mxpy ${requiredVersion}, which isn't available in your environment.
-Do you agree to install it?`);
-    return answer;
+export async function askInstallMxpy(minMxpyVersion: string): Promise<void> {
+    const message = `MultiversX IDE requires mxpy ${minMxpyVersion} (or later), which isn't available in your environment.
+  
+  In order to install it, please follow:
+  
+  https://docs.multiversx.com/sdk-and-tools/sdk-py/installing-mxpy
+  
+  Alternatively, invoke the VSCode command "MultiversX: Install mxpy".
+  `;
+
+    await vscode.window.showInformationMessage(message, { modal: true });
 }
 
-export async function askMxpyVersion(defaultVersion: Version): Promise<Version> {
-    const result = await vscode.window.showInputBox({
-        prompt: "Enter the mxpy version to install",
-        value: defaultVersion.toString(),
-        ignoreFocusOut: true,
-        placeHolder: "For example: 5.6.7",
-        validateInput: text => {
-            return text.length > 0 ? null : "Should not be empty.";
-        }
-    });
+export async function askInstallMxpyGroup(group: string): Promise<void> {
+    const message = `It seems that your workspace requires the dependency group "${group}", which isn't available in your environment.
+  
+  In order to install it, run the following in your terminal:
+  
+  "mxpy deps install ${group}"
+  
+  Alternatively, invoke the VSCode command "MultiversX: Install Module or Dependency".
+    `;
 
-    if (result === undefined) {
-        return null;
-    }
-
-    return Version.parse(result);
-}
-
-export async function askInstallMxpyGroup(group: string): Promise<boolean> {
-    let answer = await askYesNo(`It seems that your workspace requires the dependency group "${group}", which isn't available in your environment.
-Do you agree to install it?`);
-    return answer;
+    await vscode.window.showInformationMessage(message, { modal: true });
 }
 
 export async function askChooseSdkModule(modules: string[]): Promise<string> {
